@@ -1,0 +1,9 @@
+Package: cir
+Type: Package
+Title: Centered-Isotonic-Regression and Dose-Response utilities
+Version: 1.1
+Date: 2014-05-02
+Author: Assaf P. Oron
+Maintainer: Assaf P. Oron <assaf.oron@seattlechildrens.org>
+Description: Isotonic regression, as well as a small-sample tweak called CIR, and some other goodies.
+License: GPL-2
