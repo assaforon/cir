@@ -1,5 +1,9 @@
 ##' Returns centered-isotonic-regression estimate
-
+#'
+#'
+#' Nonparametric forward point estimation of a monotone response (y) as a function of dose (x), using the centered-isotonic-regression (CIR) algorithm.
+#'
+#'
 ##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
 
 
@@ -10,7 +14,7 @@
 #' @param dec logical, is the true function is assumed to be monotone decreasing? Default \code{FALSE}.
 #' @param ...	Other arguments passed on to the constructor functions that pre-process the input.
 
-#' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects named \code{output,input,alg} for the output data at dose levels, the input data, and the function as fit at algorithm-generated points, respectively.
+#' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects name \code{output,input,alg} for the output data at dose levels, the input data, and the function as fit at algorithm-generated points, respectively.
 
 cirPAVA <-function (y,x=NULL,wt=rep(1,length(x)),full=FALSE,dec=FALSE,...) {
 
@@ -36,7 +40,7 @@ if (dec) dr$y = -dr$y
 repeat {
 
 # Find adjacent violators
-	viol <- (as.vector(diff(dr$y)) < 0)
+	viol <- (as.vector(diff(dr$y)) <= 0)
 
     if (!(any(viol))) break
     i <- min( (1:(m-1))[viol]) # Pool first pair of violators

@@ -1,6 +1,10 @@
 #' Methods for DRtrace and doseResponse classes
-
-#' Plotting methods for \code{\link{DRtrace, doseResponse}} classes.
+#'
+#'
+#' Plotting methods for DRtrace, doseResponse classes.
+#'
+#'
+#' Generic methods for dose-response trajectory/trace (\code{\link{DRtrace}}), and dose-response summary  (\code{\link{doseResponse}}) class objects. 
 
 #' The \code{\link{DRtrace}} plotting uses the typical convention of plotting dose-finding experimental trace, with dose levels (x) in the vertical axis and 1/0 responses (y) denoted via filled/empty circles, respectively. In other words, this generic plotting method is only relevant for binary 0/1 outcomes.
 

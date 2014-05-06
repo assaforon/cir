@@ -1,5 +1,9 @@
 ##' Inverse (dose-finding) estimate of a target percentile, using the centered-isotonic-regression algorithm
-
+#'
+#'
+#' Inverse ("dose-finding") point estimation of a dose (x) for a specified target response rate, using the centered-isotonic-regression (\code{invCIR}) or a generic forward-estimation algorithm (\code{doseFind})
+#'
+#'
 ##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 

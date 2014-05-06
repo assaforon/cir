@@ -27,7 +27,11 @@ return(TRUE)
 #########################
 
 #' Constructor functions and class-checking functions for DRtrace and doseResponse classes
-
+#'
+#'
+#' Functions to create and sanity-check objects of the \code{DRtrace} (dose-response experiment trace/trajectory) and \code{doseResponse} (dose-response raw summary) classes. Note that the latter inherits from the former, purely for programming-convenience reasons.
+#'
+#'
 ##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
 
 #' @param y,x,wt  see help to \code{\link{cirPAVA}}.
@@ -77,6 +81,8 @@ return(tout)
 doseResponse<-function(y,x=NULL,wt=NULL,...)
 {
 if(is.doseResponse(y)) return(y)
+
+if(is.null(x)) x=1:length(y)
 
 z<-suppressWarnings(DRtrace(y,x,wt,...))
 
