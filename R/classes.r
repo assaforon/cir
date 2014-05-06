@@ -1,7 +1,6 @@
-#' Functions to check class
 
-#' @param dr the (purported) dose-response object being checked
-#' @return logical value indicating whether the object meets class definition
+##' @rdname DRtrace
+#' @export
 
 is.DRtrace<-function(dr)
 {
@@ -12,6 +11,9 @@ if(!all(sapply(dr[,c("x","y","weight")],is.numeric))) return(FALSE)
 if(any(dr$weight<0)) return(FALSE)
 return(TRUE)
 }
+
+##' @rdname DRtrace
+#' @export
 
 is.doseResponse<-function(dr)
 {
@@ -24,7 +26,14 @@ return(TRUE)
 
 #########################
 
-#' Constructor functions for DRtrace and doseResponse classes
+#' Constructor functions and class-checking functions for DRtrace and doseResponse classes
+
+##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
+
+#' @param y,x,wt  see help to \code{\link{cirPAVA}}.
+#' @param noyes logical, in case of a 2-column input is the 1st column 'no'? Default \code{FALSE}, meaning the 1st column is 'yes'.
+#' @param dr the object being checked
+#' @return for constructor functions, the relevant object. For checking functions, a logical value indicating whether the object meets class definition.
 
 DRtrace<-function(y,x=NULL,wt=NULL,noyes=FALSE)
 {
@@ -62,6 +71,8 @@ return(tout)
 
 
 #############
+##' @rdname DRtrace
+#' @export
 
 doseResponse<-function(y,x=NULL,wt=NULL,...)
 {

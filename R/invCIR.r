@@ -1,21 +1,27 @@
+##' Inverse (dose-finding) estimate of a target percentile, using the centered-isotonic-regression algorithm
 
-# Generic dose
-# Assaf Oron, 10/2007
-# Returns Point & Interval Estimates of Target percentile
+##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
 
-### ARGUMENTS:
-# y: Yes-no table of binary responses. Can contain rows of zeros
-# xseq: Treatment values matched to the responses
-# target: The target response rate (between 0 and 1)
-# xbounds,ybounds: used for interpolation in case (estimated)
-# target falls xoutside CIR xoutput boundaries.
-# full: complete xoutput or estimates only
-# cioption: which method to use for interval estimation
-# can choose from 'poisson', 't' or binomial (any other string)
-# plist: percentile list for interval estimation. Is a vector
-# of any length
+#' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
+#' @param x dose levels (if not included in y). 
+#' @param wt weights (if not included in y).
+#' @param target the target response rate for which the percentile dose estimate is needed.
+#' @param full (relevant only for doseFind) logical, is a more complete output desired (relevant only for doseFind)? if \code{FALSE} (default), only a point estimate of the dose (x) for the provided target rate is returned
+#' @param dec (relevant only for doseFind) logical, is the true function is assumed to be monotone decreasing? Default \code{FALSE}.
+#' @param estfun the name of the dose-response estimation function (relevant only for doseFind). For \code{invCIR} this is hard-coded as \code{\link{cirPAVA}}, which is also the default for \code{doseFind}.
+#' @param ...	Other arguments passed on, from \code{invCIR} to \code{doseFind} and from there to the constructor functions that pre-process the input.
+#' @return under default, returns a point estimate of the dose (x) for the provided target rate. With \code{full=TRUE}, returns a list with
+#' \itemize{
+#' \item {xout}{The said point estimate of x}
+#' \item {input}{a \code{doseResponse} object summarizing the input data}
+#' \item {cir}{a \code{doseResponse} object which is the \code{alg} output of the forward-estimation function}
+#' }
+
 
 invCIR<-function(y,x=NULL,wt=rep(1,length(x)),target,...) doseFind(y,x,wt,estfun=cirPAVA,target=target,full=FALSE,...) 
+
+##' @rdname invCIR
+#' @export
 
 doseFind<-function(y,x=NULL,wt=rep(1,length(x)),estfun=cirPAVA,target,full=FALSE,dec=FALSE,...) {
 
@@ -26,13 +32,9 @@ doseFind<-function(y,x=NULL,wt=rep(1,length(x)),estfun=cirPAVA,target,full=FALSE
 dr=doseResponse(y,x,wt,...)
 if (any(is.na(dr))) stop ("Missing values are not allowed.\n")  
 
-
-### Point Estimate  ###########################
-
-# We start via forward estimation, just calling 'cir.pava'
+# We start via forward estimation
 
 pavout<-estfun(y=dr,full=TRUE,dec=dec)
-
 
 newx<-pavout$alg$x
 newy<-pavout$alg$y

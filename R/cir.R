@@ -1,17 +1,16 @@
+##' Returns centered-isotonic-regression estimate
 
-##' Returns centered-isotonic-regression y values at original x points 
-##' @author Assaf P. Oron
-#
+##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
 
-# y: y values (responses). Can be a vector or a yes-no table (for binary responses)
-#    it is Given as first argument, both for compatibility with 'pava'
-# and to enable parallel running via 'apply' type routines
-# x: treatments. Need to be pre-sorted in increasing order, with order matching y's
-# wt: weights. Will be overwritten in case of a yes-no input for y
 
-# full: if FALSE, only point estimates at x values are returned
-# dec: Whether the true function is assumed to be
-#    decreasing. Defaults to FALSE
+#' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
+#' @param x dose levels (if not included in y). 
+#' @param wt weights (if not included in y).
+#' @param full: logical, is a more complete output desired? if \code{FALSE} (default), only a vector of point estimates for y at the provided dose levels is returned
+#' @param dec logical, is the true function is assumed to be monotone decreasing? Default \code{FALSE}.
+#' @param ...	Other arguments passed on to the constructor functions that pre-process the input.
+
+#' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects named \code{output,input,alg} for the output data at dose levels, the input data, and the function as fit at algorithm-generated points, respectively.
 
 cirPAVA <-function (y,x=NULL,wt=rep(1,length(x)),full=FALSE,dec=FALSE,...) {
 
@@ -71,6 +70,5 @@ if (!full) {
 	
 	dr1=dr0
 	dr1$y=approx(dr$x,dr$y,dr1$x,rule=2)$y
-	return(list(output=dr1,input=dr0,alg=dr))
-}
+	return(list(output=dr1,input=dr0,alg=dr))   }
 }
