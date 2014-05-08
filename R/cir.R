@@ -10,13 +10,14 @@
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
 #' @param x dose levels (if not included in y). 
 #' @param wt weights (if not included in y).
+#' @param outx vector of x values for which predictions will be made. If \code{NULL} (default), this will be set to the set of unique values in the x argument (or equivalently in y$x). Non-NULL inputs are relevant only if \code{full=TRUE}.
 #' @param full: logical, is a more complete output desired? if \code{FALSE} (default), only a vector of point estimates for y at the provided dose levels is returned
 #' @param dec logical, is the true function is assumed to be monotone decreasing? Default \code{FALSE}.
 #' @param ...	Other arguments passed on to the constructor functions that pre-process the input.
 
 #' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects name \code{output,input,alg} for the output data at dose levels, the input data, and the function as fit at algorithm-generated points, respectively.
 
-cirPAVA <-function (y,x=NULL,wt=rep(1,length(x)),full=FALSE,dec=FALSE,...) {
+cirPAVA <-function (y,x=NULL,wt=rep(1,length(x)),outx=NULL,full=FALSE,dec=FALSE,...) {
 
 ### converting to doseResponse object 
 ### Basically it's a numeric data frame with x,y,weight, and x increasing
@@ -29,6 +30,9 @@ if (m <= 1) {  ## degenerate case: only one dose level
 if (!full) return (dr$y)
 else return(list(output=dr,input=dr,alg=dr))
 }
+
+### Predictions will be delivered for x=outx
+if(is.null(outx)) outx=dr$x
 
 dr0=dr ## clean copy of input data
 ### Decreasing monotone case: simple fix
@@ -58,18 +62,11 @@ repeat {
 # This will give constant y values for x values falling outside new range of x
 # Which is identical to the PAVA solution on those ranges
 
-if (dr$x[m]<max(dr0$x)) {
-    dr<-rbind(dr,c(max(dr0$x),dr$y[m],0)) 
-    m=m+1
-}
-if (dr$x[1]>min(dr0$x)) {
-	dr<-rbind(c(min(dr0$x),dr$y[1],0),dr)  
-	m=m+1
-}
+
 if (dec) dr$y = -dr$y
 
 if (!full) {
-	return(approx(dr$x,dr$y,dr0$x,rule=2)$y)
+	return(approx(dr$x,dr$y,outx,rule=2)$y)
 } else {
 	
 	dr1=dr0
