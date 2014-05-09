@@ -25,7 +25,7 @@ plainCirBoot<-function(dat,fun=cirPAVA,xout=NULL,B=999,width=0.95,stratify=FALSE
 if(!is.DRtrace(dat)) stop("Input data has to be a DRtrace or doseResponse object.\n")
 if(stratify) {
 	dat=doseResponse(dat)
-	cat("Stratified (Binomial) bootstrap...\n")
+	if(verbose)	cat("Stratified (Binomial) bootstrap...\n")
 } else if(is.doseResponse(dat)) stop("Non-stratified only possible with DRtrace input.\n")
 if(width<=2/B || width>=1-2/B) stop("Unrealistic input interval width.\n")
 

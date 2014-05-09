@@ -62,12 +62,20 @@ repeat {
 # This will give constant y values for x values falling outside new range of x
 # Which is identical to the PAVA solution on those ranges
 
-
+if(m==1) ## degenerate again: all values identical or violating
+{
+#	cat("got here\n")
+	dr=rbind(dr,dr)
+	if(dr$x[1]>min(dr0$x)) { dr$x[1]=min(dr0$x)
+	} else dr$x[2]=max(dr0$x)
+#	print(dr)
+}
 if (dec) dr$y = -dr$y
 
 if (!full) {
 	return(approx(dr$x,dr$y,outx,rule=2)$y)
 } else {
+	
 	
 	dr1=dr0
 	dr1$y=approx(dr$x,dr$y,dr1$x,rule=2)$y
