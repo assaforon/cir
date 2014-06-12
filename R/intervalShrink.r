@@ -33,7 +33,7 @@ m=length(basest)
 #print(basest)
 if(is.null(prior)) prior=doseResponse(y=(1:m)/(m+1),x=xout,wt=rep(1/m,m))
 
-# validation on user-provided prior
+# validation of user-provided prior
 if(!is.doseResponse(prior)) stop("User-defined prior must be a doseResponse object.\n")
 if(!all(dat$x %in% prior$x)) stop("User-defined prior must include all requested x values.\n")
 
