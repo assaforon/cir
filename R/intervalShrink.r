@@ -24,14 +24,15 @@ shrinkCirBoot<-function(dat,fun=cirPAVA,xout=NULL,B=999,width=0.9,prior=NULL,det
 {
 if(!is.DRtrace(dat)) stop("Input data has to be a DRtrace or doseResponse object.\n")
 if(!is.doseResponse(dat))	dat=doseResponse(dat)
-if(width<=2/B || width>=1-2/B) stop("Unrealistic input interval width.\n")
+if(width<=2/B || width>=1-2/B) stop("Unrealistic interval specification: not enough replications for this confidence level.\n")
 
 if(verbose) cat(date(),' ')
 
 basest=fun(dat,...)
 m=length(basest)
 #print(basest)
-if(is.null(prior)) prior=doseResponse(y=(1:m)/(m+1),x=xout,wt=rep(1/m,m))
+
+if(is.null(prior)) prior=doseResponse(y=(1:m)/(m+1),x=dat$x,wt=rep(1/m,m))
 
 # validation of user-provided prior
 if(!is.doseResponse(prior)) stop("User-defined prior must be a doseResponse object.\n")
@@ -60,9 +61,16 @@ for (a in 1:B) {
 }
 if(verbose) cat(date(),'\n')
 
-tails=(1-width)/2
-ciout=apply(dout,2,quantile,prob=c(tails,1-tails),type=6)
-if(!detailed) return(ciout)
 
-return(list(interval=ciout,samples=dout))
+### Now to intervals; ##################
+tails=(1-width)/2
+## Percentile bootstrap
+ciPerc=apply(dout,2,quantile,prob=c(tails,1-tails),type=6)
+ciBCa=ciPerc
+for (a in 1:m) ciBCa[,a]=bcaFwd(dout[1:B,a],thetaHat=shrunkest$y[a],n=shrunkest$weight[a],probs=c(tails,1-tails))
+
+cis=data.frame(percLo=ciPerc[1,],BCaLo=ciBCa[1,],percHi=ciPerc[2,],BCaHi=ciBCa[2,])
+if(!detailed) return(cis)
+
+return(list(intervals=cis,samples=dout))
 }
