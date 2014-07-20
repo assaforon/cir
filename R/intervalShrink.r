@@ -66,11 +66,21 @@ if(verbose) cat(date(),'\n')
 tails=(1-width)/2
 ## Percentile bootstrap
 ciPerc=apply(dout,2,quantile,prob=c(tails,1-tails),type=6)
-ciBCa=ciPerc
-for (a in 1:m) ciBCa[,a]=bcaFwd(dout[1:B,a],thetaHat=shrunkest$y[a],n=shrunkest$weight[a],probs=c(tails,1-tails))
 
-cis=data.frame(percLo=ciPerc[1,],BCaLo=ciBCa[1,],percHi=ciPerc[2,],BCaHi=ciBCa[2,])
+#ciBCa=ciPerc
+#for (a in 1:m) ciBCa[,a]=bcaFwd(dout[1:B,a],thetaHat=shrunkest$y[a],n=shrunkest$weight[a],probs=c(tails,1-tails))
+ciT=ciPerc
+print(prior)
+peevots=matrix(NA,nrow=B,ncol=m)
+for (a in 1:m) {tmp=bootTFwd(dout[1:B,a],thetaHat=basest[a],n=dat$weight[a],probs=c(tails,1-tails),prior=prior$y[a],nprior=prior$weight[a],full=TRUE)
+ciT[,a]=tmp$endpoints
+peevots[,a]=tmp$pivots}
+
+cis=data.frame(percLo=ciPerc[1,],tLo=ciT[1,],percHi=ciPerc[2,],tHi=ciT[2,])
+cis[cis>1]=1
+cis[cis<0]=0
+
 if(!detailed) return(cis)
 
-return(list(intervals=cis,samples=dout))
+return(list(intervals=cis,samples=dout,pivots=peevots))
 }

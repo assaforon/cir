@@ -18,5 +18,17 @@ if(!full) return(endpoints)
 return(list(enddpoints=endpoints,a=accel,z0=z0))
 }
 
-#shrinkIt<-function(
-#if(is.null(prior)) prior=doseResponse(y=(1:m)/(m+1),x=xout,wt=rep(1/m,m))
+
+#### bootstrap-t for Binomial, with variance shrinkage
+bootTFwd<-function(bootdat,thetaHat,n,probs,full=FALSE,prior,nprior)
+{
+theta0Shrink=(thetaHat*n+prior*nprior)/(n+nprior)
+thetaBootShrink=(bootdat*n+prior*nprior)/(n+nprior)
+#cat(theta0Shrink,quantile(thetaBootShrink),'\n')
+pivots=(thetaHat-bootdat)/sqrt(thetaBootShrink*(1-thetaBootShrink)/n)
+
+endpoints=thetaHat+sqrt(theta0Shrink*(1-theta0Shrink)/n)*quantile(pivots,prob=probs,type=6)
+if(!full) return(endpoints)
+return(list(endpoints=endpoints,pivots=pivots))
+}
+
