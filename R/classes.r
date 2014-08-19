@@ -78,15 +78,23 @@ return(tout)
 ##' @rdname DRtrace
 #' @export
 
-doseResponse<-function(y,x=NULL,wt=NULL,...)
+doseResponse<-function(y,x=NULL,wt=rep(1,length(y)),...)
 {
 if(is.doseResponse(y)) return(y)
 
-if(is.null(x)) x=1:length(y)
+#if(is.null(x)) x=1:length(y)
 
-z<-suppressWarnings(DRtrace(y,x,wt,...))
 
-tout<-data.frame(x=sort(unique(z$x)),y=tapply(z$y,z$x,mean),weight=tapply(z$weight,z$x,sum))
+if(is.null(x) || any(duplicated(x)) || any(diff(x)<0))  # Cases for doing DRtrace first
+{
+	z<-suppressWarnings(DRtrace(y=y,x=x,wt=wt,...))
+	tout<-data.frame(x=sort(unique(z$x)),y=tapply(z$y,z$x,mean),weight=tapply(z$weight,z$x,sum))
+
+} else if (length(x)==length(y) && (length(wt)==length(y) || is.null(wt)))  # straightforward x-y input
+{
+	tout<-data.frame(x=x,y=y,weight=ifelse(is.null(wt),1,wt))
+} else stop("Incompatible input data. Check the help.\n")
+
 attr(tout,'class')<-c('doseResponse','DRtrace','data.frame')
 return(tout)
 }

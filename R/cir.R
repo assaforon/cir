@@ -17,13 +17,18 @@
 
 #' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects name \code{output,input,alg} for the output data at dose levels, the input data, and the function as fit at algorithm-generated points, respectively.
 
-cirPAVA <-function (y,x=NULL,wt=rep(1,length(x)),outx=NULL,full=FALSE,dec=FALSE,...) {
+cirPAVA <-function (y,x=NULL,wt=rep(1,length(y)),outx=NULL,full=FALSE,dec=FALSE,...) {
 
 ### converting to doseResponse object 
 ### Basically it's a numeric data frame with x,y,weight, and x increasing
 
-dr=doseResponse(y,x,wt,...)
+dr=doseResponse(y=y,x=x,wt=wt,...)
 if (any(is.na(dr))) stop ("Missing values are not allowed.\n")  
+
+### Predictions will be delivered for x=outx
+if(is.null(outx)) outx=dr$x
+
+if(min(outx)<min(dr$x) || max(outx)>max(dr$x)) stop("Cannot predict outside design boundaries.\n")
 
 m <- dim(dr)[1]
 if (m <= 1) {  ## degenerate case: only one dose level
@@ -31,8 +36,6 @@ if (!full) return (dr$y)
 else return(list(output=dr,input=dr,alg=dr))
 }
 
-### Predictions will be delivered for x=outx
-if(is.null(outx)) outx=dr$x
 
 dr0=dr ## clean copy of input data
 ### Decreasing monotone case: simple fix
@@ -72,12 +75,16 @@ if(m==1) ## degenerate again: all values identical or violating
 }
 if (dec) dr$y = -dr$y
 
+outy=approx(dr$x,dr$y,outx,rule=2)$y
+
 if (!full) {
-	return(approx(dr$x,dr$y,outx,rule=2)$y)
+	return(outy)
 } else {
 	
-	
-	dr1=dr0
-	dr1$y=approx(dr$x,dr$y,dr1$x,rule=2)$y
+	if(all(outx %in% dr0$x)) {
+		dr1=dr0
+		dr1$y=outy
+		dr1=dr1[match(outx,dr1$x),]
+	} else dr1=doseResponse(y=outy,x=outx,wt=rep(0,length(outy)))
 	return(list(output=dr1,input=dr0,alg=dr))   }
 }
