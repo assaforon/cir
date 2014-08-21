@@ -31,11 +31,6 @@
 #' }
 
 #' @seealso \code{\link{pava}},\code{\link{cirPAVA}}
-#' @alias doseFind
-
-
-
-
 
 #' @export
 
@@ -45,7 +40,7 @@ doseFind<-function(y,x=NULL,wt=rep(1,length(y)),estfun=cirPAVA,target,full=FALSE
 ### converting to doseResponse object 
 ### Basically it's a numeric data frame with x,y,weight, and x increasing
 
-dr=doseResponse(y,x,wt,...)
+dr=doseResponse(y=y,x=x,wt=wt,...)
 if (any(is.na(dr))) stop ("Missing values are not allowed.\n")  
 
 # We start via forward estimation
@@ -60,7 +55,7 @@ newn=pavout$alg.wt
 
 tout=approx(x=newy,y=newx,xout=target,ties="ordered",rule=ifelse(extrapolate,2,1))$y
 
-#### xoutput
+#### output
 
 if (!full)  return(tout) 
 
@@ -70,7 +65,27 @@ return (list(targest=tout,input=dr,fwd=pavout$alg))
 #' Point and Interval Inverse Estimation using CIR and IR
 #'
 #'
-#' Convenience wrapper for point and interval estimation, using CIR and IR.
+#' Convenience wrapper for point and interval estimation of the "dose" that would generate a \code{target} "response" value, using CIR and IR.
+
+#' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
+#' @param x dose levels (if not included in y). 
+#' @param wt weights (if not included in y).
+#' @param target A vector of target response rate(s), for which the percentile dose estimate is needed.
+#' @param full logical, is a more complete output desired (relevant only for doseFind)? if \code{FALSE} (default), only a point estimate of the dose (x) for the provided target rate is returned
+#' @param extrapolate logical: should extrapolation beyond the range of estimated y values be allowed? Default \code{FALSE}.
+#' @param dec (relevant only for doseFind) logical, is the true function is assumed to be monotone decreasing? Default \code{FALSE}.
+#' @param estfun the name of the dose-response estimation function (relevant only for doseFind). For \code{invCIR} this is hard-coded as \code{\link{cirPAVA}}, which is also the default for \code{doseFind}.
+#' @param ...	Other arguments passed on, from \code{invCIR} to \code{doseFind} and from there to the constructor functions that pre-process the input.
+
+#' @return A data frame with
+#' \itemize{
+#' \item {target  }  { The user-provided target values of y, at which x is estimated}
+#' \item {point } {  The point estimates of x}
+#' \item {lowerPPconf,upperPPconf  }  { the interval-boundary estimates for a 'PP'=\code{100*conf} confidence interval}
+#' }
+
+#' @seealso \code{\link{pava}},\code{\link{cirPAVA}}
+
 
 quickInverse<-function(y,x=NULL,wt=rep(1,length(y)),target,cir = TRUE, intfun = wilsonCI, conf = 0.9, ...)
 {
@@ -95,7 +110,7 @@ dout=data.frame(target=target,point=pestimate$targest,low=NA,high=NA)
 dout$low[!is.na(pestimate$targest)]=ciLow
 dout$high[!is.na(pestimate$targest)]=ciHigh
 
-names(dout)[3:4]=paste(c("Lower","Upper"),round(100*conf),"conf",sep="")
+names(dout)[3:4]=paste(c("lower","upper"),round(100*conf),"conf",sep="")
 return(dout)
 }
 
