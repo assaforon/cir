@@ -92,7 +92,8 @@ if(is.null(x) || any(duplicated(x)) || any(diff(x)<0))  # Cases for doing DRtrac
 
 } else if (length(x)==length(y) && (length(wt)==length(y) || is.null(wt)))  # straightforward x-y input
 {
-	tout<-data.frame(x=x,y=y,weight=ifelse(is.null(wt),1,wt))
+	if(is.null(wt)) wt=rep(1,length(y))
+	tout<-data.frame(x=x,y=y,weight=wt)
 } else stop("Incompatible input data. Check the help.\n")
 
 attr(tout,'class')<-c('doseResponse','DRtrace','data.frame')

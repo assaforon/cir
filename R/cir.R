@@ -65,14 +65,16 @@ repeat {
 # This will give constant y values for x values falling outside new range of x
 # Which is identical to the PAVA solution on those ranges
 
-if(m==1) ## degenerate again: all values identical or violating
+## Extending back to original boundaries if needed
+if(dr$x[1]>dr0$x[1] ) 
 {
-#	cat("got here\n")
-	dr=rbind(dr,dr)
-	if(dr$x[1]>min(dr0$x)) { dr$x[1]=min(dr0$x)
-	} else dr$x[2]=max(dr0$x)
-#	print(dr)
+	dr=rbind(doseResponse(x=dr0$x[1],y=dr$y[1],wt=0),dr)
 }
+if(max(dr$x)<max(dr0$x)) ## Extending back to original boundaries if needed
+{
+	dr=rbind(dr,doseResponse(x=max(dr0$x),y=max(dr$y),wt=0))
+}
+
 if (dec) dr$y = -dr$y
 
 outy=approx(dr$x,dr$y,outx,rule=2)$y
