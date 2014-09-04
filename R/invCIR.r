@@ -100,7 +100,7 @@ return (list(targest=tout,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
 quickInverse<-function(y,x=NULL,wt=rep(1,length(y)),target,cir = TRUE, intfun = wilsonCI, invGlobal=TRUE,conf = 0.9, ...)
 {
 
-if(cir) estfun<-cirPAVA else estfun<-drPAVA
+if(cir) estfun<-cirPAVA else estfun<-oldPAVA
 pestimate=doseFind(y=y,x=x,wt=wt,estfun=estfun,target=target,full=TRUE,...) 
 foundPts=pestimate$targest[!is.na(pestimate$targest)]
 

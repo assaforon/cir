@@ -52,7 +52,7 @@ if(is.null(outx)) outx=dr$x
 
 if (cir) {
 	pestimate=cirPAVA(y=dr,dec=dec,full=TRUE)
-} else pestimate=drPAVA(y=dr,dec=dec,full=TRUE)
+} else pestimate=oldPAVA(y=dr,dec=dec,full=TRUE)
 
 cestimate=isotInterval(pestimate$output,conf=conf,intfun=intfun,outx=outx)
 
