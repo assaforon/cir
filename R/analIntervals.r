@@ -17,7 +17,7 @@ isotInterval<-function(isotPoint,outx=isotPoint$x,conf=0.9,intfun=wilsonCI)
 ## Validation
 if(conf<=0 || conf>=1) stop("Confidence must be between 0 and 1.\n")
 if(!is.doseResponse(isotPoint)) stop("Point-estimate data must be in doseResponse format.\n")
-if(min(outx)<min(isotPoint$x) || max(outx)>max(isotPoint$x)) stop("Cannot predict outside design boundaries.\n")
+if(min(outx)<min(isotPoint$x) || max(outx)>max(isotPoint$x)) stop("Cannot predict outside data boundaries.\n")
 
 designInt=intfun(phat=isotPoint$y,n=isotPoint$weight,conf=conf)
 
@@ -58,7 +58,7 @@ cestimate=isotInterval(pestimate$output,conf=conf,intfun=intfun,outx=outx)
 
 if(all(outx %in% dr$x)) 
 {
-	dout=cbind(pestimate$output[,1:2],cestimate)
+	dout=cbind(pestimate$output[match(outx,pestimate$output$x),1:2],cestimate)
 } else
 {
 	dout=data.frame(x=outx,y=approx(pestimate$output$x,pestimate$output$y,xout=outx)$y,low=cestimate[,1],hi=cestimate[,2])

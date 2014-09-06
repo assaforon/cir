@@ -34,7 +34,7 @@
 
 #' @export
 
-doseFind<-function(y,x=NULL,wt=rep(1,length(y)),estfun=cirPAVA,target,full=FALSE,dec=FALSE,extrapolate=FALSE,...) {
+doseFind<-function(y,x=NULL,wt=NULL,estfun=cirPAVA,target,full=FALSE,dec=FALSE,extrapolate=FALSE,...) {
 
 
 ### converting to doseResponse object 
@@ -82,9 +82,10 @@ return (list(targest=tout,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
 #' @param wt weights (if not included in y).
 #' @param target A vector of target response rate(s), for which the percentile dose estimate is needed.
 #' @param full logical, is a more complete output desired (relevant only for doseFind)? if \code{FALSE} (default), only a point estimate of the dose (x) for the provided target rate is returned
-#' @param extrapolate logical: should extrapolation beyond the range of estimated y values be allowed? Default \code{FALSE}.
+#' @param extrapolate logical: should extrapolation beyond the range of estimated y values be allowed? Default \code{FALSE}. Note this affects only the point estimate; interval boundarie are extrapolated in any case.
 #' @param dec (relevant only for doseFind) logical, is the true function is assumed to be monotone decreasing? Default \code{FALSE}.
 #' @param estfun the name of the dose-response estimation function (relevant only for doseFind). For \code{invCIR} this is hard-coded as \code{\link{cirPAVA}}, which is also the default for \code{doseFind}.
+#' @param extrapolate logical: should extrapolation beyond the range of estimated y values be allowed? Default \code{FALSE}.
 #' @param ...	Other arguments passed on, from \code{invCIR} to \code{doseFind} and from there to the constructor functions that pre-process the input.
 
 #' @return A data frame with
@@ -97,22 +98,33 @@ return (list(targest=tout,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
 #' @seealso \code{\link{pava}},\code{\link{cirPAVA}}
 
 
-quickInverse<-function(y,x=NULL,wt=rep(1,length(y)),target,cir = TRUE, intfun = wilsonCI, invGlobal=TRUE,conf = 0.9, ...)
+quickInverse<-function(y,x=NULL,wt=NULL,target,cir = TRUE, intfun = wilsonCI, invGlobal=TRUE,conf = 0.9,xbounds=NULL,extrapolate=FALSE, ...)
 {
 
 if(cir) estfun<-cirPAVA else estfun<-oldPAVA
-pestimate=doseFind(y=y,x=x,wt=wt,estfun=estfun,target=target,full=TRUE,...) 
+pestimate=doseFind(y=y,x=x,wt=wt,estfun=estfun,target=target,full=TRUE,extrapolate=extrapolate,...) 
 foundPts=pestimate$targest[!is.na(pestimate$targest)]
 
+### Establishing "logical" boundaries for CIs, at one spacing level out
+if(is.null(xbounds)) xbounds=rep(NA,2)
+m=length(pestimate$fwdDesign$x)
+xmin=pestimate$fwdDesign$x[1]-(pestimate$fwdDesign$x[2]-pestimate$fwdDesign$x[1])
+xmax=pestimate$fwdDesign$x[m]+(pestimate$fwdDesign$x[m]-pestimate$fwdDesign$x[m-1])
+xbounds[1]=min(xmin,xbounds[1],na.rm=TRUE)
+xbounds[2]=max(xmax,xbounds[2],na.rm=TRUE)
 
 ### Two methods for inverse CI: "global" and "local" (see 'Details')
 if(invGlobal) {
-## Start with CIs at design points
+## Start with CIs at design poi
+ts
 	fcestimate=isotInterval(pestimate$fwdDesign,conf=conf,intfun=intfun)
-	ciLow=doseFind(y=fcestimate$ciHigh,x=pestimate$fwdDesign$x,wt=pestimate$fwdDesign$wt,estfun=estfun,target=target[!is.na(pestimate$targest)],extrapolate=TRUE,...)
-	ciLow[is.na(ciLow)]=min(x)
-	ciHigh=doseFind(y=fcestimate$ciLow,x=pestimate$fwdDesign$x,wt=pestimate$fwdDesign$wt,estfun=estfun,target=target[!is.na(pestimate$targest)],extrapolate=TRUE,...) 
-	ciHigh[is.na(ciHigh)]=max(x)
+	ciLow=doseFind(y=fcestimate$ciHigh,x=pestimate$fwdDesign$x,wt=pestimate$fwdDesign$weight,estfun=estfun,target=target[!is.na(pestimate$targest)],extrapolate=TRUE,...)
+	#	ciLow[is.na(ciLow)]=min(x)
+	ciLow[!is.finite(ciLow)]=xbounds[1]
+
+	ciHigh=doseFind(y=fcestimate$ciLow,x=pestimate$fwdDesign$x,wt=pestimate$fwdDesign$weight,estfun=estfun,target=target[!is.na(pestimate$targest)],extrapolate=TRUE,...) 
+#	ciHigh[is.na(ciHigh)]=max(x)
+	ciHigh[!is.finite(ciHigh)]=xbounds[2]
 
 
 } else {
