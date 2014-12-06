@@ -34,12 +34,12 @@
 
 #' @export
 
-doseFind<-function(y,x=NULL,wt=NULL,estfun=cirPAVA,target,full=FALSE,dec=FALSE,extrapolate=FALSE,...) {
+doseFind<-function(y,x=NULL,wt=NULL,estfun=cirPAVA,target=NULL,full=FALSE,dec=FALSE,extrapolate=FALSE,...) {
 
 
 ### converting to doseResponse object 
 ### Basically it's a numeric data frame with x,y,weight, and x increasing
-
+if(is.null(target)) stop("Must provide target to dose-find for.\n")
 dr=doseResponse(y=y,x=x,wt=wt,...)
 if (any(is.na(dr))) stop ("Missing values are not allowed.\n")  
 
@@ -98,7 +98,7 @@ return (list(targest=tout,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
 #' @seealso \code{\link{pava}},\code{\link{cirPAVA}}
 
 
-quickInverse<-function(y,x=NULL,wt=NULL,target,cir = TRUE, intfun = wilsonCI, invGlobal=TRUE,conf = 0.9,xbounds=NULL,extrapolate=FALSE, ...)
+quickInverse<-function(y,x=NULL,wt=NULL,target,cir = TRUE, intfun = wilsonCI, conf = 0.9,xbounds=NULL,extrapolate=FALSE,seqDesign=FALSE,...)
 {
 
 if(cir) estfun<-cirPAVA else estfun<-oldPAVA
@@ -113,11 +113,10 @@ xmax=pestimate$fwdDesign$x[m]+(pestimate$fwdDesign$x[m]-pestimate$fwdDesign$x[m-
 xbounds[1]=min(xmin,xbounds[1],na.rm=TRUE)
 xbounds[2]=max(xmax,xbounds[2],na.rm=TRUE)
 
-### Two methods for inverse CI: "global" and "local" (see 'Details')
-if(invGlobal) {
-## Start with CIs at design poi
-ts
-	fcestimate=isotInterval(pestimate$fwdDesign,conf=conf,intfun=intfun)
+### CI using "global" interpolation
+
+## Start with CIs at design points
+	fcestimate=isotInterval(pestimate$fwdDesign,conf=conf,intfun=intfun,sequential=seqDesign)
 	ciLow=doseFind(y=fcestimate$ciHigh,x=pestimate$fwdDesign$x,wt=pestimate$fwdDesign$weight,estfun=estfun,target=target[!is.na(pestimate$targest)],extrapolate=TRUE,...)
 	#	ciLow[is.na(ciLow)]=min(x)
 	ciLow[!is.finite(ciLow)]=xbounds[1]
@@ -125,22 +124,6 @@ ts
 	ciHigh=doseFind(y=fcestimate$ciLow,x=pestimate$fwdDesign$x,wt=pestimate$fwdDesign$weight,estfun=estfun,target=target[!is.na(pestimate$targest)],extrapolate=TRUE,...) 
 #	ciHigh[is.na(ciHigh)]=max(x)
 	ciHigh[!is.finite(ciHigh)]=xbounds[2]
-
-
-} else {
-
-	## Finding the slopes...
-	slopes=diff(pestimate$fwd$y)/diff(pestimate$fwd$x)
-
-	### Generate forward CIs for those targets we've managed to find, and deconstructing them...
-	cestimate=isotInterval(pestimate$fwdDesign,conf=conf,intfun=intfun,outx=foundPts)
-	intBelow=target[!is.na(pestimate$targest)]-cestimate$ciLow
-	intAbove=cestimate$ciHigh-target[!is.na(pestimate$targest)]
-	# Which segment do each of our target pt. estimates fall in?
-	segs=findInterval(foundPts,pestimate$fwd$x)
-	ciLow=foundPts-intAbove/slopes[segs]
-	ciHigh=foundPts+intBelow/slopes[segs]
-}
 
 dout=data.frame(target=target,point=pestimate$targest,low=NA,high=NA)
 dout$low[!is.na(pestimate$targest)]=ciLow

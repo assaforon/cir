@@ -12,7 +12,7 @@
 #' @param intfun the function to be used for interval estimation. Default \code{\link{wilsonCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 
-isotInterval<-function(isotPoint,outx=isotPoint$x,conf=0.9,intfun=wilsonCI)
+isotInterval<-function(isotPoint,outx=isotPoint$x,conf=0.9,intfun=wilsonCI,sequential=FALSE)
 {
 ## Validation
 if(conf<=0 || conf>=1) stop("Confidence must be between 0 and 1.\n")
@@ -21,10 +21,20 @@ if(min(outx)<min(isotPoint$x) || max(outx)>max(isotPoint$x)) stop("Cannot predic
 
 designInt=intfun(phat=isotPoint$y,n=isotPoint$weight,conf=conf)
 
+if(sequential) ## correction for sequential designs
+{
+	pi_j=isotPoint$weight/sum(isotPoint$weight)
+	corfac=sqrt(1+(1-pi_j)/isotPoint$weight)
+
+	newidths=(designInt-isotPoint$y)*as.vector(corfac)
+	designInt=newidths+isotPoint$y
+	designInt[designInt<0]=0
+	designInt[designInt>1]=1
+}
 #if(all(outx %in% isotPoint$x)) return(designInt[match(outx,isotPoint$x),])
 
-return(data.frame(ciLow=approx(isotPoint$x,designInt[,1],xout=outx)$y
-	,ciHigh=approx(isotPoint$x,designInt[,2],xout=outx)$y))
+return(data.frame(ciLow=parapolate(isotPoint$x,designInt[,1],xout=outx,upward=TRUE)
+	,ciHigh=parapolate(isotPoint$x,designInt[,2],xout=outx,upward=FALSE)))
 }
 
 #'
@@ -45,7 +55,7 @@ return(data.frame(ciLow=approx(isotPoint$x,designInt[,1],xout=outx)$y
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param ...	Other arguments passed on to the estimating function.
 
-quickIsotone<-function (y,x=NULL,wt=rep(1,length(y)),outx=NULL,dec=FALSE,cir=TRUE,intfun=wilsonCI,conf=0.9,...) 
+quickIsotone<-function (y,x=NULL,wt=rep(1,length(y)),outx=NULL,dec=FALSE,cir=TRUE,intfun=wilsonCI,conf=0.9,seqDesign=FALSE,...) 
 {
 dr=doseResponse(y=y,x=x,wt=wt,...)
 if(is.null(outx)) outx=dr$x
@@ -54,7 +64,7 @@ if (cir) {
 	pestimate=cirPAVA(y=dr,dec=dec,full=TRUE)
 } else pestimate=oldPAVA(y=dr,dec=dec,full=TRUE)
 
-cestimate=isotInterval(pestimate$output,conf=conf,intfun=intfun,outx=outx)
+cestimate=isotInterval(pestimate$output,conf=conf,intfun=intfun,outx=outx,sequential=seqDesign)
 
 if(all(outx %in% dr$x)) 
 {
