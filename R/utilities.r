@@ -27,6 +27,38 @@ chigh=ifelse(phat==1,1,qbeta(1-(1-conf)/2,x+w1,n-x+w2))
 return(cbind(clow,chigh))
 }
 
+########### Intervals from Morris 1988
+
+morrisUCL<-function(x,n,halfa=0.05,full=FALSE)
+{
+m=length(x)
+if(length(n)!=m) stop("Mismatched lengths in Morris.\n")
+# weird prep...
+uout=rep(1,m)
+G=list()
+for (a in 1:m) G[[a]]<-function(x) 1
+
+a=m
+while(x[a]==n[a] && a>=1) a=a-1
+uout[[a]]=wilsonCI(phat=x[a]/n[a],n=n[a],conf=1-2*halfa)[2]
+if(a<=1) return(uout)
+G[[a]]<-function(theta,g,y,n,k) pbinom(q=y[k],size=n[k],prob=theta)
+
+for(b in (a-1):1)
+{
+	G[[b]]=function(theta,g,y,n,k) 
+		pbinom(q=y[k]-1,size=n[k],prob=theta)+dbinom(x=y[k],size=n[k],prob=theta)*g[[k+1]](theta=theta,g=g,y=y,n=n,k=k+1)
+	uout[b]=uniroot(function(theta,h,d,alpha,...) h[[d]](theta=theta,...)-alpha,interval=c(0,1),
+		alpha=halfa,d=b,k=b,g=G,h=G,n=n,y=x)$root
+}
+if(full) return(list(u=uout,G=G))
+return(uout)
+}
+	
+
+	
+########### Interpolation, Extrapolation, Parapolation....
+
 #' Linearly interpolate/extrapolate from a single segment.
 
 extrapol<-function(point1,point2,xout)
