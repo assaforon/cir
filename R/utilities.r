@@ -1,6 +1,6 @@
 #### Some standard CI calculation functions
 
-wilsonCI<-function(phat,n,conf=0.9)
+wilsonCI<-function(phat,n,conf=0.9,...)
 {
 zalpha=qnorm(1-(1-conf)/2)
 wid=zalpha*sqrt((phat*(1-phat)+zalpha^2/(4*n))/n)
@@ -8,7 +8,7 @@ return(cbind(pmax(0,(phat+zalpha^2/(2*n)-wid)/(1+zalpha^2/n)),
 	pmin(1,(phat+zalpha^2/(2*n)+wid)/(1+zalpha^2/n))))
 }
 
-agcouCI<-function(phat,n,conf=0.9)
+agcouCI<-function(phat,n,conf=0.9,...)
 {
 zalpha=qnorm(1-(1-conf)/2)
 ptilde=(phat+zalpha^2/(2*n))/(1+zalpha^2/n)
@@ -18,7 +18,7 @@ return(cbind(pmax(0,ptilde-wid),
 	pmin(1,ptilde+wid)))
 }
 
-jeffCI<-function(phat,n,conf=0.9,w1=0.5,w2=w1)
+jeffCI<-function(phat,n,conf=0.9,w1=0.5,w2=w1,...)
 {
 x=n*phat
 clow=ifelse(phat==0,0,qbeta((1-conf)/2,x+w1,n-x+w2))
@@ -27,35 +27,7 @@ chigh=ifelse(phat==1,1,qbeta(1-(1-conf)/2,x+w1,n-x+w2))
 return(cbind(clow,chigh))
 }
 
-########### Intervals from Morris 1988
 
-Gupper<-function(theta,y,n,k)
-{
-if(k==length(y)) return (pbinom(q=y[k],size=n[k],prob=theta))
-pbinom(q=y[k]-1,size=n[k],prob=theta)+dbinom(x=y[k],size=n[k],prob=theta)*Gupper(theta=theta,y=y,n=n,k=k+1)
-}	
-
-morrisUCL<-function(x,n,halfa=0.05)
-{
-m=length(x)
-if(length(n)!=m) stop("Mismatched lengths in Morris.\n")
-# weird prep...
-uout=rep(1,m)
-a=m
-while(x[a]==n[a] && a>=1) a=a-1
-
-for(b in a:1)
-{
-	uout[b]=uniroot(function(theta,h,d,alpha,...) h(theta=theta,...)-alpha,interval=c(0,1),
-		alpha=halfa,k=b,h=Gupper,n=n,y=x)$root
-}
-return(uout)
-}
-	
-#uout[[a]]=wilsonCI(phat=x[a]/n[a],n=n[a],conf=1-2*halfa)[2]
-#if(a<=1) return(uout)
-
-	
 ########### Interpolation, Extrapolation, Parapolation....
 
 #' Linearly interpolate/extrapolate from a single segment.

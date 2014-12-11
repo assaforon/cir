@@ -98,7 +98,7 @@ return (list(targest=tout,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
 #' @seealso \code{\link{pava}},\code{\link{cirPAVA}}
 
 
-quickInverse<-function(y,x=NULL,wt=NULL,target,cir = TRUE, intfun = wilsonCI, conf = 0.9,resolution=100,xbounds=NULL,extrapolate=FALSE,seqDesign=FALSE,...)
+quickInverse<-function(y,x=NULL,wt=NULL,target,cir = TRUE, intfun = morrisCI, conf = 0.9,resolution=100,xbounds=NULL,extrapolate=FALSE,seqDesign=FALSE,...)
 {
 
 #### Point estimate first
@@ -124,8 +124,8 @@ xmin=dr$x[1]-(dr$x[2]-dr$x[1])
 xmax=dr$x[m]+(dr$x[m]-dr$x[m-1])
 xbounds[1]=min(xmin,xbounds[1],na.rm=TRUE)
 xbounds[2]=max(xmax,xbounds[2],na.rm=TRUE)
-maxLower=max(c(fwdCIgrid[,3],extrapol(point1=c(dr$x[m-1],fwdCIdesign[m-1,3]),point2=c(dr$x[m],fwdCIdesign[m,3]),xout=xbounds[2])))
-minUpper=min(c(fwdCIgrid[,4],extrapol(point1=c(dr$x[1],fwdCIdesign[1,4]),point2=c(dr$x[2],fwdCIdesign[2,4]),xout=xbounds[1])))
+maxLower=max(c(fwdCIgrid[,3],extrapol(point1=c(dr$x[1],fwdCIdesign[1,3]),point2=c(dr$x[m],fwdCIdesign[m,3]),xout=xbounds[2])))
+minUpper=min(c(fwdCIgrid[,4],extrapol(point1=c(dr$x[1],fwdCIdesign[1,4]),point2=c(dr$x[m],fwdCIdesign[m,4]),xout=xbounds[1])))
 
 ### CI by finding 'right points' on grid
 for (a in 1:length(dout$target))
@@ -134,7 +134,7 @@ for (a in 1:length(dout$target))
 	{
 		dout$high[a]=fwdCIgrid[min(which(fwdCIgrid[,3]>=dout$target[a])),1]
 	} else if(dout$target[a]<=maxLower)  {
-		dout$high[a]=extrapol(point1=c(fwdCIdesign[m-1,3],fwdCIdesign$x[m-1]),
+		dout$high[a]=extrapol(point1=c(fwdCIdesign[1,3],fwdCIdesign$x[1]),
 			point2=c(fwdCIdesign[m,3],fwdCIdesign$x[m]),xout=dout$target[a])
 	}
 	if(dout$target[a]>=min(fwdCIgrid[,4]))  # and vice versa
@@ -142,7 +142,7 @@ for (a in 1:length(dout$target))
 		dout$low[a]=fwdCIgrid[max(which(fwdCIgrid[,4]<=dout$target[a])),1]
 	} else if(dout$target[a]>=minUpper)  {
 		dout$low[a]=extrapol(point1=c(fwdCIdesign[1,4],fwdCIdesign$x[1]),
-			point2=c(fwdCIdesign[2,4],fwdCIdesign$x[2]),xout=dout$target[a])
+			point2=c(fwdCIdesign[m,4],fwdCIdesign$x[m]),xout=dout$target[a])
 	}
 }
 	

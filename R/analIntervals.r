@@ -12,14 +12,14 @@
 #' @param intfun the function to be used for interval estimation. Default \code{\link{wilsonCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 
-isotInterval<-function(isotPoint,outx=isotPoint$x,conf=0.9,intfun=wilsonCI,sequential=FALSE)
+isotInterval<-function(isotPoint,ycount,outx=isotPoint$x,conf=0.9,intfun=morrisCI,sequential=FALSE,...)
 {
 ## Validation
 if(conf<=0 || conf>=1) stop("Confidence must be between 0 and 1.\n")
 if(!is.doseResponse(isotPoint)) stop("Point-estimate data must be in doseResponse format.\n")
 if(min(outx)<min(isotPoint$x) || max(outx)>max(isotPoint$x)) stop("Cannot predict outside data boundaries.\n")
 
-designInt=intfun(phat=isotPoint$y,n=isotPoint$weight,conf=conf)
+designInt=intfun(phat=isotPoint$y,n=isotPoint$weight,y=ycount,conf=conf,...)
 
 if(sequential) ## correction for sequential designs
 {
@@ -55,7 +55,7 @@ return(data.frame(ciLow=parapolate(isotPoint$x,designInt[,1],xout=outx,upward=TR
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param ...	Other arguments passed on to the estimating function.
 
-quickIsotone<-function (y,x=NULL,wt=rep(1,length(y)),outx=NULL,dec=FALSE,cir=TRUE,intfun=wilsonCI,conf=0.9,seqDesign=FALSE,...) 
+quickIsotone<-function (y,x=NULL,wt=rep(1,length(y)),outx=NULL,dec=FALSE,cir=TRUE,intfun=morrisCI,conf=0.9,seqDesign=FALSE,...) 
 {
 dr=doseResponse(y=y,x=x,wt=wt,...)
 if(is.null(outx)) outx=dr$x
@@ -64,7 +64,7 @@ if (cir) {
 	pestimate=cirPAVA(y=dr,dec=dec,full=TRUE)
 } else pestimate=oldPAVA(y=dr,dec=dec,full=TRUE)
 
-cestimate=isotInterval(pestimate$output,conf=conf,intfun=intfun,outx=outx,sequential=seqDesign)
+cestimate=isotInterval(pestimate$output,ycount=dr$weight*dr$y,conf=conf,intfun=intfun,outx=outx,sequential=seqDesign,...)
 
 if(all(outx %in% dr$x)) 
 {
