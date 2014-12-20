@@ -17,7 +17,7 @@
 
 #' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects name \code{output,input,alg} for the output data at dose levels, the input data, and the function as fit at algorithm-generated points, respectively.
 
-cirPAVA <-function (y,x=NULL,wt=NULL,outx=NULL,full=FALSE,dec=FALSE,...) {
+cirPAVA <-function (y,x=NULL,wt=NULL,outx=NULL,full=FALSE,dec=FALSE,strict=FALSE,interiorStrict=TRUE,ybounds=0:1,...) {
 
 ### converting to doseResponse object 
 ### Basically it's a numeric data frame with x,y,weight, and x increasing
@@ -28,7 +28,9 @@ if (any(is.na(dr))) stop ("Missing values are not allowed.\n")
 ### Predictions will be delivered for x=outx
 if(is.null(outx)) outx=dr$x
 
+### validations
 if(min(outx)<min(dr$x) || max(outx)>max(dr$x)) stop("Cannot predict outside design boundaries.\n")
+if(strict && !interiorStrict) warning("strict=TRUE overrides interiorStrict=FALSE.\n")
 
 m <- dim(dr)[1]
 if (m <= 1) {  ## degenerate case: only one dose level
@@ -47,7 +49,15 @@ if (dec) dr$y = -dr$y
 repeat {
 
 # Find adjacent violators
-	viol <- (as.vector(diff(dr$y)) <= 0)
+# Definition of violators comes in 1 of 3 'flavors', see help
+	viol <- (as.vector(diff(dr$y)) < 0)
+	if(interiorStrict) 
+	{
+		addviol <- (as.vector(diff(dr$y)) == 0)
+		addviol[addviol & (dr$y[-m] %in% ybounds) & (dr$y[-1] %in% ybounds)]=FALSE
+		viol<-(viol | addviol)
+	}
+	if(strict) viol <- (as.vector(diff(dr$y)) <= 0)
 
     if (!(any(viol))) break
     i <- min( (1:(m-1))[viol]) # Pool first pair of violators

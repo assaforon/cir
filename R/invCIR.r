@@ -45,7 +45,7 @@ if (any(is.na(dr))) stop ("Missing values are not allowed.\n")
 
 # We start via forward estimation
 
-pavout<-estfun(y=dr,full=TRUE,dec=dec)
+pavout<-estfun(y=dr,full=TRUE,dec=dec,...)
 
 newx<-pavout$alg$x
 newy<-pavout$alg$y

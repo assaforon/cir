@@ -61,8 +61,8 @@ dr=doseResponse(y=y,x=x,wt=wt,...)
 if(is.null(outx)) outx=dr$x
 
 if (cir) {
-	pestimate=cirPAVA(y=dr,dec=dec,full=TRUE)
-} else pestimate=oldPAVA(y=dr,dec=dec,full=TRUE)
+	pestimate=cirPAVA(y=dr,dec=dec,full=TRUE,...)
+} else pestimate=oldPAVA(y=dr,dec=dec,full=TRUE,...)
 
 cestimate=isotInterval(pestimate$output,ycount=dr$weight*dr$y,conf=conf,intfun=intfun,outx=outx,sequential=seqDesign,...)
 
