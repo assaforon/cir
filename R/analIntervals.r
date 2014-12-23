@@ -12,13 +12,14 @@
 #' @param intfun the function to be used for interval estimation. Default \code{\link{wilsonCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 
-isotInterval<-function(isotPoint,ycount,outx=isotPoint$x,conf=0.9,intfun=morrisCI,sequential=FALSE,...)
+isotInterval<-function(isotPoint,outx=isotPoint$x,conf=0.9,intfun=morrisCI,sequential=FALSE,parabola=TRUE,...)
 {
 ## Validation
 if(conf<=0 || conf>=1) stop("Confidence must be between 0 and 1.\n")
 if(!is.doseResponse(isotPoint)) stop("Point-estimate data must be in doseResponse format.\n")
 if(min(outx)<min(isotPoint$x) || max(outx)>max(isotPoint$x)) stop("Cannot predict outside data boundaries.\n")
 
+ycount=round(isotPoint$weight*isotPoint$y)
 designInt=intfun(phat=isotPoint$y,n=isotPoint$weight,y=ycount,conf=conf,...)
 
 if(sequential) ## correction for sequential designs
@@ -33,8 +34,12 @@ if(sequential) ## correction for sequential designs
 }
 #if(all(outx %in% isotPoint$x)) return(designInt[match(outx,isotPoint$x),])
 
-return(data.frame(ciLow=parapolate(isotPoint$x,designInt[,1],xout=outx,upward=TRUE)
-	,ciHigh=parapolate(isotPoint$x,designInt[,2],xout=outx,upward=FALSE)))
+if(parabola) lcl=parapolate(isotPoint$x,designInt[,1],xout=outx,upward=TRUE) else
+	lcl=approx(isotPoint$x,designInt[,1],xout=outx)$y
+if(parabola) ucl=parapolate(isotPoint$x,designInt[,2],xout=outx,upward=FALSE) else
+	ucl=approx(isotPoint$x,designInt[,2],xout=outx)$y
+
+return(data.frame(ciLow=lcl,ciHigh=ucl))
 }
 
 #'
@@ -64,7 +69,7 @@ if (cir) {
 	pestimate=cirPAVA(y=dr,dec=dec,full=TRUE,...)
 } else pestimate=oldPAVA(y=dr,dec=dec,full=TRUE,...)
 
-cestimate=isotInterval(pestimate$output,ycount=dr$weight*dr$y,conf=conf,intfun=intfun,outx=outx,sequential=seqDesign,...)
+cestimate=isotInterval(pestimate$output,conf=conf,intfun=intfun,outx=outx,sequential=seqDesign,...)
 
 if(all(outx %in% dr$x)) 
 {
