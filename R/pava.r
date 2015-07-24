@@ -25,6 +25,7 @@
 #' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects named \code{output,input,alg} for the output data at dose levels, the input data, and the function as fit at algorithm-generated points, respectively. For this function, the first and thrid objects are identical.
 
 #' @seealso \code{\link{cirPAVA}}
+#' @export
 
 oldPAVA<-function (y,x=NULL,wt=rep(1,length(x)),outx=NULL,full=FALSE,dec=FALSE,...) {
 
