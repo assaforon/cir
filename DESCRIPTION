@@ -6,7 +6,7 @@ Date: 2014-05-02
 Description: Isotonic regression, as well as a small-sample tweak called CIR, and some other goodies.
 License: GPL-2
 Author: Assaf P. Oron
-Maintainer: Assaf P. Oron <assaf.oron@seattlechildrens.org'>
+Maintainer: Assaf P. Oron <assaf.oron@seattlechildrens.org>
 Authors@R: if (file.exists('DESCRIPTION') && !file.exists('man/cirPAVA.Rd')) roxygen2::roxygenize('.');
     person('Assaf P.','Oron', role=c('cre','aut'), email='assaf.oron@seattlechildrens.org')
     
