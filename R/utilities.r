@@ -1,5 +1,6 @@
 #### Some standard CI calculation functions
 
+#' @export
 wilsonCI<-function(phat,n,conf=0.9,...)
 {
 zalpha=qnorm(1-(1-conf)/2)
@@ -8,6 +9,7 @@ return(cbind(pmax(0,(phat+zalpha^2/(2*n)-wid)/(1+zalpha^2/n)),
 	pmin(1,(phat+zalpha^2/(2*n)+wid)/(1+zalpha^2/n))))
 }
 
+#' @export
 agcouCI<-function(phat,n,conf=0.9,...)
 {
 zalpha=qnorm(1-(1-conf)/2)
@@ -18,6 +20,7 @@ return(cbind(pmax(0,ptilde-wid),
 	pmin(1,ptilde+wid)))
 }
 
+#' @export
 jeffCI<-function(phat,n,conf=0.9,w1=0.5,w2=w1,...)
 {
 x=n*phat

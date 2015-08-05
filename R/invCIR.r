@@ -1,7 +1,7 @@
 ##' Inverse (dose-finding) estimate of a target x value (e.g., a percentile)
 #'
 #'
-#' Inverse ("dose-finding") point estimation of a dose (x) for a specified target y value (e.g., a response rate), using the centered-isotonic-regression (\code{invCIR}) or a generic forward-estimation algorithm (\code{doseFind}).
+#' Inverse ("dose-finding") point estimation of a dose (x) for a specified target y value (e.g., a response rate), using centered-isotonic-regression (\code{invCIR}) or a generic forward-estimation algorithm (\code{doseFind}).
 #'
 #'
 #' The function works by calling \code{estfun} for forward estimation of the x-y relationship, then using \code{\link{approx}} with the x and y roles reversed for inverse estimation. The \code{extrapolate} option sets the \code{rule} argumet for this second call: 
@@ -30,7 +30,7 @@
 #' \item {cir  }  {  a \code{doseResponse} object which is the \code{alg} output of the forward-estimation function}
 #' }
 
-#' @seealso \code{\link{pava}},\code{\link{cirPAVA}}
+#' @seealso \code{\link{pava}},\code{\link{cirPAVA}},\code{\link{quickInverse}}
 
 #' @export
 
@@ -72,7 +72,7 @@ if (!full)  return(tout)
 return (list(targest=tout,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
 }
 
-#' Point and Interval Inverse Estimation using CIR and IR
+#' Point and Interval Inverse Estimation ("Dose-Finding"), using CIR and IR
 #'
 #'
 #' Convenience wrapper for point and interval estimation of the "dose" that would generate a \code{target} "response" value, using CIR and IR.
@@ -95,8 +95,8 @@ return (list(targest=tout,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
 #' \item {lowerPPconf,upperPPconf  }  { the interval-boundary estimates for a 'PP'=\code{100*conf} confidence interval}
 #' }
 
-#' @seealso \code{\link{pava}},\code{\link{cirPAVA}}
-
+#' @seealso \code{\link{pava}},\code{\link{cirPAVA}},\code{\link{quickIsotone}},\code{\link{doseFind}}
+#' @export
 
 quickInverse<-function(y,x=NULL,wt=NULL,target,cir = TRUE, intfun = morrisCI, conf = 0.9,resolution=100,xbounds=NULL,extrapolate=FALSE,seqDesign=FALSE,...)
 {

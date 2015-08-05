@@ -56,8 +56,28 @@ return(uout)
 }
 #####
 
+##' Analytical confidence intervals using the Morris (1988) algorithm
+##'
+##'
+##' Analytical confidence intervals for CIR and IR, using the recursive algorithm by Morris (1988) for ordered-binomial point estimates. Optionally, the intervals are narrowed further using a backup pointwise interval estimate.
+##'
+##' 
+##' The default for backup is Wilson's (\code{wilconCI}). Also available are Jeffrys' (\code{jeffCI}) and Agresti-Coull (\code{agcouCI}).
+
+#' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
+#' @export
+#' @seealso \code{\link{isotInterval}}
+
+#' @param y integer or numeric vector, the pointwise Binomial counts
+#' @param n integer or numeric vector, the pointwise sample sizes
+#' @param phat numeric vector, the point estimates. Defaults to \code{y/n}, but when called by \code{\link{isotInterval}} is overridden by the actual CIR/IR point estimate.
+#' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
+#' @param narrower logical, if the \code{alternate}-produced interval is narrower at any point, should it replace the Morris result? Default \code{TRUE}.
+#' @param alternate function to use for alternate pointwise interval. Default \code{wilconCI}.
+#' @param ... parameters passed on to \code{alternate}.
 morrisCI<-function(y,n,phat=y/n,conf=0.9,narrower=TRUE,alternate=wilsonCI,...)
 {
+if(conf<=0 || conf>=1) stop("Confidence must be between 0 and 1.\n")
 tailp=(1-conf)/2
 lcl=morrisLCL(y=y,n=n,halfa=tailp)
 ucl=morrisUCL(y=y,n=n,halfa=tailp)
