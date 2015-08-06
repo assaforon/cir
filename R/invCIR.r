@@ -76,17 +76,21 @@ return (list(targest=tout,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
 #'
 #'
 #' Convenience wrapper for point and interval estimation of the "dose" that would generate a \code{target} "response" value, using CIR and IR.
+#' 
+#' 
+#' The inverse point estimate is calculated in a straightforward manner from a forward estimate, using \code{\link{doseFind}}. For the inverse interval, \code{\link{quickIsotone}} is called for forward estimation on a high-resolution grid of $x$ values (the default interval curves are piecewise-parabolic), then the closest points to the line \code{y=target} are found. Note that the forward UCL is used to find the inverse LCL, and vice versa. 
 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
 #' @param x dose levels (if not included in y). 
 #' @param wt weights (if not included in y).
 #' @param target A vector of target response rate(s), for which the percentile dose estimate is needed.
-#' @param full logical, is a more complete output desired (relevant only for doseFind)? if \code{FALSE} (default), only a point estimate of the dose (x) for the provided target rate is returned
+#' #' @param cir logical, is centered-isotonic-regression (CIR) to be used? If \code{FALSE}, traditional isotonic regression is used. Default \code{TRUE}.
+#' @param intfun the function to be used for interval estimation. Default \code{\link{wilsonCI}} (see help on that function for additional options).
+#' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
+#' @param resolution numeric: how fine should the grid for the inverse-interval approximation be? Default 100, which seems to be quite enough. See 'Details'.
+#' @param xbounds numeric vector of 2, lower and upper bounds for the confidence intervals, beyond which the interval "doesn't make sense". Under the default (\code{NULL}), the function will set these to one spacing level outside the boundaries of \code{x}.
 #' @param extrapolate logical: should extrapolation beyond the range of estimated y values be allowed? Default \code{FALSE}. Note this affects only the point estimate; interval boundarie are extrapolated in any case.
-#' @param dec (relevant only for doseFind) logical, is the true function is assumed to be monotone decreasing? Default \code{FALSE}.
-#' @param estfun the name of the dose-response estimation function (relevant only for doseFind). For \code{invCIR} this is hard-coded as \code{\link{cirPAVA}}, which is also the default for \code{doseFind}.
-#' @param extrapolate logical: should extrapolation beyond the range of estimated y values be allowed? Default \code{FALSE}.
-#' @param ...	Other arguments passed on, from \code{invCIR} to \code{doseFind} and from there to the constructor functions that pre-process the input.
+#' @param ...	Other arguments passed on to \code{\link{doseFind}} and \code{\link{quickIsotone}}, and onwards from there.
 
 #' @return A data frame with
 #' \itemize{

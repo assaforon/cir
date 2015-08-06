@@ -67,6 +67,8 @@ return(uout)
 #' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
 #' @export
 #' @seealso \code{\link{isotInterval}}
+#' 
+#' @references Morris, M., 1988. Small-sample confidence limits for parameters under inequality constraints with application to quantal bioassay. Biometrics 44, 1083-1092.
 
 #' @param y integer or numeric vector, the pointwise Binomial counts
 #' @param n integer or numeric vector, the pointwise sample sizes

@@ -1,8 +1,11 @@
 ##' Returns analytic interval estimates, given isotonic-regression (centered or not) point estimates
 #'
 #'
-#' Forward interval estimation of a monotone response (y) as a function of dose (x), given a set of point estimates produced by  \code{\link{cirPAVA}} or \code{\link{oldPAVA}}.
-#'
+#' For confidence intervals at design points ($x$ values with obesrvations), this function calls \code{intfun} to do the work. In addition, CIs for any $x$ value are calculated. Naively, one would do a linear interpolation just like with the point estimate. However, between observations the uncertainty is greater, and it can also be generally assumed that the curve is nonlinear. Therefore, a piecewise-convex (for the LCL) or piecewise-concave (for the UCL) confidence band seems in order, analogous to the curvilinear bands of linear regression. 
+#' 
+#' The solution used was chosen because it does not require tuning parameters, while maintaining monotonicity. Each segment is a parabola whose slope becomes zero at one endpoint. The requirement of maintaining convexity/concavity for LCL/UCL determines that endpoint. This is implemented via the internal function \code{parapolate}
+#' 
+#' 
 #' @seealso \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{morrisCI}},
 #'
 ##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
@@ -12,8 +15,8 @@
 #' @param outx vector of x values for which estimates will be made. If \code{NULL} (default), this will be set to the set of unique values in isotPoint$x argument (or equivalently in y$x).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param intfun the function to be used for interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
-#' @param logical, should a rough accounting for the added randomness due to the use of a sequential dose-finding design? Default \code{FALSE} due to little benefit.
-#' @param logical, should the interpolation between design points follow a parabola (\code{TRUE}, default) or a straight line? See details.
+#' @param sequential logical, should a rough accounting for the added randomness due to the use of a sequential dose-finding design? Default \code{FALSE} due to little benefit.
+#' @param parabola logical, should the interpolation between design points follow a parabola (\code{TRUE}, default) or a straight line? See details.
 #' @param ... additional arguments passed on to \code{intfun}
 
 isotInterval<-function(isotPoint,outx=isotPoint$x,conf=0.9,intfun=morrisCI,sequential=FALSE,parabola=TRUE,...)

@@ -18,11 +18,11 @@
 #' @param x dose levels (if not included in y). Note that the PAV algorithm doesn't really use them. 
 #' @param wt weights (if not included in y).
 #' @param outx vector of x values for which predictions will be made. If \code{NULL} (default), this will be set to the set of unique values in the x argument (or equivalently in y$x). Non-NULL inputs are relevant only if \code{full=TRUE}.
-#' @param full: logical, is a more complete output desired? if \code{FALSE} (default), only a vector of point estimates for y at the provided dose levels is returned
+#' @param full logical, is a more complete output desired? if \code{FALSE} (default), only a vector of point estimates for y at the provided dose levels is returned
 #' @param dec logical, is the true function is assumed to be monotone decreasing? Default \code{FALSE}.
 #' @param ...	Other arguments passed on to the constructor functions that pre-process the input.
 
-#' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects named \code{output,input,alg} for the output data at dose levels, the input data, and the function as fit at algorithm-generated points, respectively. For this function, the first and thrid objects are identical.
+#' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects named \code{output,input,alg} for the output data at dose levels, the input data, and the function as fit at algorithm-generated points, respectively. For this function, the first and third objects are identical.
 
 #' @seealso \code{\link{cirPAVA}}
 #' @export
