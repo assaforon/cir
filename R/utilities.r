@@ -1,6 +1,14 @@
 #### Some standard CI calculation functions
+#' Standard unordered-Binomial confidence interval utilitlies.
+#' 
+#' Standard small-sample Binomial confidence interval utilities, using the methods of Wilson, Agresti-Coull and Jeffrys.
+#' 
+#' These functions implement the basic (uncorrected) three intervals which are seen by the consensus of literature as the "safest" off-the-shelf formulae. None of them account for ordering or monotonicity; therefore the \code{cir} package default is \code{\link{morrisCI}} which does account for that, with the 3 unordered formulae used for optional narrowing of the interval at individual points.
 
+#' @aliases agcouCI jeffCI
+#' @seealso \code{\link{isotInterval}} for more details about how forward CIs are calculated, \code{\link{quickInverse}} for inverse (dose-finding) intervals.
 #' @export
+
 wilsonCI<-function(phat,n,conf=0.9,...)
 {
 zalpha=qnorm(1-(1-conf)/2)

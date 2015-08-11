@@ -1,19 +1,25 @@
 ### Morris and Morris-style CI: functions and accessories
-
-Gupper<-function(theta,y,n,k)
+# Evaluation functions used by recursive algorithm (not exported)
+# This is G(t_j,theta_j) in Morris (1988) equation (4.3), with typo correction
+Gupper<-function(theta,y,n,j)
+# conversion of Morris (4.3) to this function:
+# s in Morris -> y here
+# j index is the same
+# theta is the same
+# there's no need for Morris' t, it is a hypothetical variable
 {
-if(k==length(y)) return (pbinom(q=y[k],size=n[k],prob=theta))
-pbinom(q=y[k]-1,size=n[k],prob=theta)+dbinom(x=y[k],size=n[k],prob=theta)*Gupper(theta=theta,y=y,n=n,k=k+1)
+if(j==length(y)) return (pbinom(q=y[j],size=n[j],prob=theta))
+pbinom(q=y[j]-1,size=n[j],prob=theta)+dbinom(x=y[j],size=n[j],prob=theta)*Gupper(theta=theta,y=y,n=n,j=j+1) ## The typo is the use of G_{j+1} rather than G_j throughout
 }	
 
-Glower<-function(theta,y,n,k)
+Glower<-function(theta,y,n,j)
 {
-if(k==1) return (pbinom(q=y[k]-1,size=n[k],prob=theta,lower.tail=FALSE))
-pbinom(q=y[k],size=n[k],prob=theta,lower.tail=FALSE)+dbinom(x=y[k],size=n[k],prob=theta)*Glower(theta=theta,y=y,n=n,k=k-1)
+if(j==1) return (pbinom(q=y[j]-1,size=n[j],prob=theta,lower.tail=FALSE))
+pbinom(q=y[j],size=n[j],prob=theta,lower.tail=FALSE)+dbinom(x=y[j],size=n[j],prob=theta)*Glower(theta=theta,y=y,n=n,j=j-1)
 }	
 
 
-##' Confidence intervals for ordered Binomial, based on Morris 1988
+# Confidence intervals for ordered Binomial, based on Morris 1988: recursive algorithm (not exported)
 
  
 morrisUCL<-function(y,n,halfa=0.05)
@@ -30,7 +36,7 @@ if(a<1) return(uout)
 for(b in a:1)
 {
 	uout[b]=uniroot(function(theta,h,d,alpha,...) h(theta=theta,...)-alpha,interval=c(0,1),
-		alpha=halfa,k=b,h=Gupper,n=n,y=y)$root
+		alpha=halfa,j=b,h=Gupper,n=n,y=y)$root
 }
 return(uout)
 }
@@ -50,7 +56,7 @@ if(a>m) return(uout)
 for(b in a:m)
 {
 	uout[b]=uniroot(function(theta,h,d,alpha,...) h(theta=theta,...)-alpha,interval=c(0,1),
-		alpha=halfa,k=b,h=Glower,n=n,y=y)$root
+		alpha=halfa,j=b,h=Glower,n=n,y=y)$root
 }
 return(uout)
 }
@@ -59,7 +65,7 @@ return(uout)
 ##' Analytical confidence intervals using the Morris (1988) algorithm
 ##'
 ##'
-##' Analytical confidence intervals for CIR and IR, using the recursive algorithm by Morris (1988) for ordered-binomial point estimates. Optionally, the intervals are narrowed further using a backup pointwise interval estimate.
+##' Analytical confidence intervals for CIR and IR, using the recursive algorithm by Morris (1988), equation (4.3), for ordered-binomial point estimates. Optionally, the intervals are narrowed further using a backup pointwise interval estimate.
 ##'
 ##' 
 ##' The default for backup is Wilson's (\code{wilconCI}). Also available are Jeffrys' (\code{jeffCI}) and Agresti-Coull (\code{agcouCI}).
@@ -70,6 +76,8 @@ return(uout)
 #' 
 #' @references Morris, M., 1988. Small-sample confidence limits for parameters under inequality constraints with application to quantal bioassay. Biometrics 44, 1083-1092.
 
+#' @note This function found and corrected a typo in equation (4.3), namely the use of G_(j+1) in the recursion. The recursion cannot start in this way. Rather, it is the use of theta_(j+1) that delivers information from adjacent doses. Or perhaps in other words, there is only one G function rather a different one for each dose. The correction has been verified by reproducing the numbers in the Morris (1988) example (Table 1), and also approved by the original author.
+#' 
 #' @param y integer or numeric vector, the pointwise Binomial counts
 #' @param n integer or numeric vector, the pointwise sample sizes
 #' @param phat numeric vector, the point estimates. Defaults to \code{y/n}, but when called by \code{\link{isotInterval}} is overridden by the actual CIR/IR point estimate.

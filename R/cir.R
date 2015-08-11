@@ -133,12 +133,13 @@ if (!full) {
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
 #' @param x dose levels (if not included in y). Note that the PAV algorithm doesn't really use them. 
 #' @param wt weights (if not included in y).
-#' @param outx vector of x values for which predictions will be made. If \code{NULL} (default), this will be set to the set of unique values in the x argument (or equivalently in y$x).
-#' @param dec logical, is the true function is assumed to be monotone decreasing? Default \code{FALSE}.
+#' @param outx vector of x values for which predictions will be made. If \code{NULL} (default), this will be set to the set of unique values in the \code{x} argument (or equivalently in \code{y$x}).
+#' @param dec logical, is the true function assumed to be monotone decreasing rather than increasing? Default \code{FALSE}.
 #' @param cir logical, is centered-isotonic-regression (CIR) to be used? If \code{FALSE}, traditional isotonic regression is used. Default \code{TRUE}.
 #' @param intfun the function to be used for interval estimation. Default \code{\link{wilsonCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
-#' @param ...	Other arguments passed on to the estimating function.
+#' @param seqDesign logical, should intervals be further widened using a simple adjustment for the data having been obtained via a sequential (adaptive) design? Default \code{FALSE} due to futility.
+#' @param ...	arguments passed on to other functions (constructor, point estimate and interval estimate).
 
 quickIsotone<-function (y,x=NULL,wt=rep(1,length(y)),outx=NULL,dec=FALSE,cir=TRUE,intfun=morrisCI,conf=0.9,seqDesign=FALSE,...) 
 {
