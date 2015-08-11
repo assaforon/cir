@@ -9,6 +9,12 @@
 #' @seealso \code{\link{isotInterval}} for more details about how forward CIs are calculated, \code{\link{quickInverse}} for inverse (dose-finding) intervals.
 #' @export
 
+#' @param phat numeric vector, point estimates for which an interval is sought
+#' @param n integer vector of same length, of pointwise sample sizes
+#' @param conf numeric in (0,1), the confidence level
+#' @param w1,w2 numeric, weights used in \code{jeffCI} only
+#' @param ... pass-through for compatibility with a variety of calling functions
+#' 
 wilsonCI<-function(phat,n,conf=0.9,...)
 {
 zalpha=qnorm(1-(1-conf)/2)
@@ -17,6 +23,7 @@ return(cbind(pmax(0,(phat+zalpha^2/(2*n)-wid)/(1+zalpha^2/n)),
 	pmin(1,(phat+zalpha^2/(2*n)+wid)/(1+zalpha^2/n))))
 }
 
+#' @rdname wilsonCI
 #' @export
 agcouCI<-function(phat,n,conf=0.9,...)
 {
@@ -28,6 +35,7 @@ return(cbind(pmax(0,ptilde-wid),
 	pmin(1,ptilde+wid)))
 }
 
+#' @rdname wilsonCI
 #' @export
 jeffCI<-function(phat,n,conf=0.9,w1=0.5,w2=w1,...)
 {
@@ -41,7 +49,7 @@ return(cbind(clow,chigh))
 
 ########### Interpolation, Extrapolation, Parapolation....
 
-#' Linearly interpolate/extrapolate from a single segment.
+# Linearly interpolate/extrapolate from a single segment.
 
 extrapol<-function(point1,point2,xout)
 {
@@ -49,7 +57,7 @@ slope=(point2[2]-point1[2])/(point2[1]-point1[1])
 return(point2[2]+(xout-point2[1])*slope)
 }
 
-#' Locally monotone quadratic interpolation between points on a plane
+# Locally monotone quadratic interpolation between points on a plane
 
 parapolate<-function(x,y,xout,upward,full=FALSE)
 {

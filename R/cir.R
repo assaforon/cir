@@ -128,7 +128,7 @@ if (!full) {
 ##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
 #' @export
 
-#' @seealso \code{\link{cirPAVA}},\code{\link{oldPAVA}},\code{\link{quickInverse}},\code{\link{doseResponse}}
+#' @seealso \code{\link{cirPAVA}},\code{\link{oldPAVA}},\code{\link{isotInterval}},\code{\link{quickInverse}},\code{\link{doseResponse}}
 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
 #' @param x dose levels (if not included in y). Note that the PAV algorithm doesn't really use them. 

@@ -5,7 +5,8 @@
 #' 
 #' The solution used was chosen because it does not require tuning parameters, while maintaining monotonicity. Each segment is a parabola whose slope becomes zero at one endpoint. The requirement of maintaining convexity/concavity for LCL/UCL determines that endpoint. This is implemented via the internal function \code{parapolate}
 #' 
-#' 
+#' @note All provided algorithm and formulae are for Binomial data only. For other data, write your own. Also, interval estimates for dose-finding is only available via the \code{\link{quickInverse}} function. That function calls \code{isotInterval} and then reads the inverse interval "horizontally". See details there.
+#'
 #' @seealso \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{morrisCI}},
 #'
 ##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
