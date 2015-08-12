@@ -1,5 +1,4 @@
 
-##' @rdname DRtrace
 #' @export
 
 is.DRtrace<-function(dr)
@@ -12,7 +11,6 @@ if(any(dr$weight<0)) return(FALSE)
 return(TRUE)
 }
 
-##' @rdname DRtrace
 #' @export
 
 is.doseResponse<-function(dr)
@@ -32,12 +30,15 @@ return(TRUE)
 #' Functions to create and sanity-check objects of the \code{DRtrace} (dose-response experiment trace/trajectory) and \code{doseResponse} (dose-response raw summary) classes. Note that the latter inherits from the former, purely for programming-convenience reasons.
 #'
 #'
+#' @aliases doseResponse is.doseResponse is.DRtrace
 ##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
+##' 
+##' @seealso \code{\link{cirPAVA}}, \code{\link{plot.doseResponse}},\code{\link{plot.DRtrace}} 
 
 #' @param y,x,wt  see help to \code{\link{cirPAVA}}.
 #' @param noyes logical, in case of a 2-column input is the 1st column 'no'? Default \code{FALSE}, meaning the 1st column is 'yes'.
 #' @param dr the object being checked
-#' @return for constructor functions, the relevant object. For checking functions, a logical value indicating whether the object meets class definition.
+#' @return For constructor functions, the relevant object. For checking functions, a logical value indicating whether the object meets class definition.
 
 DRtrace<-function(y,x=NULL,wt=NULL,noyes=FALSE)
 {

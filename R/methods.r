@@ -1,7 +1,7 @@
 #' Methods for DRtrace and doseResponse classes
 #'
 #'
-#' Plotting methods for DRtrace, doseResponse classes.
+#' Plotting methods for \code{\link{doseResponse}}, \code{\link{DRtrace}} classes.
 #'
 #'
 #' Generic methods for dose-response trajectory/trace (\code{\link{DRtrace}}), and dose-response summary  (\code{\link{doseResponse}}) class objects. 
@@ -10,6 +10,7 @@
 
 #' The \code{\link{doseResponse}} plotting has response rate on the y-axis and dose on the x-axis, and plots symbols whose area is proportional to the weights. 
 
+#' @seealso \code{\link{doseResponse}}, \code{\link{DRtrace}}
 #' @param dr 	the object, whether DRtrace or doseResponse
 #' @param xlab,ylab		x-axis and y-axis labels passed on to \code{\link{plot}}
 #' @param pch	the plotting character (doseResponse only), the default being 'X' marks

@@ -79,6 +79,9 @@ return (list(targest=tout,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
 #' 
 #' 
 #' The inverse point estimate is calculated in a straightforward manner from a forward estimate, using \code{\link{doseFind}}. For the inverse interval, \code{\link{quickIsotone}} is called for forward estimation on a high-resolution grid of $x$ values (the default interval curves are piecewise-parabolic), then the closest points to the line \code{y=target} are found. Note that the forward UCL is used to find the inverse LCL, and vice versa. 
+#' 
+#' @return A data frame with 4 variables: \code{x} either the input x values, or \code{outx} of specified; \code{y} the point estimates; and the lower and upper confidence bounds.
+
 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
 #' @param x dose levels (if not included in y). 
@@ -93,14 +96,14 @@ return (list(targest=tout,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
 #' @param seqDesign logical, should intervals be further widened using a simple adjustment for the data having been obtained via a sequential (adaptive) design? Default \code{FALSE} due to futility.
 #' @param ...	Other arguments passed on to \code{\link{doseFind}} and \code{\link{quickIsotone}}, and onwards from there.
 
-#' @return A data frame with
+#' @return A data frame with 4 elements:
 #' \itemize{
-#' \item {target  }  { The user-provided target values of y, at which x is estimated}
-#' \item {point } {  The point estimates of x}
-#' \item {lowerPPconf,upperPPconf  }  { the interval-boundary estimates for a 'PP'=\code{100*conf} confidence interval}
+#' \item {\code{target}  }  { The user-provided target values of y, at which x is estimated}
+#' \item {\code{point} } {  The point estimates of x}
+#' \item {\code{lowerPPconf,upperPPconf}  }  { the interval-boundary estimates for a 'PP'=\code{100*conf} confidence interval}
 #' }
 
-#' @seealso \code{\link{pava}},\code{\link{cirPAVA}},\code{\link{quickIsotone}},\code{\link{doseFind}}
+#' @seealso \code{\link{quickIsotone}},\code{\link{doseFind}},\code{\link{isotInterval}}
 #' @export
 
 quickInverse<-function(y,x=NULL,wt=NULL,target,cir = TRUE, intfun = morrisCI, conf = 0.9,resolution=100,xbounds=NULL,extrapolate=FALSE,seqDesign=FALSE,...)

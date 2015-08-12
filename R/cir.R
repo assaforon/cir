@@ -128,6 +128,13 @@ if (!full) {
 ##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
 #' @export
 
+#' @return A data frame with 4 variables:  
+#' \itemize{
+#' \item {\code{x}} {either the input x values, or \code{outx} of specified;}
+#' \item {\code{y}} {  The point estimates of x}
+#' \item {\code{lowerPPconf,upperPPconf}  }  { the interval-boundary estimates for a 'PP'=\code{100*conf} confidence interval}
+#' }
+#'  
 #' @seealso \code{\link{cirPAVA}},\code{\link{oldPAVA}},\code{\link{isotInterval}},\code{\link{quickInverse}},\code{\link{doseResponse}}
 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 

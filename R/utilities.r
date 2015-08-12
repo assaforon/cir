@@ -9,6 +9,8 @@
 #' @seealso \code{\link{isotInterval}} for more details about how forward CIs are calculated, \code{\link{quickInverse}} for inverse (dose-finding) intervals.
 #' @export
 
+#' @return A two-column matrix with the same number of rows as \code{length(phat)}, containing the calculated lower and upper bounds, respectively.
+#' 
 #' @param phat numeric vector, point estimates for which an interval is sought
 #' @param n integer vector of same length, of pointwise sample sizes
 #' @param conf numeric in (0,1), the confidence level

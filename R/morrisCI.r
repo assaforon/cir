@@ -78,6 +78,8 @@ return(uout)
 
 #' @note This function found and corrected a typo in equation (4.3), namely the use of G_(j+1) in the recursion. The recursion cannot start in this way. Rather, it is the use of theta_(j+1) that delivers information from adjacent doses. Or perhaps in other words, there is only one G function rather a different one for each dose. The correction has been verified by reproducing the numbers in the Morris (1988) example (Table 1), and also approved by the original author.
 #' 
+#' @return A two-column matrix with the same number of rows as \code{length(phat)}, containing the calculated lower and upper bounds, respectively.
+
 #' @param y integer or numeric vector, the pointwise Binomial counts
 #' @param n integer or numeric vector, the pointwise sample sizes
 #' @param phat numeric vector, the point estimates. Defaults to \code{y/n}, but when called by \code{\link{isotInterval}} is overridden by the actual CIR/IR point estimate.
