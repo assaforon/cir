@@ -100,4 +100,45 @@ return(list(a=a,b=b,c=cee,outdat=data.frame(x=xout,y=yout)))
 
 #k=length(xout)
 
+slope<-function(x,y,xout,allowZero=FALSE,full=FALSE)
+{
+### Validation (might be mostly redundant if using doseResponse as input)
 
+if (any(xout>max(x) | xout<min(x))) stop("No extrapolation allowed in 'slopes'.\n")
+m=length(x)
+if(length(y)!=m) stop("Mismatched lengths in 'slopes'.\n")
+xdiffs=diff(x)
+ydiffs=diff(y)
+if (any(xdiffs<=0 | ydiffs<0)) stop("Monotonicity violation in 'slopes'.\n")
+slopes=ydiffs/xdiffs
+sslopes=c(0,slopes,0)
+
+interval=findInterval(xout,x)
+## The trivial ones
+candidate=slopes[interval]
+## ones falling on design points
+design=which(xout %in% x)
+if (length(design)>0) {
+	for(a in design) candidate[a]=(sslopes[interval[a]]+sslopes[interval[a]+1])/2
+}
+candidate0=candidate
+
+## tougher nut: zero slope
+if(!allowZero && any(candidate==0))
+{
+	xstep=mean(xdiffs)/2
+	for (a in which(candidate==0))
+	{	
+		b=0
+		while(candidate[a]==0)
+		{
+			b=b+1
+			xends=c(max(x[1],xout[a]-b*xstep),min(x[m],xout[a]+b*xstep))
+			yends=approx(x,y,xout=xends)$y
+			candidate[a]=diff(yends)/diff(xends)
+		}
+	}
+}
+if(!full) return (candidate)
+return(list(scrappy=candidate,clean=candidate0,rawslopes=slopes))		
+}
