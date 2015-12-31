@@ -98,26 +98,28 @@ if(!full) return(yout)
 return(list(a=a,b=b,c=cee,outdat=data.frame(x=xout,y=yout)))
 }
 
-#k=length(xout)
+#####################
+#' Calculate local slopes given a (non-strictly) monotone x-y sequence
 
-slope<-function(x,y,xout,allowZero=FALSE,full=FALSE)
+slope<-function(x,y,outx=x,allowZero=FALSE,full=FALSE,decreasing=FALSE)
 {
 ### Validation (might be mostly redundant if using doseResponse as input)
 
-if (any(xout>max(x) | xout<min(x))) stop("No extrapolation allowed in 'slopes'.\n")
+if (any(outx>max(x) | outx<min(x))) stop("No extrapolation allowed in 'slopes'.\n")
 m=length(x)
 if(length(y)!=m) stop("Mismatched lengths in 'slopes'.\n")
+if(decreasing) y=-y
 xdiffs=diff(x)
 ydiffs=diff(y)
 if (any(xdiffs<=0 | ydiffs<0)) stop("Monotonicity violation in 'slopes'.\n")
 slopes=ydiffs/xdiffs
 sslopes=c(0,slopes,0)
 
-interval=findInterval(xout,x)
+interval=findInterval(outx,x)
 ## The trivial ones
 candidate=slopes[interval]
 ## ones falling on design points
-design=which(xout %in% x)
+design=which(outx %in% x)
 if (length(design)>0) {
 	for(a in design) candidate[a]=(sslopes[interval[a]]+sslopes[interval[a]+1])/2
 }
@@ -133,12 +135,13 @@ if(!allowZero && any(candidate==0))
 		while(candidate[a]==0)
 		{
 			b=b+1
-			xends=c(max(x[1],xout[a]-b*xstep),min(x[m],xout[a]+b*xstep))
+			xends=c(max(x[1],outx[a]-b*xstep),min(x[m],outx[a]+b*xstep))
 			yends=approx(x,y,xout=xends)$y
 			candidate[a]=diff(yends)/diff(xends)
 		}
 	}
 }
+if(decreasing) y=-y
 if(!full) return (candidate)
 return(list(scrappy=candidate,clean=candidate0,rawslopes=slopes))		
 }
