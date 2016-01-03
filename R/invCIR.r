@@ -106,7 +106,7 @@ return (list(targest=tout,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
 #' @seealso \code{\link{quickIsotone}},\code{\link{doseFind}},\code{\link{isotInterval}}
 #' @export
 
-quickInverse<-function(y,x=NULL,wt=NULL,target,cir = TRUE, intfun = morrisCI, conf = 0.9,resolution=100,xbounds=NULL,extrapolate=FALSE,seqDesign=FALSE,...)
+quickInverse<-function(y,x=NULL,wt=NULL,target,cir = TRUE, intfun = morrisCI,delta=TRUE,conf = 0.9,resolution=100,xbounds=NULL,extrapolate=FALSE,seqDesign=FALSE,...)
 {
 
 #### Point estimate first
@@ -118,42 +118,45 @@ foundPts=pestimate$targest[!is.na(pestimate$targest)]
 
 dout=data.frame(target=target,point=pestimate$targest,low=-Inf,high=Inf)
 
+if(delta) { ## new default, delta-method ("local") intervals
+	dout[,3:4]=deltaInverse(y=dr,target=target,cir=cir,intfun=intfun,conf=conf,seqDesign=seqDesign,...)
+} else {
 #### CI, using "global" interpolation, a more stable method
 
-## Calculate forward CIs at high-rez grid
-higrid=seq(dr$x[1],dr$x[m],length.out=1+resolution*(m-1))
-fwdCIgrid=quickIsotone(dr,outx=higrid,conf=conf,intfun=intfun,seqDesign=seqDesign,...)
-fwdCIdesign=fwdCIgrid[match(dr$x,fwdCIgrid$x),]
+	## Calculate forward CIs at high-rez grid
+	higrid=seq(dr$x[1],dr$x[m],length.out=1+resolution*(m-1))
+	fwdCIgrid=quickIsotone(dr,outx=higrid,conf=conf,intfun=intfun,seqDesign=seqDesign,...)
+	fwdCIdesign=fwdCIgrid[match(dr$x,fwdCIgrid$x),]
 
-### Setting extrapolation boundaries for CI. If not given by user, we establish "logical" boundaries for CIs, at one spacing level out
+	### Setting extrapolation boundaries for CI. If not given by user, we establish "logical" boundaries for CIs, at one spacing level out
 
-if(is.null(xbounds)) xbounds=rep(NA,2)
-xmin=dr$x[1]-(dr$x[2]-dr$x[1])
-xmax=dr$x[m]+(dr$x[m]-dr$x[m-1])
-xbounds[1]=min(xmin,xbounds[1],na.rm=TRUE)
-xbounds[2]=max(xmax,xbounds[2],na.rm=TRUE)
-maxLower=max(c(fwdCIgrid[,3],extrapol(point1=c(dr$x[1],fwdCIdesign[1,3]),point2=c(dr$x[m],fwdCIdesign[m,3]),xout=xbounds[2])))
-minUpper=min(c(fwdCIgrid[,4],extrapol(point1=c(dr$x[1],fwdCIdesign[1,4]),point2=c(dr$x[m],fwdCIdesign[m,4]),xout=xbounds[1])))
+	if(is.null(xbounds)) xbounds=rep(NA,2)
+	xmin=dr$x[1]-(dr$x[2]-dr$x[1])
+	xmax=dr$x[m]+(dr$x[m]-dr$x[m-1])
+	xbounds[1]=min(xmin,xbounds[1],na.rm=TRUE)
+	xbounds[2]=max(xmax,xbounds[2],na.rm=TRUE)
+	maxLower=max(c(fwdCIgrid[,3],extrapol(point1=c(dr$x[1],fwdCIdesign[1,3]),point2=c(dr$x[m],fwdCIdesign[m,3]),xout=xbounds[2])))
+	minUpper=min(c(fwdCIgrid[,4],extrapol(point1=c(dr$x[1],fwdCIdesign[1,4]),point2=c(dr$x[m],fwdCIdesign[m,4]),xout=xbounds[1])))
 
-### CI by finding 'right points' on grid
-for (a in 1:length(dout$target))
-{	
-	if(dout$target[a]<=max(fwdCIgrid[,3]))  # upper inverse interval taken from fwd LCL 
-	{
-		dout$high[a]=fwdCIgrid[min(which(fwdCIgrid[,3]>=dout$target[a])),1]
-	} else if(dout$target[a]<=maxLower)  {
-		dout$high[a]=extrapol(point1=c(fwdCIdesign[1,3],fwdCIdesign$x[1]),
-			point2=c(fwdCIdesign[m,3],fwdCIdesign$x[m]),xout=dout$target[a])
-	}
-	if(dout$target[a]>=min(fwdCIgrid[,4]))  # and vice versa
-	{
-		dout$low[a]=fwdCIgrid[max(which(fwdCIgrid[,4]<=dout$target[a])),1]
-	} else if(dout$target[a]>=minUpper)  {
-		dout$low[a]=extrapol(point1=c(fwdCIdesign[1,4],fwdCIdesign$x[1]),
-			point2=c(fwdCIdesign[m,4],fwdCIdesign$x[m]),xout=dout$target[a])
+	### CI by finding 'right points' on grid
+	for (a in 1:length(dout$target))
+	{	
+		if(dout$target[a]<=max(fwdCIgrid[,3]))  # upper inverse interval taken from fwd LCL 
+		{
+			dout$high[a]=fwdCIgrid[min(which(fwdCIgrid[,3]>=dout$target[a])),1]
+		} else if(dout$target[a]<=maxLower)  {
+			dout$high[a]=extrapol(point1=c(fwdCIdesign[1,3],fwdCIdesign$x[1]),
+				point2=c(fwdCIdesign[m,3],fwdCIdesign$x[m]),xout=dout$target[a])
+		}
+		if(dout$target[a]>=min(fwdCIgrid[,4]))  # and vice versa
+		{
+			dout$low[a]=fwdCIgrid[max(which(fwdCIgrid[,4]<=dout$target[a])),1]
+		} else if(dout$target[a]>=minUpper)  {
+			dout$low[a]=extrapol(point1=c(fwdCIdesign[1,4],fwdCIdesign$x[1]),
+				point2=c(fwdCIdesign[m,4],fwdCIdesign$x[m]),xout=dout$target[a])
+		}
 	}
 }
-	
 
 #dout$low[!is.na(pestimate$targest)]=ciLow
 #dout$high[!is.na(pestimate$targest)]=ciHigh

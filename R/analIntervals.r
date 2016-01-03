@@ -56,20 +56,29 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 
 #' Calculate inverse (dose-finding) intervals, using local inversion and the Delta method
 
+#' Calculate left-bound to right-bound intervals for the dose point estimates, using local slopes at design points (places where observations exist) to invert the forward lower-upper bounds.
+
+#' The Delta method in this application boils down to dividing the distance to the forward (vertical) bounds by the slope. Slope estimates are subcontracted to \code{\link{slope}}.  
+
+#' @return two-column matrix with the left and right bounds, respectively
 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
 #' @param x dose levels (if not included in y). 
 #' @param wt weights (if not included in y).
-#' @param targets A vector of target response rate(s), for which the interval is needed. If \code{NULL} (default), interval will be returned for the point estimates at design points (e.g., if the forward point estimate at $x_1$ is 0.2, then the first returned interval is for the 20th percentile).
+#' @param target A vector of target response rate(s), for which the interval is needed. If \code{NULL} (default), interval will be returned for the point estimates at design points (e.g., if the forward point estimate at $x_1$ is 0.2, then the first returned interval is for the 20th percentile).
 #' @param cir logical, is centered-isotonic-regression (CIR) to be used? If \code{FALSE}, traditional isotonic regression is used. Default \code{TRUE}.
 #' @param intfun the function to be used for interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 
-deltaInverse<-function(y,x=NULL,wt=NULL,targets=NULL,cir = TRUE, intfun = morrisCI, conf = 0.9,seqDesign=FALSE,...)
+#' @export
+
+deltaInverse<-function(y,x=NULL,wt=NULL,target=NULL,cir = TRUE, intfun = morrisCI, conf = 0.9,seqDesign=FALSE,...)
 {
 dr=doseResponse(y,x,wt)
 # We start by constructing inverse intervals based on design-point estimates
-fwdEsts=quickIsotone(dr,conf=conf,intfun=intfun,seqDesign=seqDesign,cir=cir,...)
+forward=quickIsotone(dr,outx=NULL,conf=conf,intfun=intfun,seqDesign=seqDesign,cir=cir,...)
+yvals=sort(unique(forward$y))
+if(length(yvals)==1) return(NA) ## degenerate case, completely flat
 fslopes=slope(dr$x,forward$y)
 
 # inverse widths raw
@@ -78,13 +87,12 @@ lwidths=(forward$y-forward$upper)/fslopes
 
 rbounds=rev(cummin(rev(tapply(dr$x+rwidths,forward$y,max))))
 lbounds=cummax(tapply(dr$x+lwidths,forward$y,min))
-yvals=sort(unique(forward$y))
 designCIs=cbind(lbounds,rbounds)[match(forward$y,yvals),]
 
-if (is.null(targets)) return(designCIs)
+if (is.null(target)) return(designCIs)
 
-lout=approx(yvals,lbounds,xout=targets)$y
-rout=approx(yvals,rbounds,xout=targets)$y
+lout=approx(yvals,lbounds,xout=target,rule=1)$y
+rout=approx(yvals,rbounds,xout=target,rule=1)$y
 
 return(cbind(lout,rout))
 }
