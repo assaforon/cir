@@ -72,13 +72,16 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 
 #' @export
 
-deltaInverse<-function(y,x=NULL,wt=NULL,target=NULL,cir = TRUE, intfun = morrisCI, conf = 0.9,seqDesign=FALSE,...)
+deltaInverse<-function(y,x=NULL,wt=NULL,target=NULL,cir = TRUE, intfun = morrisCI, conf = 0.9,seqDesign=FALSE,parabola=FALSE,...)
 {
 dr=doseResponse(y,x,wt)
+k=length(target)
 # We start by constructing inverse intervals based on design-point estimates
 forward=quickIsotone(dr,outx=NULL,conf=conf,intfun=intfun,seqDesign=seqDesign,cir=cir,...)
+forward$y=round(forward$y,10) ### avoid rounding errors from PAVA
 yvals=sort(unique(forward$y))
-if(length(yvals)==1) return(NA) ## degenerate case, completely flat
+#cat(yvals)
+if(length(yvals)==1 || var(yvals)<.Machine$double.eps*1e3) return(cbind(rep(NA,k),rep(NA,k))) ## degenerate case, completely flat
 fslopes=slope(dr$x,forward$y)
 
 # inverse widths raw
@@ -91,9 +94,16 @@ designCIs=cbind(lbounds,rbounds)[match(forward$y,yvals),]
 
 if (is.null(target)) return(designCIs)
 
-lout=approx(yvals,lbounds,xout=target,rule=1)$y
-rout=approx(yvals,rbounds,xout=target,rule=1)$y
-
+if(parabola) {  ### direction chosen by trial & error...
+	good=(target>=min(yvals) & target<=max(yvals))
+	lout=rep(NA,k)
+	rout=lout
+	lout[good]=parapolate(yvals,lbounds,xout=target[good],upward=TRUE)
+	rout[good]=parapolate(yvals,rbounds,xout=target[good],upward=FALSE)
+} else {
+	lout=approx(yvals,lbounds,xout=target,rule=1)$y
+	rout=approx(yvals,rbounds,xout=target,rule=1)$y
+}
 return(cbind(lout,rout))
 }
 

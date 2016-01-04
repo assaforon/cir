@@ -148,7 +148,7 @@ if (!full) {
 #' @param seqDesign logical, should intervals be further widened using a simple adjustment for the data having been obtained via a sequential (adaptive) design? Default \code{FALSE} due to futility.
 #' @param ...	arguments passed on to other functions (constructor, point estimate and interval estimate).
 
-quickIsotone<-function (y,x=NULL,wt=rep(1,length(y)),outx=NULL,dec=FALSE,cir=TRUE,intfun=morrisCI,conf=0.9,seqDesign=FALSE,...) 
+quickIsotone<-function (y,x=NULL,wt=rep(1,length(y)),outx=NULL,dec=FALSE,cir=TRUE,intfun=morrisCI,conf=0.9,seqDesign=FALSE,parabola=FALSE,...) 
 {
 dr=doseResponse(y=y,x=x,wt=wt,...)
 if(is.null(outx)) outx=dr$x
@@ -157,7 +157,7 @@ if (cir) {
 	pestimate=cirPAVA(y=dr,dec=dec,full=TRUE,...)
 } else pestimate=oldPAVA(y=dr,dec=dec,full=TRUE,...)
 
-cestimate=isotInterval(pestimate$output,conf=conf,intfun=intfun,outx=outx,sequential=seqDesign,...)
+cestimate=isotInterval(pestimate$output,conf=conf,intfun=intfun,outx=outx,sequential=seqDesign,parabola=parabola,...)
 
 if(all(outx %in% dr$x)) 
 {
