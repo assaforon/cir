@@ -18,11 +18,11 @@
 #' @param outx vector of x values for which estimates will be made. If \code{NULL} (default), this will be set to the set of unique values in isotPoint$x argument (or equivalently in y$x).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param intfun the function to be used for interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
-#' @param sequential logical, should a rough accounting for the added randomness due to the use of a sequential dose-finding design? Default \code{FALSE} due to little benefit.
-#' @param parabola logical, should the interpolation between design points follow a parabola (\code{TRUE}, default) or a straight line? See details.
+#' @param sequential logical, should a rough accounting for the added randomness due to the use of a sequential dose-finding design? Default \code{FALSE}.
+#' @param parabola logical, should the interpolation between design points follow a parabola (\code{TRUE}) or a straight line (\code{FALSE}, default)? See details.
 #' @param ... additional arguments passed on to \code{intfun}
 
-isotInterval<-function(isotPoint,outx=isotPoint$x,conf=0.9,intfun=morrisCI,sequential=FALSE,parabola=TRUE,...)
+isotInterval<-function(isotPoint,outx=isotPoint$x,conf=0.9,intfun=morrisCI,sequential=FALSE,parabola=FALSE,...)
 {
 ## Validation
 if(conf<=0 || conf>=1) stop("Confidence must be between 0 and 1.\n")
@@ -58,7 +58,7 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 
 #' Calculate left-bound to right-bound intervals for the dose point estimates, using local slopes at design points (places where observations exist) to invert the forward lower-upper bounds.
 
-#' The Delta method in this application boils down to dividing the distance to the forward (vertical) bounds by the slope. Slope estimates are subcontracted to \code{\link{slope}}.  
+#' The Delta method in this application boils down to dividing the distance to the forward (vertical) bounds, by the slope, to get the left/right interval width. Slope estimates are performed by \code{\link{slope}}. An alternative method (dubbed "global") is hard-coded into \code{\link{quickInverse}}. 
 
 #' @return two-column matrix with the left and right bounds, respectively
 
@@ -67,8 +67,14 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' @param wt weights (if not included in y).
 #' @param target A vector of target response rate(s), for which the interval is needed. If \code{NULL} (default), interval will be returned for the point estimates at design points (e.g., if the forward point estimate at $x_1$ is 0.2, then the first returned interval is for the 20th percentile).
 #' @param cir logical, is centered-isotonic-regression (CIR) to be used? If \code{FALSE}, traditional isotonic regression is used. Default \code{TRUE}.
-#' @param intfun the function to be used for interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
+#' @param intfun the function to be used for initial (forward) interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
+#' @param seqDesign logical, should a rough accounting for the added randomness due to the use of a sequential dose-finding design? Default \code{FALSE}.
+#' @param parabola logical, should the interpolation between design points follow a parabola (\code{TRUE}) or a straight line (\code{FALSE}, default)? See details.
+#' @param ... additional arguments passed on to \code{\link{quickIsotone}}
+
+#' @seealso \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{isotInterval}},\code{\link{slope}}
+
 
 #' @export
 

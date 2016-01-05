@@ -101,7 +101,9 @@ return(list(a=a,b=b,c=cee,outdat=data.frame(x=xout,y=yout)))
 #####################
 #' Piecewise-linear local slopes given a (non-strictly) monotone x-y sequence
 
+#' Estimate monotone piecewise-linear slopes, with the default behavior forbidding zero slope. This behavior is due to the fact that the function is used to invert confidence intervals using the Delta method. The input interval has to be strictly increasing in \code{x}, and (non-strictly) monotone in \code{y} (increasing or decreasing).
 
+#' At design points (i.e., the input \code{x} values), the function takes the average between the left and right slopes (on the edges the inside slope is technically replicated to the outside). If \code{allowZero=FALSE} (default), the algorithm gradually expands the x range over which slope is observed (by increments of one average \code{x} spacing), until a positive slope results. If the input is completely flat in \code{y} and \code{allowZero=FALSE}, the function returns \code{NA}s. 
 
 #' @param x numeric or integer: input x values, must be strictly increasing
 #' @param y numeric: input y values, must be monotone (can be non-strict) and in line with the direction specified by \code{decreasing}
@@ -111,8 +113,9 @@ return(list(a=a,b=b,c=cee,outdat=data.frame(x=xout,y=yout)))
 #' @param decreasing logical: is input supposed to be monotone decreasing rather than increasing? Default \code{FALSE}
 
 #' @return If \code{full=FALSE}, returns a vector of slopes at the points specified by \code{outx}. 
-#' @return If \code{full=TRUE}, returns a list with slopes at the design point (\code{rawslopes}), the initial guess at output slopes (\code{scrappy}), and the official final ones (\code{clean}). 
+#' @return If \code{full=TRUE}, returns a list with slopes at the design point (\code{rawslopes}), the initial guess at output slopes (\code{initial}), and the official final ones (\code{final}). 
 
+#' @seealso \code{\link{deltaInverse}}, which uses this function.
 #' @export
 
 slope<-function(x,y,outx=x,allowZero=FALSE,full=FALSE,decreasing=FALSE,minimal=0.01)
