@@ -116,9 +116,9 @@ if (!full) {
 }
 
 #'
-#' One-Step Forward point and interval estimation via CIR or IR
+#' One-Stop-shop Forward point and interval estimation via CIR or IR
 #'
-#' One-Step Forward point and confidence-interval estimation of a monotone response (y) as a function of dose (x), using centered-isotonic-regression (CIR, default) or isotonic regression. Input format is rather flexible.
+#' One-Stop-shop Forward point and confidence-interval estimation of a monotone response (y) as a function of dose (x), using centered-isotonic-regression (CIR, default) or isotonic regression. Input format is rather flexible.
 
 #' This function calls either \code{\link{cirPAVA}} or \code{\link{oldPAVA}} for the point estimate, then \code{\link{isotInterval}} for the confidence interval. Vector input is allowed, but the preferred input format is a \code{\link{doseResponse}} object.
 
@@ -135,27 +135,28 @@ if (!full) {
 #' \item {\code{lowerPPconf,upperPPconf}  }  { the interval-boundary estimates for a 'PP'=\code{100*conf} confidence interval}
 #' }
 #'  
-#' @seealso \code{\link{cirPAVA}},\code{\link{oldPAVA}},\code{\link{isotInterval}},\code{\link{quickInverse}},\code{\link{doseResponse}}
+#' @seealso \code{\link{cirPAVA}},\code{\link{oldPAVA}},\link{iterCIR}},\code{\link{isotInterval}},\code{\link{quickInverse}},\code{\link{doseResponse}}
 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
 #' @param x dose levels (if not included in y). Note that the PAV algorithm doesn't really use them. 
 #' @param wt weights (if not included in y).
 #' @param outx vector of x values for which predictions will be made. If \code{NULL} (default), this will be set to the set of unique values in the \code{x} argument (or equivalently in \code{y$x}).
 #' @param dec logical, is the true function assumed to be monotone decreasing rather than increasing? Default \code{FALSE}.
-#' @param cir logical, is centered-isotonic-regression (CIR) to be used? If \code{FALSE}, traditional isotonic regression is used. Default \code{TRUE}.
+#' @param estfun the function to be used for point estimation. Default \code{\link{cirPAVA}}.
 #' @param intfun the function to be used for interval estimation. Default \code{\link{wilsonCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param seqDesign logical, should intervals be further widened using a simple adjustment for the data having been obtained via a sequential (adaptive) design? Default \code{FALSE} due to futility.
 #' @param ...	arguments passed on to other functions (constructor, point estimate and interval estimate).
 
-quickIsotone<-function (y,x=NULL,wt=rep(1,length(y)),outx=NULL,dec=FALSE,cir=TRUE,intfun=morrisCI,conf=0.9,seqDesign=FALSE,parabola=FALSE,...) 
+quickIsotone<-function (y,x=NULL,wt=rep(1,length(y)),outx=NULL,dec=FALSE,estfun=cirPAVA,intfun=morrisCI,conf=0.9,seqDesign=FALSE,parabola=FALSE,...) 
 {
 dr=doseResponse(y=y,x=x,wt=wt,...)
 if(is.null(outx)) outx=dr$x
 
-if (cir) {
-	pestimate=cirPAVA(y=dr,dec=dec,full=TRUE,...)
-} else pestimate=oldPAVA(y=dr,dec=dec,full=TRUE,...)
+pestimate=estfun(y=dr,dec=dec,full=TRUE,...)
+#if (cir) {
+#a	pestimate=cirPAVA(y=dr,dec=dec,full=TRUE,...)
+#} else pestimate=oldPAVA(y=dr,dec=dec,full=TRUE,...)
 
 cestimate=isotInterval(pestimate$output,conf=conf,intfun=intfun,outx=outx,sequential=seqDesign,parabola=parabola,...)
 
