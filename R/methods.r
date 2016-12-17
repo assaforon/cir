@@ -1,7 +1,7 @@
-#' Methods for DRtrace and doseResponse classes
+#' PLotting Methods for DRtrace, doseResponse Objects
 #'
 #'
-#' Plotting methods for \code{\link{doseResponse}}, \code{\link{DRtrace}} classes.
+#' Plotting methods for \code{\link{doseResponse}} and \code{\link{DRtrace}} classes.
 #'
 #'
 #' Generic methods for dose-response trajectory/trace (\code{\link{DRtrace}}), and dose-response summary  (\code{\link{doseResponse}}) class objects. 
@@ -18,9 +18,10 @@
 #' @param ...	Other arguments passed on to \code{\link{plot}}. 
 
 ##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}	  
+#' @example inst/examples/classExamples.r
 #' @export
 
-plot.DRtrace<-function(dr,xlab="Patient",ylab="Dose",...) {
+plot.DRtrace<-function(dr,xlab="Patient Order",ylab="Dose",...) {
 
 n=dim(dr)[1]
 plot(dr$x,pch=ifelse(dr$y==1,16,1),type="b",xaxt="n",yaxt="n",xlab=xlab,ylab=ylab,...)

@@ -1,4 +1,5 @@
 
+##' @rdname DRtrace
 #' @export
 
 is.DRtrace<-function(dr)
@@ -10,7 +11,7 @@ if(!all(sapply(dr[,c("x","y","weight")],is.numeric))) return(FALSE)
 if(any(dr$weight<0)) return(FALSE)
 return(TRUE)
 }
-
+##' @rdname DRtrace
 #' @export
 
 is.doseResponse<-function(dr)
@@ -33,12 +34,14 @@ return(TRUE)
 #' @aliases doseResponse is.doseResponse is.DRtrace
 ##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
 ##' 
+#' @example inst/examples/classExamples.r
 ##' @seealso \code{\link{cirPAVA}}, \code{\link{plot.doseResponse}},\code{\link{plot.DRtrace}} 
 
 #' @param y,x,wt  see help to \code{\link{cirPAVA}}.
 #' @param noyes logical, in case of a 2-column input is the 1st column 'no'? Default \code{FALSE}, meaning the 1st column is 'yes'.
 #' @param dr the object being checked
 #' @return For constructor functions, the relevant object. For checking functions, a logical value indicating whether the object meets class definition.
+#' @export
 
 DRtrace<-function(y,x=NULL,wt=NULL,noyes=FALSE)
 {
@@ -83,10 +86,10 @@ doseResponse<-function(y,x=NULL,wt=rep(1,length(y)),...)
 {
 if(is.doseResponse(y)) return(y)
 
-#if(is.null(x)) x=1:length(y)
+if(is.null(x)) x=1:length(y)
 
 
-if(is.null(x) || any(duplicated(x)) || any(diff(x)<0))  # Cases for doing DRtrace first
+if(any(duplicated(x)) || any(diff(x)<0))  # Cases for doing DRtrace first
 {
 	z<-suppressWarnings(DRtrace(y=y,x=x,wt=wt,...))
 	tout<-data.frame(x=sort(unique(z$x)),y=tapply(z$y,z$x,mean),weight=tapply(z$weight,z$x,sum))
