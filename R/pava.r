@@ -22,7 +22,7 @@
 #' @param dec logical, is the true function is assumed to be monotone decreasing? Default \code{FALSE}.
 #' @param ...	Other arguments passed on to the constructor functions that pre-process the input.
 
-#' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects named \code{output,input,alg} for the output data at dose levels, the input data, and the function as fit at algorithm-generated points, respectively. For this function, the first and third objects are identical.
+#' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects named \code{output,input,shrinkage} for the output data at dose levels, the input data, and the function as fit at algorithm-generated points, respectively. For this function, the first and third objects are identical.
 
 #' @seealso \code{\link{cirPAVA}}
 #' @export
@@ -45,7 +45,7 @@ if(min(outx)<min(dr$x) || max(outx)>max(dr$x)) stop("Cannot predict outside desi
 m <- dim(dr)[1]
 if (m <= 1) {  ## degenerate case: only one dose level
 if (!full) return (dr$y)
-else return(list(output=dr,input=dr,alg=dr))
+else return(list(output=dr,input=dr,shrinkage=dr))
 }
 
 
@@ -82,5 +82,5 @@ if (!full) {
 		dr1$y=outy
 		dr1=dr1[match(outx,dr1$x),]
 	} else dr1=doseResponse(y=outy,x=outx,wt=rep(0,length(outy)))
-	return(list(output=dr1,input=dr0,alg=dr))   }
+	return(list(output=dr1,input=dr0,shrinkage=dr))   }
 }

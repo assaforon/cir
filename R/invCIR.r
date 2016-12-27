@@ -48,14 +48,13 @@ if (any(is.na(dr))) stop ("Missing values are not allowed.\n")
 
 pavout<-estfun(y=dr,full=TRUE,dec=dec,...)
 
-newx<-pavout$alg$x
-newy<-pavout$alg$y
-newn=pavout$alg.wt
+newx<-pavout$shrinkage$x
+newy<-pavout$shrinkage$y
 # Degenerate case
 if(min(newy)==max(newy))
 {
 	if(errOnFlat) stop("Cannot dose-find; curve completely flat.\n")
-	if(full) return (list(targest=NA,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
+	if(full) return (list(targest=NA,input=dr,fwd=pavout$shrinkage,fwdDesign=pavout$output))
 	return(rep(NA,length(target)))
 }
 
@@ -77,7 +76,7 @@ if(any(is.na(tout)) && extrapolate)
 
 if (!full)  return(tout) 
 
-return (list(targest=tout,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
+return (list(targest=tout,input=dr,fwd=pavout$shrinkage,fwdDesign=pavout$output))
 }
 
 #' Point and Interval Inverse Estimation ("Dose-Finding"), using CIR and IR
@@ -94,7 +93,7 @@ return (list(targest=tout,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
 #' @param x dose levels (if not included in y). 
 #' @param wt weights (if not included in y).
 #' @param target A vector of target response rate(s), for which the percentile dose estimate is needed.
-#' #' @param cir logical, is centered-isotonic-regression (CIR) to be used? If \code{FALSE}, traditional isotonic regression is used. Default \code{TRUE}.
+#' @param estfun the function to be used for point estimation. Default \code{\link{cirPAVA}}.
 #' @param intfun the function to be used for interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
 #' @param delta logical: should intervals be calculated using the delta ("local") method (default, \code{TRUE}) or back-drawn directly from the forward bounds? See Details.
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
@@ -115,13 +114,12 @@ return (list(targest=tout,input=dr,fwd=pavout$alg,fwdDesign=pavout$output))
 #' @seealso \code{\link{quickIsotone}},\code{\link{doseFind}},\code{\link{isotInterval}}
 #' @export
 
-quickInverse<-function(y,x=NULL,wt=NULL,target,cir = TRUE, intfun = morrisCI,delta=TRUE,conf = 0.9,resolution=100,xbounds=NULL,extrapolate=FALSE,seqDesign=FALSE,parabola=FALSE,...)
+quickInverse<-function(y,x=NULL,wt=NULL,target,estfun=cirPAVA, intfun = morrisCI,delta=TRUE,conf = 0.9,resolution=100,xbounds=NULL,extrapolate=FALSE,seqDesign=FALSE,parabola=FALSE,...)
 {
 
 #### Point estimate first
 dr=doseResponse(y,x,wt)
 m=length(dr$x)
-if(cir) estfun<-cirPAVA else estfun<-oldPAVA
 pestimate=doseFind(y=dr,estfun=estfun,target=target,full=TRUE,extrapolate=extrapolate,...)
 dout=data.frame(target=target,point=pestimate$targest,low=-Inf,high=Inf)
 if(all(is.na(pestimate$targest)))

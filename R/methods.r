@@ -14,6 +14,7 @@
 #' @param dr 	the object, whether DRtrace or doseResponse
 #' @param xlab,ylab		x-axis and y-axis labels passed on to \code{\link{plot}}
 #' @param pch	the plotting character (doseResponse only), the default being 'X' marks
+#' @param varsize 	(doseResponse only) logical, should symbol size vary by sample size? Default \code{TRUE}
 #' @param refsize 	(doseResponse only) a reference size by which the plotting sizes will be divided. Larger values make the symbols smaller. Default is \code{mean(dr$weight)}.
 #' @param ...	Other arguments passed on to \code{\link{plot}}. 
 
@@ -33,8 +34,9 @@ axis(2,at=sort(unique(dr$x)))
 #############
 ##' @rdname plot.DRtrace
 #' @export
-plot.doseResponse<-function(dr,xlab="Dose",ylab="Response",pch='X',refsize=mean(dr$weight),...) {
-
-plot(y~x,data=dr,pch=pch,xlab=xlab,ylab=ylab,cex=sqrt(dr$weight/refsize),xaxt='n',...)
+plot.doseResponse<-function(dr,xlab="Dose",ylab="Response",pch='X',varsize=TRUE,refsize=mean(dr$weight),...) {
+cexy=refsize
+if(varsize) cexy=sqrt(dr$weight/refsize)
+plot(y~x,data=dr,pch=pch,xlab=xlab,ylab=ylab,cex=cexy,xaxt='n',...)
 axis(1,at=sort(unique(dr$x)))
 }

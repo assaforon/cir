@@ -13,6 +13,7 @@
 #' @references Oron, A., Hoff, P., 2013. Small-sample behavior of novel Phase I cancer trial designs. Clinical Trials, 63-80.
 
 ##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
+#' @example inst/examples/cirExamples.r
 
 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
@@ -26,7 +27,7 @@
 #' @param ybounds numeric vector of length 2, relevant only under the default setting of \code{strict=FALSE,interiorStrict=TRUE}. Default \code{0:1}. See 'Details'.
 #' @param ...	Other arguments passed on to the constructor functions that pre-process the input.
 
-#' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects name \code{output,input,alg} for the output data at dose levels, the input data, and the function as fit at algorithm-generated points, respectively.
+#' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects name \code{output,input,shrinkage} for the output data at dose levels, the input data, and the function as fit at algorithm-generated shrinkage points, respectively.
 
 #' @seealso \code{\link{oldPAVA}},\code{\link{quickIsotone}}
 #' @export
@@ -49,7 +50,7 @@ if(strict && !interiorStrict) warning("strict=TRUE overrides interiorStrict=FALS
 m <- dim(dr)[1]
 if (m <= 1) {  ## degenerate case: only one dose level
 if (!full) return (dr$y)
-else return(list(output=dr,input=dr,alg=dr))
+else return(list(output=dr,input=dr,shrinkage=dr))
 }
 
 
@@ -112,7 +113,7 @@ if (!full) {
 		dr1$y=outy
 		dr1=dr1[match(outx,dr1$x),]
 	} else dr1=doseResponse(y=outy,x=outx,wt=rep(0,length(outy)))
-	return(list(output=dr1,input=dr0,alg=dr))   }
+	return(list(output=dr1,input=dr0,shrinkage=dr))   }
 }
 
 #'
@@ -126,6 +127,7 @@ if (!full) {
 #'
 #'
 ##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
+#' @example inst/examples/cirExamples.r
 #' @export
 
 #' @return A data frame with 4 variables:  
@@ -135,7 +137,7 @@ if (!full) {
 #' \item {\code{lowerPPconf,upperPPconf}  }  { the interval-boundary estimates for a 'PP'=\code{100*conf} confidence interval}
 #' }
 #'  
-#' @seealso \code{\link{cirPAVA}},\code{\link{oldPAVA}},\link{iterCIR}},\code{\link{isotInterval}},\code{\link{quickInverse}},\code{\link{doseResponse}}
+#' @seealso \code{\link{cirPAVA}},\code{\link{oldPAVA}},\code{\link{isotInterval}},\code{\link{quickInverse}},\code{\link{doseResponse}}
 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
 #' @param x dose levels (if not included in y). Note that the PAV algorithm doesn't really use them. 
@@ -165,7 +167,7 @@ if(all(outx %in% dr$x))
 	dout=cbind(pestimate$output[match(outx,pestimate$output$x),1:2],cestimate)
 } else
 {
-	dout=data.frame(x=outx,y=approx(pestimate$output$x,pestimate$output$y,xout=outx)$y,low=cestimate[,1],hi=cestimate[,2])
+	dout=data.frame(x=outx,y=approx(pestimate$shrinkage$x,pestimate$shrinkage$y,xout=outx)$y,low=cestimate[,1],hi=cestimate[,2])
 }
 names(dout)[3:4]=paste(c("lower","upper"),round(100*conf),"conf",sep="")
 return(dout)
