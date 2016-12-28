@@ -121,7 +121,7 @@ if (!full) {
 #'
 #' One-Stop-shop Forward point and confidence-interval estimation of a monotone response (y) as a function of dose (x), using centered-isotonic-regression (CIR, default) or isotonic regression. Input format is rather flexible.
 
-#' This function calls either \code{\link{cirPAVA}} or \code{\link{oldPAVA}} for the point estimate, then \code{\link{isotInterval}} for the confidence interval. Vector input is allowed, but the preferred input format is a \code{\link{doseResponse}} object.
+#' This function calls \code{\link{cirPAVA}}, \code{\link{oldPAVA}}, \code{\link{iterCIR}} (speculatively), or a user-written function, for the point estimate, then \code{\link{isotInterval}} for the confidence interval. Vector input is allowed, but the preferred input format is a \code{\link{doseResponse}} object.
 
 #' An analogous function for dose-finding (inverse estimation) is \code{\link{quickInverse}}.
 #'
@@ -138,6 +138,7 @@ if (!full) {
 #' }
 #'  
 #' @seealso \code{\link{cirPAVA}},\code{\link{oldPAVA}},\code{\link{isotInterval}},\code{\link{quickInverse}},\code{\link{doseResponse}}
+#' @note You can obtain interpolated point estimates for x values between the observed data by specifying them via \code{outx}. However, for CIR, do NOT commit the error of generating estimates at observations, then interpolating using \code{\link{approx}}. If you need to retain a set of estimates for plotting the entire fitted curve, or for future interpolation at unknown points, call \code{\link{cirPAVA}} directly with \code{full=TRUE}, then use the returned \code{shrinkage} data frame for plotting and interpolation. See example code below.
 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
 #' @param x dose levels (if not included in y). Note that the PAV algorithm doesn't really use them. 

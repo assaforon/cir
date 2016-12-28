@@ -7,6 +7,7 @@
 
 #' @aliases agcouCI jeffCI
 #' @seealso \code{\link{isotInterval}} for more details about how forward CIs are calculated, \code{\link{quickInverse}} for inverse (dose-finding) intervals.
+#' @example inst/examples/fwdCiExamples.r
 #' @export
 
 #' @return A two-column matrix with the same number of rows as \code{length(phat)}, containing the calculated lower and upper bounds, respectively.
@@ -100,9 +101,11 @@ return(list(a=a,b=b,c=cee,outdat=data.frame(x=xout,y=yout)))
 
 #####################
 #' Piecewise-linear local slopes given a (non-strictly) monotone x-y sequence
-
+#'
+#'
 #' Estimate monotone piecewise-linear slopes, with the default behavior forbidding zero slope. This behavior is due to the fact that the function is used to invert confidence intervals using the Delta method. The input interval has to be strictly increasing in \code{x}, and (non-strictly) monotone in \code{y} (increasing or decreasing).
-
+#'
+#'
 #' At design points (i.e., the input \code{x} values), the function takes the average between the left and right slopes (on the edges the inside slope is technically replicated to the outside). If \code{allowZero=FALSE} (default), the algorithm gradually expands the x range over which slope is observed (by increments of one average \code{x} spacing), until a positive slope results. If the input is completely flat in \code{y} and \code{allowZero=FALSE}, the function returns \code{NA}s. 
 
 #' @param x numeric or integer: input x values, must be strictly increasing

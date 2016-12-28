@@ -1,13 +1,12 @@
 ##' Returns analytic interval estimates, given isotonic-regression (centered or not) point estimates
 #'
 #'
-#' For confidence intervals at design points ($x$ values with obesrvations), this function calls \code{intfun} to do the work. In addition, CIs for any $x$ value are calculated. Naively, one would do a linear interpolation just like with the point estimate. However, between observations the uncertainty is greater, and it can also be generally assumed that the curve is nonlinear. Therefore, a piecewise-convex (for the LCL) or piecewise-concave (for the UCL) confidence band seems in order, analogous to the curvilinear bands of linear regression. 
+#' For confidence intervals at design points ($x$ values with obesrvations), this function calls \code{intfun} to do the work. In addition, CIs for any $x$ value are calculated using linear interpolation between design points (note that for CIR, this differs from the interpolation of point estimates which is carried out between shrinkage points, as explained in \code{\link{quickIsotone}})
 #' 
-#' The solution used was chosen because it does not require tuning parameters, while maintaining monotonicity. Each segment is a parabola whose slope becomes zero at one endpoint. The requirement of maintaining convexity/concavity for LCL/UCL determines that endpoint. This is implemented via the internal function \code{parapolate}
-#' 
-#' @note All provided algorithm and formulae are for Binomial data only. For other data, write your own \code{intfun}, returning a two-column matrix. Also, interval estimate for dose-finding (inverse estimation) is only available via the \code{\link{quickInverse}} function. That function calls \code{isotInterval} and then reads the inverse interval "horizontally". See details there.
+#' @note All provided algorithm and formulae are for Binomial data only. For other data, write your own \code{intfun}, returning a two-column matrix. 
 #'
 #' @seealso \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{morrisCI}},
+#' @example inst/examples/fwdCiExamples.r
 #'
 ##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
 #' @export
@@ -19,7 +18,7 @@
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param intfun the function to be used for interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
 #' @param sequential logical, should a rough accounting for the added randomness due to the use of a sequential dose-finding design? Default \code{FALSE}.
-#' @param parabola logical, should the interpolation between design points follow a parabola (\code{TRUE}) or a straight line (\code{FALSE}, default)? See details.
+#' @param parabola logical, should the interpolation between design points follow a parabola (\code{TRUE}) to be more conservative, or a straight line (\code{FALSE})? The latter is the default, since these CIs tend to be conservative already.
 #' @param ... additional arguments passed on to \code{intfun}
 
 isotInterval<-function(isotPoint,outx=isotPoint$x,conf=0.9,intfun=morrisCI,sequential=FALSE,parabola=FALSE,...)
@@ -55,9 +54,11 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 ####################### Inverse
 
 #' Calculate inverse (dose-finding) intervals, using local inversion and the Delta method
-
+#'
+#'
 #' Calculate left-bound to right-bound intervals for the dose point estimates, using local slopes at design points (places where observations exist) to invert the forward lower-upper bounds.
-
+#'
+#'
 #' The Delta method in this application boils down to dividing the distance to the forward (vertical) bounds, by the slope, to get the left/right interval width. Slope estimates are performed by \code{\link{slope}}. An alternative method (dubbed "global") is hard-coded into \code{\link{quickInverse}}. 
 
 #' @return two-column matrix with the left and right bounds, respectively
@@ -66,7 +67,7 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' @param x dose levels (if not included in y). 
 #' @param wt weights (if not included in y).
 #' @param target A vector of target response rate(s), for which the interval is needed. If \code{NULL} (default), interval will be returned for the point estimates at design points (e.g., if the forward point estimate at $x_1$ is 0.2, then the first returned interval is for the 20th percentile).
-#' @param cir logical, is centered-isotonic-regression (CIR) to be used? If \code{FALSE}, traditional isotonic regression is used. Default \code{TRUE}.
+#' @param estfun the function to be used for point estimation. Default \code{\link{cirPAVA}}.
 #' @param intfun the function to be used for initial (forward) interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param seqDesign logical, should a rough accounting for the added randomness due to the use of a sequential dose-finding design? Default \code{FALSE}.
@@ -74,16 +75,17 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' @param ... additional arguments passed on to \code{\link{quickIsotone}}
 
 #' @seealso \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{isotInterval}},\code{\link{slope}}
+#' @example inst/examples/invCiExamples.r
 
 
 #' @export
 
-deltaInverse<-function(y,x=NULL,wt=NULL,target=NULL,cir = TRUE, intfun = morrisCI, conf = 0.9,seqDesign=FALSE,parabola=FALSE,...)
+deltaInverse<-function(y,x=NULL,wt=NULL,target=NULL,estfun=cirPAVA, intfun = morrisCI, conf = 0.9,seqDesign=FALSE,parabola=FALSE,...)
 {
 dr=doseResponse(y,x,wt)
 k=length(target)
 # We start by constructing inverse intervals based on design-point estimates
-forward=quickIsotone(dr,outx=NULL,conf=conf,intfun=intfun,seqDesign=seqDesign,cir=cir,...)
+forward=quickIsotone(dr,outx=NULL,conf=conf,intfun=intfun,seqDesign=seqDesign,estfun=estfun,...)
 forward$y=round(forward$y,10) ### avoid rounding errors from PAVA
 yvals=sort(unique(forward$y))
 #cat(yvals)
