@@ -1,15 +1,16 @@
-##' Returns analytic interval estimates, given isotonic-regression (centered or not) point estimates
+##' Returns analytical interval estimates, given isotonic-regression (centered or not) point estimates
 #'
 #'
 #' For confidence intervals at design points ($x$ values with obesrvations), this function calls \code{intfun} to do the work. In addition, CIs for any $x$ value are calculated using linear interpolation between design points (note that for CIR, this differs from the interpolation of point estimates which is carried out between shrinkage points, as explained in \code{\link{quickIsotone}})
 #' 
-#' @note All provided algorithm and formulae are for Binomial data only. For other data, write your own \code{intfun}, returning a two-column matrix. 
+#' @note All provided algorithm and formulae are for Binomial data only. For other data, write your own \code{intfun}, returning a two-column matrix. The interval estimation method is presented and discussed by Oron and Flournoy (2017).
 #'
 #' @seealso \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{morrisCI}},
 #' @example inst/examples/fwdCiExamples.r
 #'
 ##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
 #' @export
+#' @references Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Statistics in Biopharmaceutical Research, In Press (author's public version available on arxiv.org).
 
 #' @return a data frame with two variables \code{ciLow, ciHigh} containing the estimated lower and upper confidence bounds, respectively.
 #' 

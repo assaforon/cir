@@ -8,10 +8,11 @@
 #'  weights 'wt', with respect to simple order. The core algorithm is still the one
 #' coded by R.F. Raubertas, dated 02 Sep 1994. However, the input and output modules have been
 #' modified to allow more flexible formats in either direction.
-#' note that unlike centered-isotonic-regression (CIR, see \code{\link{cirPAVA}}), this algorithm does not use the dose (x) values at all. 
+#' note that unlike centered-isotonic-regression (CIR, see \code{\link{cirPAVA}}), this algorithm does not use the dose (x) values at all. For a discussion why CIR is preferred over "plain-vanilla" PAVA, see Oron and Flournoy (2017).
  
 #  
 ##' @author C.R. Raubertas, Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
+#' @references Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Statistics in Biopharmaceutical Research, In Press (author's public version available on arxiv.org).
 
 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
