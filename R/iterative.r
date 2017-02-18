@@ -2,10 +2,12 @@
 #'
 #'
 #' EXPERIMENTAL: Nonparametric forward point estimation of a monotone response (y) as a function of dose (x), using an iterative version of the centered-isotonic-regression (CIR) algorithm. The code works, but delivers marginal improvement at greater computational cost (an issue if you simulate a large ensemble), and somewhat convoluted interpretation. Use at your own risk.
-
+#' For explanation, see Oron and Flournoy (2017), Section 3.2.
+#' 
 #' @param y See \code{\link{cirPAVA}}
 #' @param outx vector of x values for which predictions will be made. If \code{NULL} (default), this will be set to the set of unique values in the \code{x} argument (or equivalently in \code{y$x}).
-#' @param tol The iteration's convergence tolerance level (default 1e-3.)
+#' @param tol The iteration's convergence tolerance level (default 1e-3)
+#' @param maxit integer, maximum number of iterations (default 10)
 #' @param full logical, is a more complete output desired? if \code{FALSE} (default), only a vector of point estimates for y at the provided dose levels is returned
 #' @param ...	Other arguments passed on to \code{\link{cirPAVA}}
 

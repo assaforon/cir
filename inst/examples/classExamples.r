@@ -1,5 +1,5 @@
 ## Summary of raw data from the notorious Neuenschwander et al. (Stat. Med., 2008) trial
-neundatTrace=DRtrace(x=c(rep(1:4,each=4),7,7,rep(6,9)),y=c(rep(0,16),1,1,rep(c(0,0,1),2),0,0,0)))
+neundatTrace=DRtrace(x=c(rep(1:4,each=4),7,7,rep(6,9)),y=c(rep(0,16),1,1,rep(c(0,0,1),2),0,0,0))
 par(mar=c(3,3,3,1),mgp=c(2,.5,0),tcl=-0.25)
 layout(t(1:2))
 plot(neundatTrace,main="N. et al. (2008) Cohort Trace",ylab="Ordinal Dose Level",cex.main=1.5)

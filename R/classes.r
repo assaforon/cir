@@ -40,6 +40,8 @@ return(TRUE)
 #' @param y,x,wt  see help to \code{\link{cirPAVA}}.
 #' @param noyes logical, in case of a 2-column input is the 1st column 'no'? Default \code{FALSE}, meaning the 1st column is 'yes'.
 #' @param dr the object being checked
+#' @param ... (\code{doseResponse()} only) parameters passed on to \code{DRtrace()}
+#' 
 #' @return For constructor functions, the relevant object. For checking functions, a logical value indicating whether the object meets class definition.
 #' @export
 

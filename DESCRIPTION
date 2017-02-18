@@ -1,8 +1,8 @@
 Package: cir
 Type: Package
 Title: Centered-Isotonic-Regression and Dose-Response utilities
-Version: 1.1.0
-Date: 2014-08-13
+Version: 2.0.0
+Date: 2017-02-15
 Description: Isotonic regression, as well as a great small-sample tweak called
     CIR, and interval estimates for both.
 License: GPL-2
