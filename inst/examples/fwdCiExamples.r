@@ -31,7 +31,11 @@ lines(int2$ciLow,lty=2,col=3)
 lines(int2$ciHigh,lty=2,col=3) 
 # Plotting the remaining 2 is skipped, as they are very similar to Wilson.
 
-# Note how the default (red) boundaries take the tighter of the two options everywhere, except for one place (dose 1 upper bound) where they go even tighter thanks to monotonicity enforcement. This can often happen when sample size is uneven; since bounds tend to be conservative it is rather safe to do.
+# Note how the default (red) boundaries take the tighter of the two options everywhere, 
+# except for one place (dose 1 upper bound) where they go even tighter thanks to monotonicity 
+# enforcement. This can often happen when sample size is uneven; since bounds tend to be 
+# conservative it is rather safe to do.
 
-legend('topleft',pch=c(NA,'X',NA,NA,NA),lty=c(1,NA,2,2,2),col=c(4,1,2,1,3),lwd=c(1,1,2,1,1),legend=c('True Curve','Observations','Morris+Wilson (default)','Morris only','Wilson only'),bty='n')
+legend('topleft',pch=c(NA,'X',NA,NA,NA),lty=c(1,NA,2,2,2),col=c(4,1,2,1,3),lwd=c(1,1,2,1,1),legend
+=c('True Curve','Observations','Morris+Wilson (default)','Morris only','Wilson only'),bty='n')
 

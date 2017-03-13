@@ -6,7 +6,8 @@ plot(neundatTrace,main="N. et al. (2008) Cohort Trace",ylab="Ordinal Dose Level"
 
 ## Same data, in 'doseResponse' format with actual doses rather than dose levels
 neundatDose=doseResponse(x=c(1,2.5,5,10,20,25),y=c(rep(0,4),2/9,1),wt=c(3,4,5,4,9,2))
-plot(neundatDose,main="N. et al. (2008) Final Dose-Toxicity",ylim=c(0,1),xlab="Dose (mg/sq.m./wk)",ylab="Toxicity Response Curve (F)",cex.main=1.5)
+plot(neundatDose,main="N. et al. (2008) Final Dose-Toxicity",ylim=c(0,1),
+	xlab="Dose (mg/sq.m./wk)",ylab="Toxicity Response Curve (F)",cex.main=1.5)
 ## We can also convert the DRtrace object to doseResponse...
 neundatLevel=doseResponse(neundatTrace)
 

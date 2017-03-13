@@ -14,8 +14,9 @@ plot(dat,ylim=c(0.05,0.55),refsize=4,las=1) # uses plot.doseResponse()
 # The IR fit: a straightforward interpolation
 lines(quick0$y,lty=2) 
 
-# With CIR, 'quickIsotone' cannot show us the true underlying interpolation; it only provides the estimates at requested points.
-# Interpolation should be done between shrinkage points, not the original design points. So we must call the full 'cirPAVA' function:
+# With CIR, 'quickIsotone' cannot show us the true underlying interpolation; 
+# it only provides the estimates at requested points.  Interpolation should be done between 
+# shrinkage points, not the original design points. So we must call the full 'cirPAVA' function:
 
 slow1=cirPAVA(dat,full=TRUE)
 # Now, compare these 3 (the first one is wrong, b/c it interpolates from design points):
@@ -30,4 +31,5 @@ lines(slow1$shrinkage$x,slow1$shrinkage$y)
 
 # Last but not least, here's the true response function
 lines(seq(1,5,0.1),pweibull(seq(1,5,0.1),shape=1.1615,scale=8.4839),col=2)
-legend('topleft',pch=c(NA,'X',NA,NA),lty=c(1,NA,2,1),col=c(2,1,1,1),legend=c('True Curve','Observations','IR','CIR'),bty='n')
+legend('topleft',pch=c(NA,'X',NA,NA),lty=c(1,NA,2,1),col=c(2,1,1,1),
+	legend=c('True Curve','Observations','IR','CIR'),bty='n')
