@@ -7,7 +7,7 @@ Description: Isotonic regression (IR), a great small-sample improvement to IR ca
     CIR, and interval estimates for both.
 License: GPL-2
 Author: Assaf P. Oron
-Maintainer: Assaf P. Oron <assaf.oron@seattlechildrens.org>
+Maintainer: Assaf P. Oron <aoron@idmod.org>
 Authors@R: if (file.exists('DESCRIPTION') && !file.exists('man/cirPAVA.Rd')) roxygen2::roxygenize('.');
-    person('Assaf P.','Oron', role=c('cre','aut'), email='assaf.oron@seattlechildrens.org')
+    person('Assaf P.','Oron', role=c('cre','aut'), email='aoron@idmod.org')
 RoxygenNote: 6.0.1

@@ -166,3 +166,18 @@ if(decreasing) y=-y
 if(!full) return (candidate)
 return(list(rawslopes=slopes,initial=candidate0,final=candidate))		
 }
+
+#' Shrinkage fix to observed rates under adaptive dose-finding design
+
+#' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
+#' @param x dose levels (if not included in y). 
+#' @param wt weights (if not included in y).
+
+DRshrink<-function(y,x=NULL,wt0=NULL,target,swt=1,nmin=2,...) 
+{
+dr=doseResponse(y=y,x=x,wt=wt0)
+dr$y=ifelse(dr$weight<nmin,dr$y,(dr$y*dr$weight+target*swt)/(dr$weight+swt))
+#print(dr)
+return(dr)
+}
+

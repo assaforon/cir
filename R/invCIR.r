@@ -11,7 +11,7 @@
 #' }
 #' Note also that the function is set up to work with a vector of targets.
  
-##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
+##' @author Assaf P. Oron \code{<aoron.at.idmod.org>}
 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
 #' @param x dose levels (if not included in y). 
@@ -46,7 +46,7 @@ if (any(is.na(dr))) stop ("Missing values are not allowed.\n")
 
 # We start via forward estimation
 
-pavout<-estfun(y=dr,full=TRUE,dec=dec,...)
+pavout<-estfun(y=dr,full=TRUE,dec=dec,target=target,...)
 
 newx<-pavout$shrinkage$x
 newy<-pavout$shrinkage$y
@@ -114,11 +114,12 @@ return (list(targest=tout,input=dr,fwd=pavout$shrinkage,fwdDesign=pavout$output)
 #' @example inst/examples/invExamples.r
 #' @export
 
-quickInverse<-function(y,x=NULL,wt=NULL,target,estfun=cirPAVA, intfun = morrisCI,delta=TRUE,conf = 0.9,resolution=100,extrapolate=FALSE,seqDesign=FALSE,parabola=FALSE,...)
+quickInverse<-function(y,x=NULL,wt=NULL,target,estfun=cirPAVA, intfun = morrisCI,delta=TRUE,conf = 0.9,resolution=100,extrapolate=FALSE,seqDesign=FALSE,parabola=FALSE,adaptiveShrink=FALSE,...)
 {
 
 #### Point estimate first
 dr=doseResponse(y,x,wt)
+if(adaptiveShrink) dr=DRshrink(y=dr,target=target,...)
 m=length(dr$x)
 pestimate=doseFind(y=dr,estfun=estfun,target=target,full=TRUE,extrapolate=extrapolate,...)
 dout=data.frame(target=target,point=pestimate$targest,low=-Inf,high=Inf)

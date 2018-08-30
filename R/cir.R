@@ -12,7 +12,7 @@
 #' 
 #' @references Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Statistics in Biopharmaceutical Research, In Press (author's public version available on arxiv.org).
 
-##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
+##' @author Assaf P. Oron \code{<aoron.at.idmod.org>}
 #' @example inst/examples/cirExamples.r
 
 
@@ -25,6 +25,7 @@
 #' @param strict logical, should CIR enforce strict monotonicity by "fixing" flat intervals as well? Default \code{FALSE}.
 #' @param interiorStrict logical, should CIR enforce strict monotonicity, but only for y values inside of \code{ybounds}?  Default \code{TRUE}. Choosing \code{FALSE} will be overridden if \code{strict=TRUE}, and a warning will be given.
 #' @param ybounds numeric vector of length 2, relevant only under the default setting of \code{strict=FALSE,interiorStrict=TRUE}. Default \code{0:1}. See 'Details'.
+#' @param adaptiveShrink logical, should the y-values be pre-shrunk towards an experimental target? May be relevant if data were obtain via an adaptive dose-finding design. See \code{\link{DRshrink}}.
 #' @param ...	Other arguments passed on to the constructor functions that pre-process the input.
 
 #' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects name \code{output,input,shrinkage} for the output data at dose levels, the input data, and the function as fit at algorithm-generated shrinkage points, respectively.
@@ -32,13 +33,15 @@
 #' @seealso \code{\link{oldPAVA}},\code{\link{quickIsotone}}
 #' @export
 #' 
-cirPAVA <-function (y,x=NULL,wt=NULL,outx=NULL,full=FALSE,dec=FALSE,strict=FALSE,interiorStrict=TRUE,ybounds=0:1,...) {
+cirPAVA <-function (y,x=NULL,wt=NULL,outx=NULL,full=FALSE,dec=FALSE,strict=FALSE,interiorStrict=TRUE,ybounds=0:1,adaptiveShrink=FALSE,...) {
 
 ### converting to doseResponse object 
 ### Basically it's a numeric data frame with x,y,weight, and x increasing
 
 dr=doseResponse(y=y,x=x,wt=wt,...)
 if (any(is.na(dr))) stop ("Missing values are not allowed.\n")  
+# Optional pre-shrinking of y for adaptive designs
+if(adaptiveShrink) dr=DRshrink(y=dr,...)
 
 ### Predictions will be delivered for x=outx
 if(is.null(outx)) outx=dr$x
@@ -126,7 +129,7 @@ if (!full) {
 #' An analogous function for dose-finding (inverse estimation) is \code{\link{quickInverse}}.
 #'
 #'
-##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
+##' @author Assaf P. Oron \code{<aoron.at.idmod.org>}
 #' @example inst/examples/cirExamples.r
 #' @export
 

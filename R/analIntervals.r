@@ -8,7 +8,7 @@
 #' @seealso \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{morrisCI}},
 #' @example inst/examples/fwdCiExamples.r
 #'
-##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
+##' @author Assaf P. Oron \code{<aoron.at.idmod.org>}
 #' @export
 #' @references Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Statistics in Biopharmaceutical Research, In Press (author's public version available on arxiv.org).
 

@@ -32,7 +32,7 @@ return(TRUE)
 #'
 #'
 #' @aliases doseResponse is.doseResponse is.DRtrace
-##' @author Assaf P. Oron \code{<assaf.oron.at.seattlechildrens.org>}
+##' @author Assaf P. Oron \code{<aoron.at.idmod.org>}
 ##' 
 #' @example inst/examples/classExamples.r
 ##' @seealso \code{\link{cirPAVA}}, \code{\link{plot.doseResponse}},\code{\link{plot.DRtrace}} 
