@@ -178,6 +178,7 @@ return(list(rawslopes=slopes,initial=candidate0,final=candidate))
 #' but instead of adding 0.5 to each cell, \code{target} is added to the 1's at each dose, 
 #' and \code{1-target} to the 0's.
 #' More details to come after publication.
+#' @references Flournoy F and Oron AP. Bias Induced by Adaptive Dose-Finding Designs. Journal of Applied Statistics, in press.
 #' 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
 #' @param x dose levels (if not included in y). 
@@ -187,6 +188,7 @@ return(list(rawslopes=slopes,initial=candidate0,final=candidate))
 #' @param nmin the minimum n at each dose, for the shrinkage to be applied. Default 1 (all doses with any observation).
 #' @param ... parameters passed on to \code{doseResponse()} 
 #' 
+#' @export
 DRshrink<-function(y,x=NULL,wt0=NULL,target,swt=1,nmin=1,...) 
 {
 if(length(target)>1) stop('Shrinkage target must be a single constant.\n')
