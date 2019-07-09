@@ -179,6 +179,7 @@ return(list(rawslopes=slopes,initial=candidate0,final=candidate))
 #' and \code{1-target} to the 0's.
 #' More details to come after publication.
 #' @references Flournoy F and Oron AP. Bias Induced by Adaptive Dose-Finding Designs. Journal of Applied Statistics, in press.
+#' @author Assaf P. Oron \code{<aoron.at.idmod.org>}
 #' 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
 #' @param x dose levels (if not included in y). 

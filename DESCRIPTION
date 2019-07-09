@@ -1,8 +1,8 @@
 Package: cir
 Type: Package
 Title: Centered Isotonic Regression and Dose-Response Utilities
-Version: 2.0.0
-Date: 2019-06-03
+Version: 2.1.0
+Date: 2019-07-08
 Description: Isotonic regression (IR), as well as a great small-sample improvement to IR called
     CIR, interval estimates for both, and additional utilities.
 License: GPL-2
@@ -11,3 +11,4 @@ Maintainer: Assaf P. Oron <aoron@idmod.org>
 Authors@R: if (file.exists('DESCRIPTION') && !file.exists('man/cirPAVA.Rd')) roxygen2::roxygenize('.');
     person('Assaf P.','Oron', role=c('cre','aut'), email='aoron@idmod.org')
 RoxygenNote: 6.1.1
+Encoding: UTF-8
