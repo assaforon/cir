@@ -23,12 +23,10 @@ Enjoy!
 \author{
 Assaf P. Oron.
 
-
 Maintainer: Assaf P. Oron \code{<aoron.at.idmod.org>}
 }
 
 \references{Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Statistics in Biopharmaceutical Research 9, 258-267. (author's public version available on arxiv.org).
-
 Flournoy, N. and Oron, A.P., 2019. Bias Induced by Adaptive Dose-Finding Designs. Journal of Applied Statistics. In Press.}
 
 
