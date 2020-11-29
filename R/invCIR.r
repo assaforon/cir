@@ -105,7 +105,7 @@ return (list(targest=tout,input=dr,fwd=pavout$shrinkage,fwdDesign=pavout$output)
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param resolution numeric: how fine should the grid for the inverse-interval approximation be? Default 100, which seems to be quite enough. See 'Details'.
 #' @param extrapolate logical: should extrapolation beyond the range of estimated y values be allowed? Default \code{FALSE}. Note this affects only the point estimate; interval boundaries are not extrapolated.
-#' @param adaptiveShrink logical, should the y-values be pre-shrunk towards an experiment's target? Recommended if data were obtained via an adaptive dose-finding design. See \code{\link{DRshrink}}.
+#' @param adaptiveShrink logical, should the y-values be pre-shrunk towards an experiment's target? Recommended when the data were obtained via an adaptive dose-finding design. See \code{\link{DRshrink}}.
 #' @param starget The shrinkage target. Defaults to \code{target[1]}.
 #' @param parabola logical: should the interpolation between design points follow a parabola (\code{TRUE}) or a straight line (\code{FALSE}? The latter is default, because CIs tend to be conservative enough already.
 #' @param ...	Other arguments passed on to \code{\link{doseFind}} and \code{\link{quickIsotone}}, and onwards from there.

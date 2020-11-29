@@ -172,13 +172,16 @@ return(list(rawslopes=slopes,initial=candidate0,final=candidate))
 #' Adaptive dose-finding designs induce a bias on observed rates,
 #' away from the target dose. This is well-known in other adaptive-design fields,
 #' but has been overlooked by the dose-finding research community.
-#' Flournoy and Oron (in press) found a simple shrinkage fix that reduces both bias and variance.
+#' Flournoy and Oron (2020) examine the bias in the dose-finding context,
+#' and suggest a simple shrinkage fix that reduces both bias and variance.
 
 #' The fix is analogous to the empirical-logit fix to binary data, 
 #' but instead of adding 0.5 to each cell, \code{target} is added to the 1's at each dose, 
 #' and \code{1-target} to the 0's.
-#' More details to come after publication.
-#' @references Flournoy F and Oron AP. Bias Induced by Adaptive Dose-Finding Designs. Journal of Applied Statistics, in press.
+#' The shrinkage is applied to the raw observation, so CIR or IR are carried out
+#' on the shrunk data.
+
+#' @references Flournoy N and Oron AP, 2020. Bias Induced by Adaptive Dose-Finding Designs. Journal of Applied Statistics 47, 2431-2442.
 #' @author Assaf P. Oron \code{<aoron.at.idmod.org>}
 #' 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
