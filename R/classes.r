@@ -16,7 +16,6 @@ return(TRUE)
 
 is.doseResponse<-function(dr)
 {
-if(!is.DRtrace(dr)) return(FALSE)
 if(!inherits(dr,"doseResponse")) return(FALSE)
 if(any(duplicated(dr$x))) return(FALSE)
 if (any(dr$x!=sort(dr$x))) return(FALSE)
@@ -51,7 +50,7 @@ if(is.DRtrace(y)) return(y)
 
 ll=dim(y)
 
-if (length(ll)>2 || (length(ll)==2 && ll[2]!=2)) stop ("For conversion to dose-response, y can only be a vector or yes-no table.\n")
+if (length(ll)>2 || (length(ll)==2 && ll[2]!=2)) stop ("y can only be a vector or yes-no table.\n")
 
 if (length(ll)==2 && ll[2]==2) { # converting a yes-no table
 
@@ -88,21 +87,29 @@ doseResponse<-function(y,x=NULL,wt=rep(1,length(y)),...)
 {
 if(is.doseResponse(y)) return(y)
 
-if(is.null(x)) x=1:length(y)
+ll=dim(y)
+## When y is given as vector and no x, then x defaults to dose indices
+if(is.null(ll) && is.null(x)) x=1:length(y)
 
-
-if(any(duplicated(x)) || any(diff(x)<0))  # Cases for doing DRtrace first
-{
+## DRtrace conversion, or cases for doing DRtrace first
+if(is.DRtrace(y) || any(duplicated(x)) || any(diff(x)<0))  
+ {
 	z<-suppressWarnings(DRtrace(y=y,x=x,wt=wt,...))
 	tout<-data.frame(x=sort(unique(z$x)),y=tapply(z$y,z$x,mean),weight=tapply(z$weight,z$x,sum))
 
-} else if (length(x)==length(y) && (length(wt)==length(y) || is.null(wt)))  # straightforward x-y input
+} else if(length(ll)==2 && ll[2]==2) 
+## Now, two-column yes-no matrix case
+{
+	if(is.null(x)) x=1:length(y)
+	tout=data.frame(x=x,y=(y[,1]/rowSums(y)),weight=rowSums(y))
+	
+} else if (length(x)==length(y) && (length(wt)==length(y) || is.null(wt)))  # straightforward x-y-wt input
 {
 	if(is.null(wt)) wt=rep(1,length(y))
 	tout<-data.frame(x=x,y=y,weight=wt)
 } else stop("Incompatible input data. Check the help.\n")
 
-attr(tout,'class')<-c('doseResponse','DRtrace','data.frame')
+attr(tout,'class')<-c('doseResponse','data.frame')
 return(tout)
 }
 
