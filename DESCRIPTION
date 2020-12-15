@@ -6,8 +6,6 @@ Date: 2020-11-29
 Description: Isotonic regression (IR), as well as a great small-sample improvement to IR called
     CIR, interval estimates for both, and additional utilities.
 License: GPL-2
-Author: Assaf P. Oron
-Maintainer: Assaf P. Oron <aoron@idmod.org>
 Authors@R:
     person('Assaf P.','Oron', role=c('cre','aut'), email='aoron@idmod.org')
 RoxygenNote: 7.1.1

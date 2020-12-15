@@ -127,9 +127,10 @@ quickInverse<-function(y,x=NULL,wt=NULL,target,estfun=cirPAVA, intfun = morrisCI
 
 #### Point estimate first
 dr=doseResponse(y,x,wt)
-# Adaptive-design shrinkage fix
-if(adaptiveShrink) dr=DRshrink(y=dr,target=starget,...)
+# Adaptive-design shrinkage fix. We must do it here b/c used for both point and interval
+#if(adaptiveShrink) dr=DRshrink(y=dr,target=starget,...)
 m=length(dr$x)
+## adaptiveShrink set to FALSE to avoid double-shrinking
 pestimate=doseFind(y=dr,estfun=estfun,target=target,full=TRUE,extrapolate=extrapolate,adaptiveShrink=adaptiveShrink,...)
 dout=data.frame(target=target,point=pestimate$targest,low=-Inf,high=Inf)
 if(all(is.na(pestimate$targest)))
@@ -138,9 +139,10 @@ foundPts=pestimate$targest[!is.na(pestimate$targest)]
 dout=data.frame(target=target,point=pestimate$targest,low=-Inf,high=Inf)
 
 if(delta) { ## new default, delta-method ("local") intervals
-	dout[,3:4]=deltaInverse(y=dr,target=target,estfun=estfun,intfun=intfun,conf=conf,parabola=parabola,...)
+	dout[,3:4]=deltaInverse(y=dr,target=target,estfun=estfun,intfun=intfun,conf=conf,parabola=parabola,adaptiveShrink=adaptiveShrink,...)
 } else {
 #### CI, using "global" interpolation; generally too conservative
+	if(adaptiveShrink) dr=DRshrink(y=dr,target=starget,...)
 
 	## Calculate forward CIs at high-rez grid
 	higrid=seq(dr$x[1],dr$x[m],length.out=1+resolution*(m-1))
