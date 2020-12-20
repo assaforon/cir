@@ -17,7 +17,7 @@
 #' @example inst/examples/cirExamples.r
 
 
-#' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
+#' @param y  can be either of the following: y values (response rates), a \code{\link{DRtrace}} object,a \code{\link{doseResponse}} object, or valid input (potentially together with \code{x,wt}) to generate a \code{\link{doseResponse}} object. See \code{\link{doseResponse}} help for more. 
 #' @param x dose levels (if not included in y). 
 #' @param wt weights (if not included in y).
 #' @param outx vector of x values for which predictions will be made. If \code{NULL} (default), this will be set to the set of unique values in the x argument (or equivalently in y$x). Non-NULL inputs are relevant only if \code{full=TRUE}.

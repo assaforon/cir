@@ -30,13 +30,16 @@ return(TRUE)
 #' Functions to create and sanity-check objects of the \code{DRtrace} (dose-response experiment trace/trajectory) and \code{doseResponse} (dose-response raw summary) classes. Note that the latter inherits from the former, purely for programming-convenience reasons.
 #'
 #'
+#' The input argument \code{y} can include the entire information, or be only the vector of responses (for a \code{DRtrace} object) or response rates (\code{doseResponse}). When including the entire information, it has to be a data frame with at least \code{y} (both y and x for \code{DRtrace}), or a two-column matrix which for \code{DRtrace} is assumed to be x (doses) in column 1 and y (responses) in 2, and for (\code{doseResponse} 'yes' and 'no' responses.
+#'
+#'
 #' @aliases doseResponse is.doseResponse is.DRtrace
 ##' @author Assaf P. Oron \code{<aoron.at.idmod.org>}
 ##' 
 #' @example inst/examples/classExamples.r
 ##' @seealso \code{\link{cirPAVA}}, \code{\link{plot.doseResponse}},\code{\link{plot.DRtrace}} 
 
-#' @param y,x,wt  see help to \code{\link{cirPAVA}}.
+#' @param y,x,wt  see Details.
 #' @param noyes logical, in case of a 2-column input is the 1st column 'no'? Default \code{FALSE}, meaning the 1st column is 'yes'.
 #' @param dr the object being checked
 #' @param ... parameters passed on to \code{DRtrace()}, or ignored.
@@ -48,9 +51,16 @@ DRtrace<-function(y,x=NULL,wt=NULL,noyes=FALSE,...)
 {
 if(is.DRtrace(y)) return(y)
 
+if(is.data.frame(y)) # data frame input, e.g, from read.csv
+{
+	if(!('x' %in% names(y)) || !('y' %in% names(y))) stop('Data frame must include variables named x and y.\n')
+	x=y$x
+	if('wt' %in% names(y)) wt=y$wt
+	y=y$y  # warning: this overwrites y the data frame (inside the function)
+}
 ll=dim(y)
 
-if (length(ll)>2 || (length(ll)==2 && ll[2]!=2)) stop ("y can only be a vector or yes-no table.\n")
+if (length(ll)>2 || (length(ll)==2 && ll[2]!=2)) stop ("y can be a vector, data frame, or yes-no table.\n")
 
 if (length(ll)==2 && ll[2]==2) { # converting a yes-no table
 
@@ -66,7 +76,7 @@ if (length(ll)==2 && ll[2]==2) { # converting a yes-no table
     y<-c(rep(1,sum(yntab[,1])),rep(0,sum(yntab[,2])))
     x<-c(rep(xvals,yntab[,1]),rep(xvals,yntab[,2]))
     wt<-rep(1,length(y))  ## in case of yes-no table we ignore incoming weights 
-	warning("Raw data is a yes-no table; therefore, observation order is arbitrary.\n")
+#	warning("Raw data is a yes-no table; therefore, observation order is arbitrary.\n")
 }
 
 n=length(y)
@@ -86,7 +96,13 @@ return(tout)
 doseResponse<-function(y,x=NULL,wt=rep(1,length(y)),...)
 {
 if(is.doseResponse(y)) return(y)
-
+if(is.data.frame(y)) # data frame input, e.g, from read.csv
+{
+	if(!('y' %in% names(y))) stop('Data frame must include variables named x and y.\n')
+	if('x' %in% names(y)) x=y$x
+	if('wt' %in% names(y)) wt=y$wt
+	y=y$y  # warning: this overwrites y the data frame (inside the function)
+}
 ll=dim(y)
 ## When y is given as vector and no x, then x defaults to dose indices
 if(is.null(ll) && is.null(x)) x=1:length(y)
