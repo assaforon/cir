@@ -19,7 +19,7 @@ cirPAVA(
 )
 }
 \arguments{
-\item{y}{can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object.}
+\item{y}{can be either of the following: y values (response rates), a \code{\link{DRtrace}} object,a \code{\link{doseResponse}} object, or valid input (potentially together with \code{x,wt}) to generate a \code{\link{doseResponse}} object. See \code{\link{doseResponse}} help for more.}
 
 \item{x}{dose levels (if not included in y).}
 

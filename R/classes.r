@@ -96,7 +96,7 @@ return(tout)
 doseResponse<-function(y,x=NULL,wt=rep(1,length(y)),...)
 {
 if(is.doseResponse(y)) return(y)
-if(is.data.frame(y)) # data frame input, e.g, from read.csv
+if(!is.DRtrace(y) && is.data.frame(y)) # data frame input, e.g, from read.csv
 {
 	if(!('y' %in% names(y))) stop('Data frame must include variables named x and y.\n')
 	if('x' %in% names(y)) x=y$x
@@ -110,7 +110,7 @@ if(is.null(ll) && is.null(x)) x=1:length(y)
 ## DRtrace conversion, or cases for doing DRtrace first
 if(is.DRtrace(y) || any(duplicated(x)) || any(diff(x)<0))  
  {
-	z<-suppressWarnings(DRtrace(y=y,x=x,wt=wt,...))
+	if(is.DRtrace(y)) {z=y} else z<-suppressWarnings(DRtrace(y=y,x=x,wt=wt,...))
 	tout<-data.frame(x=sort(unique(z$x)),y=tapply(z$y,z$x,mean),weight=tapply(z$weight,z$x,sum))
 
 } else if(length(ll)==2 && ll[2]==2) 

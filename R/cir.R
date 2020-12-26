@@ -157,7 +157,7 @@ if (!full) {
 #' @param parabola logical, should interpolated interval boundaries between observations be parabolically curved outwards to allow for more uncertainty? Default \code{FALSE}
 #' @param ...	arguments passed on to other functions (constructor, point estimate and interval estimate).
 
-quickIsotone<-function (y,x=NULL,wt=rep(1,length(y)),outx=NULL,dec=FALSE,estfun=cirPAVA,intfun=morrisCI,conf=0.9,adaptiveShrink=FALSE,parabola=FALSE,...) 
+quickIsotone<-function (y,x=NULL,wt=NULL,outx=NULL,dec=FALSE,estfun=cirPAVA,intfun=morrisCI,conf=0.9,adaptiveShrink=FALSE,parabola=FALSE,...) 
 {
 dr=doseResponse(y=y,x=x,wt=wt,...)
 # Adaptive-design shrinkage fix

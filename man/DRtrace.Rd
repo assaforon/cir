@@ -18,7 +18,7 @@ doseResponse(y, x = NULL, wt = rep(1, length(y)), ...)
 \arguments{
 \item{dr}{the object being checked}
 
-\item{y, x, wt}{see help to \code{\link{cirPAVA}}.}
+\item{y, x, wt}{see Details.}
 
 \item{noyes}{logical, in case of a 2-column input is the 1st column 'no'? Default \code{FALSE}, meaning the 1st column is 'yes'.}
 
@@ -29,6 +29,9 @@ For constructor functions, the relevant object. For checking functions, a logica
 }
 \description{
 Functions to create and sanity-check objects of the \code{DRtrace} (dose-response experiment trace/trajectory) and \code{doseResponse} (dose-response raw summary) classes. Note that the latter inherits from the former, purely for programming-convenience reasons.
+}
+\details{
+The input argument \code{y} can include the entire information, or be only the vector of responses (for a \code{DRtrace} object) or response rates (\code{doseResponse}). When including the entire information, it has to be a data frame with at least \code{y} (both y and x for \code{DRtrace}), or a two-column matrix which for \code{DRtrace} is assumed to be x (doses) in column 1 and y (responses) in 2, and for (\code{doseResponse} 'yes' and 'no' responses.
 }
 \examples{
 ## Summary of raw data from the notorious Neuenschwander et al. (Stat. Med., 2008) trial
