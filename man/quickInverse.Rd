@@ -98,6 +98,9 @@ legend('topleft',pch=c(NA,'X',NA,NA),lty=c(1,NA,2,1),col=c(4,1,1,1),
 	legend=c('True Curve','Observations','IR Estimate','CIR Estimate'),bty='n')
 
 }
+\references{
+Flournoy N and Oron AP, 2020. Bias Induced by Adaptive Dose-Finding Designs. Journal of Applied Statistics 47, 2431-2442.
+}
 \seealso{
 \code{\link{quickIsotone}},\code{\link{doseFind}},\code{\link{deltaInverse}}
 }

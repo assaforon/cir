@@ -7,7 +7,7 @@
 quickIsotone(
   y,
   x = NULL,
-  wt = rep(1, length(y)),
+  wt = NULL,
   outx = NULL,
   dec = FALSE,
   estfun = cirPAVA,
