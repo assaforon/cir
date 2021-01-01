@@ -2,9 +2,8 @@ Package: cir
 Type: Package
 Title: Centered Isotonic Regression and Dose-Response Utilities
 Version: 2.1.1
-Date: 2020-12-29
-Description: Isotonic regression (IR), as well as a great small-sample improvement to IR called
-    CIR, interval estimates for both, and additional utilities.
+Date: 2021-1-4
+Description: Isotonic regression (IR) and its improvement: centered isotonic regression (CIR). CIR is recommended in particular with small samples. Also, interval estimates for both, and additional utilities such as plotting dose-response data.
 License: GPL-2
 Authors@R:
     person('Assaf P.','Oron', role=c('cre','aut'), email='aoron@idmod.org')

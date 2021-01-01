@@ -55,7 +55,9 @@ if(is.data.frame(y)) # data frame input, e.g, from read.csv
 {
 	if(!('x' %in% names(y)) || !('y' %in% names(y))) stop('Data frame must include variables named x and y.\n')
 	x=y$x
+# Code will accept either 'wt' or 'weight', with priority for the latter if both exist
 	if('wt' %in% names(y)) wt=y$wt
+	if('weight' %in% names(y)) wt=y$weight
 	y=y$y  # warning: this overwrites y the data frame (inside the function)
 }
 ll=dim(y)
@@ -100,7 +102,9 @@ if(!is.DRtrace(y) && is.data.frame(y)) # data frame input, e.g, from read.csv
 {
 	if(!('y' %in% names(y))) stop('Data frame must include variables named x and y.\n')
 	if('x' %in% names(y)) x=y$x
+# Code will accept either 'wt' or 'weight', with priority for the latter if both exist
 	if('wt' %in% names(y)) wt=y$wt
+	if('weight' %in% names(y)) wt=y$weight
 	y=y$y  # warning: this overwrites y the data frame (inside the function)
 }
 ll=dim(y)
