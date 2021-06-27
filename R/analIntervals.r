@@ -10,7 +10,7 @@
 #'
 ##' @author Assaf P. Oron \code{<aoron.at.idmod.org>}
 #' @export
-#' @references Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Statistics in Biopharmaceutical Research, In Press (author's public version available on arxiv.org).
+#' @references Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Statistics in Biopharmaceutical Research 3, 258-267.
 
 #' @return a data frame with two variables \code{ciLow, ciHigh} containing the estimated lower and upper confidence bounds, respectively.
 #' 
@@ -18,25 +18,22 @@
 #' @param outx vector of x values for which estimates will be made. If \code{NULL} (default), this will be set to the set of unique values in isotPoint$x argument (or equivalently in y$x).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param intfun the function to be used for interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
-#' @param parabola logical: should the confidence-interval's interpolation between points with observations follow a parabola (\code{TRUE}) creating broader intervals between observations, or a straight line (\code{FALSE}, default)?
 #' @param ... additional arguments passed on to \code{intfun}
 
-isotInterval<-function(isotPoint,outx=isotPoint$x,conf=0.9,intfun=morrisCI,parabola=FALSE,...)
+isotInterval<-function(isotPoint,outx=isotPoint$output$x,conf=0.9,intfun=morrisCI,...)
 {
 ## Validation
 if(conf<=0 || conf>=1) stop("Confidence must be between 0 and 1.\n")
-if(!is.doseResponse(isotPoint)) stop("Point-estimate data must be in doseResponse format.\n")
-if(min(outx)<min(isotPoint$x) || max(outx)>max(isotPoint$x)) stop("Cannot predict outside data boundaries.\n")
+#if(!is.doseResponse(isotPoint)) stop("Point-estimate data must be in doseResponse format.\n")
+if(min(outx)<min(isotPoint$output$x) || max(outx)>max(isotPoint$output$x)) stop("Cannot predict outside data boundaries.\n")
 
-ycount=round(isotPoint$weight*isotPoint$y)
-designInt=intfun(phat=isotPoint$y,n=isotPoint$weight,y=ycount,conf=conf,...)
+ycount=round(isotPoint$shrinkage$weight*isotPoint$shrinkage$y)
+rawInt=intfun(phat=isotPoint$shrinkage$y,n=isotPoint$shrinkage$weight,y=ycount,conf=conf,...)
 
 #if(all(outx %in% isotPoint$x)) return(designInt[match(outx,isotPoint$x),])
 
-if(parabola) lcl=parapolate(isotPoint$x,designInt[,1],xout=outx,upward=TRUE) else
-	lcl=approx(isotPoint$x,designInt[,1],xout=outx)$y
-if(parabola) ucl=parapolate(isotPoint$x,designInt[,2],xout=outx,upward=FALSE) else
-	ucl=approx(isotPoint$x,designInt[,2],xout=outx)$y
+lcl=approx(isotPoint$shrinkage$x,rawInt[,1],xout=outx)$y
+ucl=approx(isotPoint$shrinkage$x,rawInt[,2],xout=outx)$y
 
 return(data.frame(ciLow=lcl,ciHigh=ucl))
 }
@@ -60,7 +57,6 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' @param estfun the function to be used for point estimation. Default \code{\link{cirPAVA}}.
 #' @param intfun the function to be used for initial (forward) interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
-#' @param parabola logical: should the confidence-interval's interpolation between points with observations follow a parabola (\code{TRUE}) creating broader intervals between observations, or a straight line (\code{FALSE}, default)?
 #' @param adaptiveShrink logical, should the y-values be pre-shrunk towards an experiment's target? Recommended if data were obtained via an adaptive dose-finding design. See \code{\link{DRshrink}}.
 #' @param starget The shrinkage target. Defaults to \code{target[1]}.
 #' @param ... additional arguments passed on to \code{\link{quickIsotone}}
@@ -72,41 +68,44 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 
 #' @export
 
-deltaInverse<-function(y,x=NULL,wt=NULL,target=NULL,estfun=cirPAVA, intfun = morrisCI, conf = 0.9,adaptiveShrink=FALSE,starget=target[1],parabola=FALSE,...)
+deltaInv2<-function(y,x=NULL,wt=NULL,target=NULL,estfun=cirPAVA, intfun = morrisCI, conf = 0.9,adaptiveShrink=FALSE,starget=target[1],...)
 {
 dr=doseResponse(y,x,wt)
 # Optional pre-shrinking of y for adaptive designs
 if(adaptiveShrink) dr=DRshrink(y=dr,target=starget,...)
 
 k=length(target)
-# We start by constructing inverse intervals based on design-point estimates
-forward=quickIsotone(dr,outx=NULL,conf=conf,intfun=intfun,estfun=estfun,...)
-forward$y=round(forward$y,10) ### avoid rounding errors from PAVA
-yvals=sort(unique(forward$y))
+# We start by constructing forward intervals based on design-point estimates
+#forward=quickIsotone(dr,outx=NULL,conf=conf,intfun=intfun,estfun=estfun,...)
+pestimate=estfun(y=dr,full=TRUE,...)
+pestimate$shrinkage$y=round(pestimate$shrinkage$y,10) ### avoid rounding errors from PAVA
+yvals=sort(unique(pestimate$shrinkage$y))
 #cat(yvals)
 if(length(yvals)==1 || var(yvals)<.Machine$double.eps*1e3) return(cbind(rep(NA,k),rep(NA,k))) ## degenerate case, completely flat
-fslopes=slope(dr$x,forward$y)
+
+cestimate=isotInterval(pestimate,conf=conf,intfun=intfun,outx=pestimate$shrinkage$x,...)
+fslopes=slope(pestimate$shrinkage$x,pestimate$shrinkage$y)
 
 # inverse widths raw
-rwidths=(forward$y-forward$lower)/fslopes
-lwidths=(forward$y-forward$upper)/fslopes
+rwidths=(pestimate$shrinkage$y-cestimate$ciLow)/fslopes
+lwidths=(pestimate$shrinkage$y-cestimate$ciHigh)/fslopes
 # Adding the widths to the mean curve, self-consistently
-rbounds=rev(cummin(rev(tapply(dr$x+rwidths,forward$y,max))))
-lbounds=cummax(tapply(dr$x+lwidths,forward$y,min))
-designCIs=cbind(lbounds,rbounds)[match(forward$y,yvals),]
+rbounds=rev(cummin(rev(tapply(pestimate$shrinkage$x+rwidths,pestimate$shrinkage$y,max))))
+lbounds=cummax(tapply(pestimate$shrinkage$x+lwidths,pestimate$shrinkage$y,min))
 
-if (is.null(target)) return(designCIs)
+### Returning
+# Note we use approx() with rule=1, forcing NAs when specified target is outside bounds
 
-if(parabola) {  ### direction chosen by trial & error...
-	good=(target>=min(yvals) & target<=max(yvals))
-	lout=rep(NA,k)
-	rout=lout
-	lout[good]=parapolate(yvals,lbounds,xout=target[good],upward=TRUE)
-	rout[good]=parapolate(yvals,rbounds,xout=target[good],upward=FALSE)
-} else {
-	lout=approx(yvals,lbounds,xout=target,rule=1)$y
-	rout=approx(yvals,rbounds,xout=target,rule=1)$y
+if (is.null(target)) 
+{ ## No target specified, returning CIs at design points
+	lout = approx(pestimate$shrinkage$y,lbounds,pestimate$output$y,rule=1)$y
+	uout = approx(pestimate$shrinkage$y,rbounds,pestimate$output$y,rule=1)$y
+	return(cbind(lout,uout))
 }
+# Otherwise: target was specified
+lout=approx(yvals,lbounds,xout=target,rule=1)$y
+rout=approx(yvals,rbounds,xout=target,rule=1)$y
+
 return(cbind(lout,rout))
 }
 
