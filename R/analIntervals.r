@@ -14,7 +14,7 @@
 
 #' @return a data frame with two variables \code{ciLow, ciHigh} containing the estimated lower and upper confidence bounds, respectively.
 #' 
-#' @param isotPoint a \code{\link{doseResponse}} object with the x values and isotonic point estimates at design points.
+#' @param isotPoint The output of an estimation function such as \code{\link{cirPAVA}}  with the option \code{full=TRUE}. Should be a list of 3 \code{\link{doseResponse}} objects named \code{input, output, shrinkage}.
 #' @param outx vector of x values for which estimates will be made. If \code{NULL} (default), this will be set to the set of unique values in isotPoint$x argument (or equivalently in y$x).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param intfun the function to be used for interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
@@ -68,7 +68,7 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 
 #' @export
 
-deltaInv2<-function(y,x=NULL,wt=NULL,target=NULL,estfun=cirPAVA, intfun = morrisCI, conf = 0.9,adaptiveShrink=FALSE,starget=target[1],...)
+deltaInverse<-function(y,x=NULL,wt=NULL,target=NULL,estfun=cirPAVA, intfun = morrisCI, conf = 0.9,adaptiveShrink=FALSE,starget=target[1],...)
 {
 dr=doseResponse(y,x,wt)
 # Optional pre-shrinking of y for adaptive designs

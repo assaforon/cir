@@ -148,8 +148,8 @@ foundPts=pestimate$targest[!is.na(pestimate$targest)]
 
 dout=data.frame(target=target,point=pestimate$targest,low=-Inf,high=Inf)
 
-if(delta) { ## new default, delta-method ("local") intervals
-	dout[,3:4]=deltaInverse(y=dr,target=target,estfun=estfun,intfun=intfun,conf=conf,parabola=parabola,adaptiveShrink=FALSE,...)
+if(delta) { ## Default, delta-method ("local") intervals
+	dout[,3:4]=deltaInverse(y=dr,target=target,starget=starget,estfun=estfun,intfun=intfun,conf=conf,parabola=parabola,adaptiveShrink=FALSE,...)
 } else {
 #### CI, using "global" interpolation; generally too conservative
 #	if(adaptiveShrink) dr=DRshrink(y=dr,target=starget,...)

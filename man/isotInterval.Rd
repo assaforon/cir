@@ -6,23 +6,20 @@
 \usage{
 isotInterval(
   isotPoint,
-  outx = isotPoint$x,
+  outx = isotPoint$output$x,
   conf = 0.9,
   intfun = morrisCI,
-  parabola = FALSE,
   ...
 )
 }
 \arguments{
-\item{isotPoint}{a \code{\link{doseResponse}} object with the x values and isotonic point estimates at design points.}
+\item{isotPoint}{The output of an estimation function such as \code{\link{cirPAVA}}  with the option \code{full=TRUE}. Should be a list of 3 \code{\link{doseResponse}} objects named \code{input, output, shrinkage}.}
 
 \item{outx}{vector of x values for which estimates will be made. If \code{NULL} (default), this will be set to the set of unique values in isotPoint$x argument (or equivalently in y$x).}
 
 \item{conf}{numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.}
 
 \item{intfun}{the function to be used for interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).}
-
-\item{parabola}{logical: should the confidence-interval's interpolation between points with observations follow a parabola (\code{TRUE}) creating broader intervals between observations, or a straight line (\code{FALSE}, default)?}
 
 \item{...}{additional arguments passed on to \code{intfun}}
 }
@@ -79,7 +76,7 @@ legend('topleft',pch=c(NA,'X',NA,NA,NA),lty=c(1,NA,2,2,2),col=c(4,1,2,1,3),lwd=c
 
 }
 \references{
-Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Statistics in Biopharmaceutical Research, In Press (author's public version available on arxiv.org).
+Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Statistics in Biopharmaceutical Research 3, 258-267.
 }
 \seealso{
 \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{morrisCI}},

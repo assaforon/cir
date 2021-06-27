@@ -14,7 +14,6 @@ deltaInverse(
   conf = 0.9,
   adaptiveShrink = FALSE,
   starget = target[1],
-  parabola = FALSE,
   ...
 )
 }
@@ -36,8 +35,6 @@ deltaInverse(
 \item{adaptiveShrink}{logical, should the y-values be pre-shrunk towards an experiment's target? Recommended if data were obtained via an adaptive dose-finding design. See \code{\link{DRshrink}}.}
 
 \item{starget}{The shrinkage target. Defaults to \code{target[1]}.}
-
-\item{parabola}{logical: should the confidence-interval's interpolation between points with observations follow a parabola (\code{TRUE}) creating broader intervals between observations, or a straight line (\code{FALSE}, default)?}
 
 \item{...}{additional arguments passed on to \code{\link{quickIsotone}}}
 }
