@@ -39,8 +39,9 @@ if(length(unique(rawInt[,1]))==1 || length(unique(rawInt[,2]))==1)
 	lcl=rep(NA,length(outx))
 	ucl=rep(NA,length(outx))
 } else {
-	lcl=approx(isotPoint$shrinkage$x,rawInt[,1],xout=outx)$y
-	ucl=approx(isotPoint$shrinkage$x,rawInt[,2],xout=outx)$y
+	n=isotPoint$shrinkage$weight
+	lcl=approx(isotPoint$shrinkage$x[n>0],rawInt[n>0,1],xout=outx,rule=2)$y
+	ucl=approx(isotPoint$shrinkage$x[n>0],rawInt[n>0,2],xout=outx,rule=2)$y
 }
 return(data.frame(ciLow=lcl,ciHigh=ucl))
 }
@@ -76,9 +77,11 @@ deltaInverse<-function(isotPoint,target=NULL,intfun = morrisCI, conf = 0.9,starg
 k=length(target)
 #isotPoint$shrinkage$y=round(isotPoint$shrinkage$y,10) ### avoid rounding errors from PAVA
 yvals=sort(unique(isotPoint$shrinkage$y))
+n=isotPoint$shrinkage$weight
 #cat(yvals)
-if(is.null(yvals) || length(yvals)<=1 || var(yvals)<.Machine$double.eps*1e3) return(cbind(rep(NA,k),rep(NA,k))) ## degenerate case, completely flat
+if(sum(n>0)<2 || is.null(yvals) || length(yvals)<=1 || var(yvals)<.Machine$double.eps*1e3) return(cbind(rep(NA,k),rep(NA,k))) ## degenerate case, completely flat
 
+### Forward interval
 cestimate=isotInterval(isotPoint,conf=conf,intfun=intfun,outx=isotPoint$shrinkage$x,...)
 fslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y)
 
@@ -91,7 +94,6 @@ lbounds=cummax(tapply(isotPoint$shrinkage$x+lwidths,isotPoint$shrinkage$y,min))
 
 ### Returning
 # Note we use approx() with rule=1, forcing NAs when specified target is outside bounds
-
 if(length(unique(lbounds))==1 || length(unique(rbounds))==1)
 { # degenerate case: only one y value. No interval can be calculated
 	nout=ifelse(is.null(target),nrow(isotPoint$output),length(target))
@@ -101,8 +103,8 @@ if(length(unique(lbounds))==1 || length(unique(rbounds))==1)
 }	
 if (is.null(target)) 
 { ## No target specified, returning CIs at design points
-	lout = approx(isotPoint$shrinkage$y,lbounds,isotPoint$output$y,rule=1)$y
-	uout = approx(isotPoint$shrinkage$y,rbounds,isotPoint$output$y,rule=1)$y
+	lout = approx(yvals,lbounds,isotPoint$output$y,rule=1)$y
+	uout = approx(yvals,rbounds[n>0],isotPoint$output$y,rule=1)$y
 	return(cbind(lout,uout))
 }
 # Otherwise: target was specified
