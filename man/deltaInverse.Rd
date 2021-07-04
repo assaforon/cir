@@ -14,7 +14,7 @@ deltaInverse(
 )
 }
 \arguments{
-\item{isotPoint}{The output of an estimation function such as \code{\link{cirPAVA}}  with the option \code{full=TRUE}. Should be a list of 3 \code{\link{doseResponse}} objects named \code{input, output, shrinkage}.}
+\item{isotPoint}{The output of an estimation function such as \code{\link{cirPAVA},\link{doseFind}},  with the option \code{full=TRUE}. Should be at least a list of 3 \code{\link{doseResponse}} objects named \code{input, output, shrinkage}.}
 
 \item{target}{A vector of target response rate(s), for which the interval is needed. If \code{NULL} (default), interval will be returned for the point estimates at design points (e.g., if the forward point estimate at $x_1$ is 0.2, then the first returned interval is for the 20th percentile).}
 

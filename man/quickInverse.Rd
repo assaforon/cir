@@ -17,7 +17,6 @@ quickInverse(
   extrapolate = FALSE,
   adaptiveShrink = FALSE,
   starget = target[1],
-  parabola = FALSE,
   ...
 )
 }
@@ -45,8 +44,6 @@ quickInverse(
 \item{adaptiveShrink}{logical, should the y-values be pre-shrunk towards an experiment's target? Recommended when the data were obtained via an adaptive dose-finding design. See \code{\link{DRshrink}} and the Note below.}
 
 \item{starget}{The shrinkage target. Defaults to \code{target[1]}.}
-
-\item{parabola}{logical: should the confidence-interval's interpolation between points with observations follow a parabola (\code{TRUE}) creating broader intervals between observations, or a straight line (\code{FALSE}, default)?}
 
 \item{...}{Other arguments passed on to \code{\link{doseFind}} and \code{\link{quickIsotone}}, and onwards from there.}
 }

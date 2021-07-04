@@ -87,7 +87,7 @@ if(any(is.na(tout)) && extrapolate)
 
 if (!full)  return(tout) 
 
-return (list(targest=tout,input=dr,fwd=pavout$shrinkage,fwdDesign=pavout$output))
+return (list(targest=tout,input=dr,shrinkage=pavout$shrinkage,output=pavout$output))
 }
 
 #' Point and Interval Inverse Estimation ("Dose-Finding"), using CIR and IR
@@ -112,7 +112,6 @@ return (list(targest=tout,input=dr,fwd=pavout$shrinkage,fwdDesign=pavout$output)
 #' @param extrapolate logical: should extrapolation beyond the range of estimated y values be allowed? Default \code{FALSE}. Note this affects only the point estimate; interval boundaries are not extrapolated.
 #' @param adaptiveShrink logical, should the y-values be pre-shrunk towards an experiment's target? Recommended when the data were obtained via an adaptive dose-finding design. See \code{\link{DRshrink}} and the Note below.
 #' @param starget The shrinkage target. Defaults to \code{target[1]}.
-#' @param parabola logical: should the confidence-interval's interpolation between points with observations follow a parabola (\code{TRUE}) creating broader intervals between observations, or a straight line (\code{FALSE}, default)?
 #' @param ...	Other arguments passed on to \code{\link{doseFind}} and \code{\link{quickIsotone}}, and onwards from there.
 
 #' @note If the data were obtained from an adaptive dose-finding design and you seek to estimate a dose other than the experiment's target, note that away from the target the estimates are likely biased (Flournoy and Oron, 2019). Use \code{adaptiveShrink=TRUE} to mitigate the bias. In addition, either provide the true target as \code{starget}, or a vector of values to \code{target}, with the first value being the true target.
@@ -132,7 +131,7 @@ return (list(targest=tout,input=dr,fwd=pavout$shrinkage,fwdDesign=pavout$output)
 #' @export
 
 quickInverse<-function(y,x=NULL,wt=NULL,target,estfun=cirPAVA, intfun = morrisCI,delta=TRUE,conf = 0.9,
-                        resolution=100,extrapolate=FALSE,adaptiveShrink=FALSE,starget=target[1],parabola=FALSE,...)
+                        resolution=100,extrapolate=FALSE,adaptiveShrink=FALSE,starget=target[1],...)
 {
 
 #### Point estimate first
@@ -149,14 +148,14 @@ foundPts=pestimate$targest[!is.na(pestimate$targest)]
 dout=data.frame(target=target,point=pestimate$targest,low=-Inf,high=Inf)
 
 if(delta) { ## Default, delta-method ("local") intervals
-	dout[,3:4]=deltaInverse(y=dr,target=target,starget=starget,estfun=estfun,intfun=intfun,conf=conf,parabola=parabola,adaptiveShrink=FALSE,...)
+	dout[,3:4]=deltaInverse(pestimate,target=target,intfun=intfun,conf=conf,...)
 } else {
 #### CI, using "global" interpolation; generally too conservative
 #	if(adaptiveShrink) dr=DRshrink(y=dr,target=starget,...)
 
 	## Calculate forward CIs at high-rez grid
 	higrid=seq(dr$x[1],dr$x[m],length.out=1+resolution*(m-1))
-	fwdCIgrid=quickIsotone(dr,outx=higrid,conf=conf,intfun=intfun,parabola=parabola,...)
+	fwdCIgrid=quickIsotone(dr,outx=higrid,conf=conf,intfun=intfun,...)
 	fwdCIdesign=fwdCIgrid[match(dr$x,fwdCIgrid$x),]
 
 	### CI by finding 'right points' on grid

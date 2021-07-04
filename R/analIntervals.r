@@ -57,7 +57,7 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 
 #' @return two-column matrix with the left and right bounds, respectively
 
-#' @param isotPoint The output of an estimation function such as \code{\link{cirPAVA}}  with the option \code{full=TRUE}. Should be a list of 3 \code{\link{doseResponse}} objects named \code{input, output, shrinkage}.
+#' @param isotPoint The output of an estimation function such as \code{\link{cirPAVA},\link{doseFind}},  with the option \code{full=TRUE}. Should be at least a list of 3 \code{\link{doseResponse}} objects named \code{input, output, shrinkage}.
 #' @param target A vector of target response rate(s), for which the interval is needed. If \code{NULL} (default), interval will be returned for the point estimates at design points (e.g., if the forward point estimate at $x_1$ is 0.2, then the first returned interval is for the 20th percentile).
 #' @param intfun the function to be used for initial (forward) interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
@@ -74,12 +74,10 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 deltaInverse<-function(isotPoint,target=NULL,intfun = morrisCI, conf = 0.9,starget=target[1],...)
 {
 k=length(target)
-# We start by constructing forward intervals based on design-point estimates
-#forward=quickIsotone(dr,outx=NULL,conf=conf,intfun=intfun,estfun=estfun,...)
-isotPoint$shrinkage$y=round(isotPoint$shrinkage$y,10) ### avoid rounding errors from PAVA
+#isotPoint$shrinkage$y=round(isotPoint$shrinkage$y,10) ### avoid rounding errors from PAVA
 yvals=sort(unique(isotPoint$shrinkage$y))
 #cat(yvals)
-if(length(yvals)==1 || var(yvals)<.Machine$double.eps*1e3) return(cbind(rep(NA,k),rep(NA,k))) ## degenerate case, completely flat
+if(is.null(yvals) || length(yvals)<=1 || var(yvals)<.Machine$double.eps*1e3) return(cbind(rep(NA,k),rep(NA,k))) ## degenerate case, completely flat
 
 cestimate=isotInterval(isotPoint,conf=conf,intfun=intfun,outx=isotPoint$shrinkage$x,...)
 fslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y)
