@@ -32,9 +32,14 @@ rawInt=intfun(phat=isotPoint$shrinkage$y,n=isotPoint$shrinkage$weight,y=ycount,c
 
 #if(all(outx %in% isotPoint$x)) return(designInt[match(outx,isotPoint$x),])
 
-lcl=approx(isotPoint$shrinkage$x,rawInt[,1],xout=outx)$y
-ucl=approx(isotPoint$shrinkage$x,rawInt[,2],xout=outx)$y
-
+if(length(unique(rawInt[,1]))==1 || length(unique(rawInt[,2]))==1)
+{ # degenerate case: only one y value
+	lcl=rep(NA,length(outx))
+	ucl=rep(NA,length(outx))
+} else {
+	lcl=approx(isotPoint$shrinkage$x,rawInt[,1],xout=outx)$y
+	ucl=approx(isotPoint$shrinkage$x,rawInt[,2],xout=outx)$y
+}
 return(data.frame(ciLow=lcl,ciHigh=ucl))
 }
 
@@ -96,6 +101,13 @@ lbounds=cummax(tapply(pestimate$shrinkage$x+lwidths,pestimate$shrinkage$y,min))
 ### Returning
 # Note we use approx() with rule=1, forcing NAs when specified target is outside bounds
 
+if(length(unique(lbounds))==1 || length(unique(rbounds))==1)
+{ # degenerate case: only one y value. No interval can be calculated
+	nout=ifelse(is.null(target),nrow(pestimate$output),length(target))
+	lout=rep(NA,nout)
+	rout=rep(NA,nout)
+	return(cbind(lout,rout))
+}	
 if (is.null(target)) 
 { ## No target specified, returning CIs at design points
 	lout = approx(pestimate$shrinkage$y,lbounds,pestimate$output$y,rule=1)$y

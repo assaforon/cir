@@ -57,14 +57,11 @@ if (!full) return (dr$y)
 else return(list(output=dr,input=dr,shrinkage=dr))
 }
 
-
 dr0=dr ## clean copy of input data
 ### Decreasing monotone case: simple fix
 if (dec) dr$y = -dr$y
 
-
 #### Core algorithm
-
 repeat {
 
 # Find adjacent violators
