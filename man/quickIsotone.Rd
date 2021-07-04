@@ -14,7 +14,6 @@ quickIsotone(
   intfun = morrisCI,
   conf = 0.9,
   adaptiveShrink = FALSE,
-  parabola = FALSE,
   ...
 )
 }
@@ -36,8 +35,6 @@ quickIsotone(
 \item{conf}{numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.}
 
 \item{adaptiveShrink}{logical, should the y-values be pre-shrunk towards an experiment's target? Recommended if data were obtained via an adaptive dose-finding design. If \code{TRUE}, then must also provide a \code{target} argument that will be passed via \code{...}.}
-
-\item{parabola}{logical, should interpolated interval boundaries between observations be parabolically curved outwards to allow for more uncertainty? Default \code{FALSE}}
 
 \item{...}{arguments passed on to other functions (constructor, point estimate and interval estimate).}
 }

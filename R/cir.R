@@ -151,10 +151,9 @@ if (!full) {
 #' @param intfun the function to be used for interval estimation. Default \code{\link{wilsonCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param adaptiveShrink logical, should the y-values be pre-shrunk towards an experiment's target? Recommended if data were obtained via an adaptive dose-finding design. If \code{TRUE}, then must also provide a \code{target} argument that will be passed via \code{...}.
-#' @param parabola logical, should interpolated interval boundaries between observations be parabolically curved outwards to allow for more uncertainty? Default \code{FALSE}
 #' @param ...	arguments passed on to other functions (constructor, point estimate and interval estimate).
 
-quickIsotone<-function (y,x=NULL,wt=NULL,outx=NULL,dec=FALSE,estfun=cirPAVA,intfun=morrisCI,conf=0.9,adaptiveShrink=FALSE,parabola=FALSE,...) 
+quickIsotone<-function (y,x=NULL,wt=NULL,outx=NULL,dec=FALSE,estfun=cirPAVA,intfun=morrisCI,conf=0.9,adaptiveShrink=FALSE,...) 
 {
 dr=doseResponse(y=y,x=x,wt=wt,...)
 # Adaptive-design shrinkage fix
@@ -166,7 +165,7 @@ pestimate=estfun(y=dr,dec=dec,full=TRUE,...)
 #a	pestimate=cirPAVA(y=dr,dec=dec,full=TRUE,...)
 #} else pestimate=oldPAVA(y=dr,dec=dec,full=TRUE,...)
 
-cestimate=isotInterval(pestimate$output,conf=conf,intfun=intfun,outx=outx,parabola=parabola,...)
+cestimate=isotInterval(pestimate,conf=conf,intfun=intfun,outx=outx,...)
 
 if(all(outx %in% dr$x)) 
 {

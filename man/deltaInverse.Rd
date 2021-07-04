@@ -5,34 +5,22 @@
 \title{Calculate inverse (dose-finding) intervals, using local inversion and the Delta method}
 \usage{
 deltaInverse(
-  y,
-  x = NULL,
-  wt = NULL,
+  isotPoint,
   target = NULL,
-  estfun = cirPAVA,
   intfun = morrisCI,
   conf = 0.9,
-  adaptiveShrink = FALSE,
   starget = target[1],
   ...
 )
 }
 \arguments{
-\item{y}{can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object.}
-
-\item{x}{dose levels (if not included in y).}
-
-\item{wt}{weights (if not included in y).}
+\item{isotPoint}{The output of an estimation function such as \code{\link{cirPAVA}}  with the option \code{full=TRUE}. Should be a list of 3 \code{\link{doseResponse}} objects named \code{input, output, shrinkage}.}
 
 \item{target}{A vector of target response rate(s), for which the interval is needed. If \code{NULL} (default), interval will be returned for the point estimates at design points (e.g., if the forward point estimate at $x_1$ is 0.2, then the first returned interval is for the 20th percentile).}
-
-\item{estfun}{the function to be used for point estimation. Default \code{\link{cirPAVA}}.}
 
 \item{intfun}{the function to be used for initial (forward) interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).}
 
 \item{conf}{numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.}
-
-\item{adaptiveShrink}{logical, should the y-values be pre-shrunk towards an experiment's target? Recommended if data were obtained via an adaptive dose-finding design. See \code{\link{DRshrink}}.}
 
 \item{starget}{The shrinkage target. Defaults to \code{target[1]}.}
 

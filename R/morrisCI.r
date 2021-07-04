@@ -97,13 +97,14 @@ ucl=morrisUCL(y=y,n=n,halfa=tailp)
 
 if(narrower)
 {
-	altout=alternate(phat=phat,n=n,conf=conf,...)
+	relevants=which(n>0) # Avoid n=0 boundary where alternate() produces NaNs
+	altout=alternate(phat=phat[relevants],n=n[relevants],conf=conf,...)
 # The cummax, cummin (added Dec. 2015) ensure monotonicity of boundaries.
 # Monotonicity is not for the optics, but rather another way to pool information
 # from where it is plentiful to where it might be lacking.
 
-	lcl=cummax(pmax(lcl,altout[,1]))
-	ucl=rev(cummin(rev(pmin(ucl,altout[,2]))))
+	lcl[relevants]=cummax(pmax(lcl[relevants],altout[,1]))
+	ucl[relevants]=rev(cummin(rev(pmin(ucl[relevants],altout[,2]))))
 }
 
 return(cbind(lcl,ucl))

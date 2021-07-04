@@ -5,6 +5,8 @@
 #' 
 #' @note All provided algorithm and formulae are for Binomial data only. For other data, write your own \code{intfun}, returning a two-column matrix. The interval estimation method is presented and discussed by Oron and Flournoy (2017).
 #'
+#' @warning As of mid-2021, we've found that interval coverage for extreme percentiles with adaptive designs is relatively lacking: by 10-15% for ED90/ED10 type targets, and deteriorating further towards the edges. 
+#'
 #' @seealso \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{morrisCI}},
 #' @example inst/examples/fwdCiExamples.r
 #'
@@ -55,14 +57,10 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 
 #' @return two-column matrix with the left and right bounds, respectively
 
-#' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
-#' @param x dose levels (if not included in y). 
-#' @param wt weights (if not included in y).
+#' @param isotPoint The output of an estimation function such as \code{\link{cirPAVA}}  with the option \code{full=TRUE}. Should be a list of 3 \code{\link{doseResponse}} objects named \code{input, output, shrinkage}.
 #' @param target A vector of target response rate(s), for which the interval is needed. If \code{NULL} (default), interval will be returned for the point estimates at design points (e.g., if the forward point estimate at $x_1$ is 0.2, then the first returned interval is for the 20th percentile).
-#' @param estfun the function to be used for point estimation. Default \code{\link{cirPAVA}}.
 #' @param intfun the function to be used for initial (forward) interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
-#' @param adaptiveShrink logical, should the y-values be pre-shrunk towards an experiment's target? Recommended if data were obtained via an adaptive dose-finding design. See \code{\link{DRshrink}}.
 #' @param starget The shrinkage target. Defaults to \code{target[1]}.
 #' @param ... additional arguments passed on to \code{\link{quickIsotone}}
 
@@ -73,45 +71,40 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 
 #' @export
 
-deltaInverse<-function(y,x=NULL,wt=NULL,target=NULL,estfun=cirPAVA, intfun = morrisCI, conf = 0.9,adaptiveShrink=FALSE,starget=target[1],...)
+deltaInverse<-function(isotPoint,target=NULL,intfun = morrisCI, conf = 0.9,starget=target[1],...)
 {
-dr=doseResponse(y,x,wt)
-# Optional pre-shrinking of y for adaptive designs
-if(adaptiveShrink) dr=DRshrink(y=dr,target=starget,...)
-
 k=length(target)
 # We start by constructing forward intervals based on design-point estimates
 #forward=quickIsotone(dr,outx=NULL,conf=conf,intfun=intfun,estfun=estfun,...)
-pestimate=estfun(y=dr,full=TRUE,...)
-pestimate$shrinkage$y=round(pestimate$shrinkage$y,10) ### avoid rounding errors from PAVA
-yvals=sort(unique(pestimate$shrinkage$y))
+isotPoint$shrinkage$y=round(isotPoint$shrinkage$y,10) ### avoid rounding errors from PAVA
+yvals=sort(unique(isotPoint$shrinkage$y))
 #cat(yvals)
 if(length(yvals)==1 || var(yvals)<.Machine$double.eps*1e3) return(cbind(rep(NA,k),rep(NA,k))) ## degenerate case, completely flat
 
-cestimate=isotInterval(pestimate,conf=conf,intfun=intfun,outx=pestimate$shrinkage$x,...)
-fslopes=slope(pestimate$shrinkage$x,pestimate$shrinkage$y)
+cestimate=isotInterval(isotPoint,conf=conf,intfun=intfun,outx=isotPoint$shrinkage$x,...)
+fslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y)
 
 # inverse widths raw
-rwidths=(pestimate$shrinkage$y-cestimate$ciLow)/fslopes
-lwidths=(pestimate$shrinkage$y-cestimate$ciHigh)/fslopes
+rwidths=(isotPoint$shrinkage$y-cestimate$ciLow)/fslopes
+lwidths=(isotPoint$shrinkage$y-cestimate$ciHigh)/fslopes
 # Adding the widths to the mean curve, self-consistently
-rbounds=rev(cummin(rev(tapply(pestimate$shrinkage$x+rwidths,pestimate$shrinkage$y,max))))
-lbounds=cummax(tapply(pestimate$shrinkage$x+lwidths,pestimate$shrinkage$y,min))
+rbounds=rev(cummin(rev(tapply(isotPoint$shrinkage$x+rwidths,isotPoint$shrinkage$y,max))))
+lbounds=cummax(tapply(isotPoint$shrinkage$x+lwidths,isotPoint$shrinkage$y,min))
 
 ### Returning
 # Note we use approx() with rule=1, forcing NAs when specified target is outside bounds
 
 if(length(unique(lbounds))==1 || length(unique(rbounds))==1)
 { # degenerate case: only one y value. No interval can be calculated
-	nout=ifelse(is.null(target),nrow(pestimate$output),length(target))
+	nout=ifelse(is.null(target),nrow(isotPoint$output),length(target))
 	lout=rep(NA,nout)
 	rout=rep(NA,nout)
 	return(cbind(lout,rout))
 }	
 if (is.null(target)) 
 { ## No target specified, returning CIs at design points
-	lout = approx(pestimate$shrinkage$y,lbounds,pestimate$output$y,rule=1)$y
-	uout = approx(pestimate$shrinkage$y,rbounds,pestimate$output$y,rule=1)$y
+	lout = approx(isotPoint$shrinkage$y,lbounds,isotPoint$output$y,rule=1)$y
+	uout = approx(isotPoint$shrinkage$y,rbounds,isotPoint$output$y,rule=1)$y
 	return(cbind(lout,uout))
 }
 # Otherwise: target was specified
