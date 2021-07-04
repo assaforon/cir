@@ -30,13 +30,17 @@ if(length(n)!=m) stop("Mismatched lengths in Morris.\n")
 uout=rep(1,m)
 a=m
 ### At uppermost doses as long as phat=1, no need for algorithms
-while(y[a]==n[a] && a>=1) a=a-1
+while((y[a]==n[a] || n[a]==0) && a>=1) a=a-1
 if(a<1) return(uout)
 
-for(b in a:1)
+for(b in a:1) ### core algorithm
 {
 	uout[b]=uniroot(function(theta,h,d,alpha,...) h(theta=theta,...)-alpha,interval=c(0,1),
 		alpha=halfa,j=b,h=Gupper,n=n,y=y)$root
+}
+if(any(n==0)) # Degenerate case with "phantom boundaries"
+{
+uout = approx((1:m)[n>0],uout[n>0],xout=1:m,rule=2)$y
 }
 return(uout)
 }
@@ -50,13 +54,17 @@ if(length(n)!=m) stop("Mismatched lengths in Morris.\n")
 uout=rep(0,m)
 a=1
 ### At lowermost doses as long as phat=0, no need for algorithms
-while(y[a]==0 && a<=m) a=a+1
+while((y[a]==0 || n[a]==0) && a<=m) a=a+1
 if(a>m) return(uout)
 
-for(b in a:m)
+for(b in a:m)  ### core algorithm
 {
 	uout[b]=uniroot(function(theta,h,d,alpha,...) h(theta=theta,...)-alpha,interval=c(0,1),
 		alpha=halfa,j=b,h=Glower,n=n,y=y)$root
+}
+if(any(n==0)) # Degenerate case with "phantom boundaries"
+{
+uout = approx((1:m)[n>0],uout[n>0],xout=1:m,rule=2)$y
 }
 return(uout)
 }
@@ -95,9 +103,10 @@ tailp=(1-conf)/2
 lcl=morrisLCL(y=y,n=n,halfa=tailp)
 ucl=morrisUCL(y=y,n=n,halfa=tailp)
 
-if(narrower)
+if(narrower) # Optional pointwise narrowing via alternate interval function
+# See Oron and Flournoy (2017) for justification/performance
 {
-	relevants=which(n>0) # Avoid n=0 boundary where alternate() produces NaNs
+	relevants=which(n>0) # Avoiding n=0 boundary where alternate() produces NaNs
 	altout=alternate(phat=phat[relevants],n=n[relevants],conf=conf,...)
 # The cummax, cummin (added Dec. 2015) ensure monotonicity of boundaries.
 # Monotonicity is not for the optics, but rather another way to pool information
