@@ -197,7 +197,7 @@ DRshrink<-function(y,x=NULL,wt0=NULL,target,swt=1,nmin=2,...)
 {
 if(length(target)>1) stop('Shrinkage target must be a single constant.\n')
 dr=doseResponse(y=y,x=x,wt=wt0,...)
-dr$y=ifelse(dr$weight<nmin,dr$y,(dr$y*dr$weight+target*swt)/(dr$weight+swt))
+dr$y=ifelse(dr$weight<nmin,dr$y,round((dr$y*dr$weight+target*swt)/(dr$weight+swt),8))
 #print(dr)
 return(dr)
 }
