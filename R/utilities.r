@@ -68,7 +68,7 @@ parapolate<-function(x,y,xout,upward,full=FALSE)
 if(any(diff(x)<=0)) stop("x must be monotone strictly increasing.\n")
 m=length(x)
 if(m<2) stop ("Need at least 2 points.\n")
-if(min(xout)<x[1] || max(xout)>x[m]) stop("This function does not extrapolate.\n")
+#if(min(xout)<x[1] || max(xout)>x[m]) stop("This function does not extrapolate.\n")
 if(length(y)!=m) stop("mismatched x,y lengths.\n")
 
 yout=y[match(xout,x)]
@@ -93,8 +93,11 @@ b=ifelse(oneflat,-2*x1*a,-2*x2*a)
 cee=y1-a*x1^2-b*x1  # per parabola definitions :)
 
 intchoose=findInterval(xout,x)
+intchoose[intchoose==0]=1
 candy=a[intchoose]*xout^2+b[intchoose]*xout+cee[intchoose]
 yout[!(xout %in% x)]=candy[!(xout %in% x)]
+# Forcing NA outside boundaries
+yout[ xout<x[1] | xout>x[m] ] = NA
 if(!full) return(yout)
 return(list(a=a,b=b,c=cee,outdat=data.frame(x=xout,y=yout)))
 }

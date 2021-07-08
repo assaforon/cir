@@ -108,8 +108,10 @@ if (is.null(target))
 	return(cbind(lout,uout))
 }
 # Otherwise: target was specified
-lout=approx(yvals,lbounds,xout=target,rule=1)$y
-rout=approx(yvals,rbounds,xout=target,rule=1)$y
+#lout=approx(yvals,lbounds,xout=target,rule=1)$y
+#rout=approx(yvals,rbounds,xout=target,rule=1)$y
+lout=parapolate(yvals,lbounds,xout=target,upward=TRUE)
+rout=parapolate(yvals,rbounds,xout=target,upward=FALSE)
 
 return(cbind(lout,rout))
 }
