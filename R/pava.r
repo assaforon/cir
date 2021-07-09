@@ -62,7 +62,7 @@ if (dec) dr$y = -dr$y
 lvlsets <- (1:m)
  
 repeat {
-      viol <- (as.vector(diff(dr$y)) < 0)  # Find adjacent violators
+      viol <- (as.vector(diff(round(dr$y,8))) < 0)  # Find adjacent violators
       if (!(any(viol))) break
  
       i <- min( (1:(m-1))[viol])        # Pool first pair of violators

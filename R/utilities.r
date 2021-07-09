@@ -127,14 +127,14 @@ return(list(a=a,b=b,c=cee,outdat=data.frame(x=xout,y=yout)))
 slope<-function(x,y,outx=x,allowZero=FALSE,full=FALSE,decreasing=FALSE)
 {
 ### Validation (might be mostly redundant if using doseResponse as input)
-
+y=round(y,8)  # underflow error prevention
 if (any(outx>max(x) | outx<min(x))) stop("No extrapolation allowed in 'slopes'.\n")
 m=length(x)
 if(length(y)!=m) stop("Mismatched lengths in 'slopes'.\n")
 if(decreasing) y=-y
 xdiffs=diff(x)
 ydiffs=diff(y)
-if (any(xdiffs<=0 | ydiffs<0)) stop("Monotonicity violation in 'slopes'.\n")
+if (any(xdiffs<=0 | ydiffs<0)) stop("Monotonicity violation in slope().\n")
 if (y[1]==y[m] && !allowZero)  return(rep(NA,length(outx))) # degenerate flat case; no solution
 slopes=ydiffs/xdiffs
 sslopes=c(slopes[1],slopes,slopes[m-1])  ### so that the edges get only the inward-side slope

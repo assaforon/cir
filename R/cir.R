@@ -66,14 +66,15 @@ repeat {
 
 # Find adjacent violators
 # Definition of violators comes in 1 of 3 'flavors', see help
-	viol <- (as.vector(diff(dr$y)) < 0)
+	viol <- (as.vector(diff(round(dr$y,8))) < 0)
 	if(interiorStrict) 
 	{
-		addviol <- (as.vector(diff(dr$y)) == 0)
+		addviol <- (as.vector(diff(round(dr$y,8))) == 0)
 		addviol[addviol & (dr$y[-m] %in% ybounds) & (dr$y[-1] %in% ybounds)]=FALSE
 		viol<-(viol | addviol)
 	}
 	if(strict) viol <- (as.vector(diff(dr$y)) <= 0)
+
 
     if (!(any(viol))) break
     i <- min( (1:(m-1))[viol]) # Pool first pair of violators
