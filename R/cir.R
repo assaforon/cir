@@ -143,6 +143,10 @@ if (!full) {
 #' @note You can obtain interpolated point estimates for x values between the observed data by specifying them via \code{outx}. However, for CIR, do NOT commit the error of generating estimates at observations, then interpolating using \code{\link{approx}}. If you need to retain a set of estimates for plotting the entire fitted curve, or for future interpolation at unknown points, call \code{\link{cirPAVA}} directly with \code{full=TRUE}, then use the returned \code{shrinkage} data frame for plotting and interpolation. See example code below.
 #' @import stats
 
+#' @references Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Statistics in Biopharmaceutical Research 9, 258-267. (author's public version available on arxiv.org).
+#' @references Flournoy, N. and Oron, A.P., 2020. Bias Induced by Adaptive Dose-Finding Designs. Journal of Applied Statistics 47, 2431-2442.
+
+
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
 #' @param x dose levels (if not included in y). Note that the PAV algorithm doesn't really use them. 
 #' @param wt weights (if not included in y).
@@ -153,6 +157,9 @@ if (!full) {
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param adaptiveShrink logical, should the y-values be pre-shrunk towards an experiment's target? Recommended if data were obtained via an adaptive dose-finding design. If \code{TRUE}, then must also provide a \code{target} argument that will be passed via \code{...}.
 #' @param ...	arguments passed on to other functions (constructor, point estimate and interval estimate).
+
+#' @note If the data were obtained from an adaptive dose-finding design then away from the design's target the estimates are likely biased (Flournoy and Oron, 2020). Use \code{adaptiveShrink=TRUE} to mitigate the bias. 
+
 
 quickIsotone<-function (y,x=NULL,wt=NULL,outx=NULL,dec=FALSE,estfun=cirPAVA,intfun=morrisCI,conf=0.9,adaptiveShrink=FALSE,...) 
 {

@@ -9,7 +9,7 @@ deltaInverse(
   target = NULL,
   intfun = morrisCI,
   conf = 0.9,
-  starget = target[1],
+  adaptiveCurve = FALSE,
   ...
 )
 }
@@ -22,7 +22,7 @@ deltaInverse(
 
 \item{conf}{numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.}
 
-\item{starget}{The shrinkage target. Defaults to \code{target[1]}.}
+\item{adaptiveCurve}{logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation (default \code{FALSE})? Recommended when adaptive design was used and \code{target} is not 0.5.}
 
 \item{...}{additional arguments passed on to \code{\link{quickIsotone}}}
 }

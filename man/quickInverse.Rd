@@ -17,6 +17,7 @@ quickInverse(
   extrapolate = FALSE,
   adaptiveShrink = FALSE,
   starget = target[1],
+  adaptiveCurve = FALSE,
   ...
 )
 }
@@ -45,6 +46,8 @@ quickInverse(
 
 \item{starget}{The shrinkage target. Defaults to \code{target[1]}.}
 
+\item{adaptiveCurve}{logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation (default \code{FALSE})? Recommended when adaptive design was used and \code{target} is not 0.5.}
+
 \item{...}{Other arguments passed on to \code{\link{doseFind}} and \code{\link{quickIsotone}}, and onwards from there.}
 }
 \value{
@@ -63,7 +66,7 @@ The inverse point estimate is calculated in a straightforward manner from a forw
 If \code{delta=FALSE}, a second call to \code{\link{quickIsotone}} genderates a high-resolution grid outlining the forward intervals. Then the algorithm "draws a horizontal line" at \code{y=target} to find the right and left bounds on this grid. Note that the right (upper) dose-finding confidence bound is found on the lower forward confidence bound, and vice versa.
 }
 \note{
-If the data were obtained from an adaptive dose-finding design and you seek to estimate a dose other than the experiment's target, note that away from the target the estimates are likely biased (Flournoy and Oron, 2019). Use \code{adaptiveShrink=TRUE} to mitigate the bias. In addition, either provide the true target as \code{starget}, or a vector of values to \code{target}, with the first value being the true target.
+If the data were obtained from an adaptive dose-finding design and you seek to estimate a dose other than the experiment's target, note that away from the target the estimates are likely biased (Flournoy and Oron, 2020). Use \code{adaptiveShrink=TRUE} to mitigate the bias and the associated too-narrow inverse CIs. In addition, either provide the true target as \code{starget}, or a vector of values to \code{target}, with the first value being the true target. Lastly, if the target is not 0.5 (median threshold), we recommend choosing \code{adaptiveCurve=TRUE} to ensure adequate CI coverage.
 }
 \examples{
 # Interesting run (#664) from a simulated up-and-down ensemble:

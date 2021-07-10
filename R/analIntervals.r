@@ -62,7 +62,7 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' @param target A vector of target response rate(s), for which the interval is needed. If \code{NULL} (default), interval will be returned for the point estimates at design points (e.g., if the forward point estimate at $x_1$ is 0.2, then the first returned interval is for the 20th percentile).
 #' @param intfun the function to be used for initial (forward) interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
-#' @param starget The shrinkage target. Defaults to \code{target[1]}.
+#' @param adaptiveCurve logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation (default \code{FALSE})? Recommended when adaptive design was used and \code{target} is not 0.5.
 #' @param ... additional arguments passed on to \code{\link{quickIsotone}}
 
 #' @seealso \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{isotInterval}},
@@ -72,7 +72,8 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 
 #' @export
 
-deltaInverse<-function(isotPoint,target=NULL,intfun = morrisCI, conf = 0.9,starget=target[1],...)
+deltaInverse<-function(isotPoint,target=NULL,intfun = morrisCI, conf = 0.9,
+	adaptiveCurve = FALSE,...)
 {
 k=length(target)
 #isotPoint$shrinkage$y=round(isotPoint$shrinkage$y,10) ### avoid rounding errors from PAVA
@@ -105,14 +106,15 @@ if (is.null(target))
 { ## No target specified, returning CIs at design points
 	lout = approx(yvals,lbounds,isotPoint$output$y,rule=1)$y
 	uout = approx(yvals,rbounds[n>0],isotPoint$output$y,rule=1)$y
-	return(cbind(lout,uout))
-}
+} else if(adaptiveCurve) {
 # Otherwise: target was specified
-#lout=approx(yvals,lbounds,xout=target,rule=1)$y
-#rout=approx(yvals,rbounds,xout=target,rule=1)$y
-lout=parapolate(yvals,lbounds,xout=target,upward=TRUE)
-rout=parapolate(yvals,rbounds,xout=target,upward=FALSE)
-
+# First, curved case for adaptive design with target!=0.5
+	lout=parapolate(yvals,lbounds,xout=target,upward=TRUE)
+	rout=parapolate(yvals,rbounds,xout=target,upward=FALSE)
+} else {
+	lout=approx(yvals,lbounds,xout=target,rule=1)$y
+	rout=approx(yvals,rbounds,xout=target,rule=1)$y
+}
 return(cbind(lout,rout))
 }
 
