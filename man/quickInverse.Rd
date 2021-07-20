@@ -63,10 +63,9 @@ Convenience wrapper for point and interval estimation of the "dose" that would g
 }
 \details{
 The inverse point estimate is calculated in a straightforward manner from a forward estimate, using \code{\link{doseFind}}. For the inverse interval, the default option (\code{delta=TRUE}) calls \code{\link{deltaInverse}} for a "local" (Delta) inversion of the forward intervals. 
-If \code{delta=FALSE}, a second call to \code{\link{quickIsotone}} genderates a high-resolution grid outlining the forward intervals. Then the algorithm "draws a horizontal line" at \code{y=target} to find the right and left bounds on this grid. Note that the right (upper) dose-finding confidence bound is found on the lower forward confidence bound, and vice versa.
-}
-\note{
-If the data were obtained from an adaptive dose-finding design and you seek to estimate a dose other than the experiment's target, note that away from the target the estimates are likely biased (Flournoy and Oron, 2020). Use \code{adaptiveShrink=TRUE} to mitigate the bias and the associated too-narrow inverse CIs. In addition, either provide the true target as \code{starget}, or a vector of values to \code{target}, with the first value being the true target. Lastly, if the target is not 0.5 (median threshold), we recommend choosing \code{adaptiveCurve=TRUE} to ensure adequate CI coverage.
+If \code{delta=FALSE}, a second call to \code{\link{quickIsotone}} generates a high-resolution grid outlining the forward intervals. Then the algorithm "draws a horizontal line" at \code{y=target} to find the right and left bounds on this grid. Note that the right (upper) dose-finding confidence bound is found on the lower forward confidence bound, and vice versa. This approach is not recommended, tending to produce CIs that are too wide.
+
+If the data were obtained from an adaptive dose-finding design and you seek to estimate a dose other than the experiment's target, note that away from the target the estimates are likely biased (Flournoy and Oron, 2019). Use \code{adaptiveShrink=TRUE} to mitigate the bias. In addition, either provide the true target as \code{starget}, or a vector of values to \code{target}, with the first value being the true target.
 }
 \examples{
 # Interesting run (#664) from a simulated up-and-down ensemble:

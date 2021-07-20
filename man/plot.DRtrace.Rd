@@ -3,7 +3,7 @@
 \name{plot.DRtrace}
 \alias{plot.DRtrace}
 \alias{plot.doseResponse}
-\title{PLotting Methods for DRtrace, doseResponse Objects}
+\title{Plotting Methods for DRtrace, doseResponse Objects}
 \usage{
 \method{plot}{DRtrace}(
   x,
