@@ -115,6 +115,7 @@ return(list(a=a,b=b,c=cee,outdat=data.frame(x=xout,y=yout)))
 #' @param y numeric: input y values, must be monotone (can be non-strict) and in line with the direction specified by \code{decreasing}
 #' @param outx numeric or integer: x values at which slopes are desired (default: same as input values)
 #' @param allowZero logical: should zero be allowed in the output? Default \code{FALSE}
+#' @param Underflow tolerance level: when \code{allowZero=FALSE}, slope below that value is considered zero. Default 1e-4. Might need to change if you use unusual units for x or y.
 #' @param full logical: should a more detailed output be provided? Default \code{FALSE} (see details under 'Value').
 #' @param decreasing logical: is input supposed to be monotone decreasing rather than increasing? Default \code{FALSE}
 
@@ -124,7 +125,7 @@ return(list(a=a,b=b,c=cee,outdat=data.frame(x=xout,y=yout)))
 #' @seealso \code{\link{deltaInverse}}, which uses this function.
 #' @export
 
-slope<-function(x,y,outx=x,allowZero=FALSE,full=FALSE,decreasing=FALSE)
+slope<-function(x,y,outx=x,allowZero=FALSE,tol=1e-4,full=FALSE,decreasing=FALSE)
 {
 ### Validation (might be mostly redundant if using doseResponse as input)
 y=round(y,8)  # underflow error prevention
@@ -150,13 +151,13 @@ if (length(design)>0) {
 candidate0=candidate
 
 ## tougher nut: zero slope
-if(!allowZero && any(candidate==0))
+if(!allowZero && any(candidate<tol))
 {
 	xstep=mean(xdiffs)
-	for (a in which(candidate==0))
+	for (a in which(candidate<tol))
 	{	
 		b=0
-		while(candidate[a]==0)
+		while(candidate[a]<tol)
 		{
 			b=b+1
 			xends=c(max(x[1],outx[a]-b*xstep),min(x[m],outx[a]+b*xstep))
