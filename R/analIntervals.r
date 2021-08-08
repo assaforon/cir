@@ -76,7 +76,7 @@ deltaInverse<-function(isotPoint,target=NULL,intfun = morrisCI, conf = 0.9,
 	adaptiveCurve = FALSE,...)
 {
 k=length(target)
-#isotPoint$shrinkage$y=round(isotPoint$shrinkage$y,10) ### avoid rounding errors from PAVA
+isotPoint$shrinkage$y=round(isotPoint$shrinkage$y,8) ### avoid rounding errors from PAVA
 yvals=isotPoint$shrinkage$y
 yval0=sort(unique(isotPoint$shrinkage$y))
 n=isotPoint$shrinkage$weight

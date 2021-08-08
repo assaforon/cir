@@ -33,9 +33,10 @@
 
 #' @return under default, returns point estimate(s) of the dose (x) for the provided target rate(s). With \code{full=TRUE}, returns a list with
 #' \itemize{
-#' \item {xout } {  The said point estimate of x}
+#' \item {targest } {  The said point estimate of x}
 #' \item {input  }  {  a \code{doseResponse} object summarizing the input data}
-#' \item {cir  }  {  a \code{doseResponse} object which is the \code{alg} output of the forward-estimation function}
+#' \item {output  }  {  a \code{doseResponse} object with the forward estimate at design points}
+#' \item {shrinkage  }  {  a \code{doseResponse} object which is the \code{alg} output of the forward-estimation function}
 #' }
 
 #' @seealso \code{\link{oldPAVA}},\code{\link{cirPAVA}}. If you'd like point and interval estimates together, use \code{\link{quickInverse}}.
@@ -67,7 +68,7 @@ newy<-pavout$shrinkage$y
 if(min(newy)==max(newy))
 {
 	if(errOnFlat) stop("Cannot dose-find; curve completely flat.\n")
-	if(full) return (list(targest=NA,input=dr,fwd=pavout$shrinkage,fwdDesign=pavout$output))
+	if(full) return (list(targest=NA,input=dr,shrinkage=pavout$shrinkage,output=pavout$output))
 	return(rep(NA,length(target)))
 }
 

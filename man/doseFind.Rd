@@ -47,9 +47,10 @@ doseFind(
 \value{
 under default, returns point estimate(s) of the dose (x) for the provided target rate(s). With \code{full=TRUE}, returns a list with
 \itemize{
-\item {xout } {  The said point estimate of x}
+\item {targest } {  The said point estimate of x}
 \item {input  }  {  a \code{doseResponse} object summarizing the input data}
-\item {cir  }  {  a \code{doseResponse} object which is the \code{alg} output of the forward-estimation function}
+\item {output  }  {  a \code{doseResponse} object with the forward estimate at design points}
+\item {shrinkage  }  {  a \code{doseResponse} object which is the \code{alg} output of the forward-estimation function}
 }
 }
 \description{
