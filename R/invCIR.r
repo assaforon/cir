@@ -148,10 +148,12 @@ m=length(dr$x)
 ## adaptiveShrink set to FALSE to avoid double-shrinking
 pestimate=doseFind(y=dr,estfun=estfun,target=target,full=TRUE,extrapolate=extrapolate,adaptiveShrink=FALSE,...)
 dout=data.frame(target=target,point=pestimate$targest,low=-Inf,high=Inf)
-if(all(is.na(pestimate$targest)))
-foundPts=pestimate$targest[!is.na(pestimate$targest)]
 
-dout=data.frame(target=target,point=pestimate$targest,low=-Inf,high=Inf)
+# All point estimates are NA -> exit here
+if(all(is.na(pestimate$targest))) {
+	names(dout)[3:4]=paste(c("lower","upper"),round(100*conf),"conf",sep="")
+	return(dout)
+}
 
 if(delta) { ## Default, delta-method ("local") intervals
 	dout[,3:4]=deltaInverse(pestimate,target=target,intfun=intfun,conf=conf,adaptiveCurve = adaptiveCurve,...)
