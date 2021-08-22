@@ -31,6 +31,8 @@ For confidence intervals at design points ($x$ values with obesrvations), this f
 }
 \note{
 All provided algorithm and formulae are for Binomial data only. For other data, write your own \code{intfun}, returning a two-column matrix. The interval estimation method is presented and discussed by Oron and Flournoy (2017).
+
+Interval coverage for extreme percentiles with adaptive designs may be lacking: use \code{adaptiveCurve=TRUE} whenever the \code{target} is not 0.5. However, targeting  the the 5th or 95th percentile will likely produce intervals with 10-15% under-coverage by with that option.
 }
 \examples{
 # Interesting run (#664) from a simulated up-and-down ensemble:
@@ -39,15 +41,15 @@ dat=doseResponse(y=c(1/7,1/8,1/2,1/4,4/17),wt=c(7,24,20,12,17))
 # The experiment's goal is to find the 30th percentile
 slow1=cirPAVA(dat,full=TRUE)
 # Default interval (Morris+Wilson); same as you get by directly calling 'quickIsotone'
-int1=isotInterval(slow1$output)
+int1=isotInterval(slow1)
 # Morris without Wilson; the 'narrower=FALSE' argument is passed on to 'morrisCI'
-int1_0=isotInterval(slow1$output,narrower=FALSE)
+int1_0=isotInterval(slow1,narrower=FALSE)
 # Wilson without Morris
-int2=isotInterval(slow1$output,intfun=wilsonCI)
+int2=isotInterval(slow1,intfun=wilsonCI)
 # Agresti=Coull (the often-used "plus 2")
-int3=isotInterval(slow1$output,intfun=agcouCI)
+int3=isotInterval(slow1,intfun=agcouCI)
 # Jeffrys (Bayesian-inspired) is also available
-int4=isotInterval(slow1$output,intfun=jeffCI)
+int4=isotInterval(slow1,intfun=jeffCI)
 
 ### Showing the data and the intervals
 par(mar=c(3,3,4,1),mgp=c(2,.5,0),tcl=-0.25)
@@ -82,5 +84,5 @@ Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Inter
 \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{morrisCI}},
 }
 \author{
-Assaf P. Oron \code{<aoron.at.idmod.org>}
+Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 }

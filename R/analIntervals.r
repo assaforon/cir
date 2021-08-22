@@ -5,12 +5,12 @@
 #' 
 #' @note All provided algorithm and formulae are for Binomial data only. For other data, write your own \code{intfun}, returning a two-column matrix. The interval estimation method is presented and discussed by Oron and Flournoy (2017).
 #'
-#' @warning As of mid-2021, we've found that interval coverage for extreme percentiles with adaptive designs is relatively lacking: by 10-15% for ED90/ED10 type targets, and deteriorating further towards the edges. 
+#' @note Interval coverage for extreme percentiles with adaptive designs may be lacking: use \code{adaptiveCurve=TRUE} whenever the \code{target} is not 0.5. However, targeting  the the 5th or 95th percentile will likely produce intervals with 10-15% under-coverage by with that option. 
 #'
 #' @seealso \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{morrisCI}},
 #' @example inst/examples/fwdCiExamples.r
 #'
-##' @author Assaf P. Oron \code{<aoron.at.idmod.org>}
+##' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 #' @export
 #' @references Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Statistics in Biopharmaceutical Research 3, 258-267.
 
@@ -108,7 +108,7 @@ if(length(unique(lbounds))==1 || length(unique(rbounds))==1)
 if (is.null(target)) 
 { ## No target specified, returning CIs at design points
 	lout = approx(yvals,lbounds,isotPoint$output$y,rule=1,ties='ordered')$y
-	uout = approx(yvals,rbounds[n>0],isotPoint$output$y,rule=1,ties='ordered')$y
+	rout = approx(yvals,rbounds,isotPoint$output$y,rule=1,ties='ordered')$y
 } else if(adaptiveCurve) {
 # Otherwise: target was specified
 # First, curved case for adaptive design with target!=0.5

@@ -6,7 +6,7 @@ quick1=quickIsotone(dat)
 # For inverse confidence intervals "the long way", 
 #    we need a full CIR output object:
 fwd1=cirPAVA(dat, full=TRUE)
-invDelta=deltaInverse(dat)
+invDelta=deltaInverse(fwd1)
 
 ### Showing the data and the estimates
 par(mar=c(3,3,4,1),mgp=c(2,.5,0),tcl=-0.25)

@@ -115,7 +115,7 @@ return(list(a=a,b=b,c=cee,outdat=data.frame(x=xout,y=yout)))
 #' @param y numeric: input y values, must be monotone (can be non-strict) and in line with the direction specified by \code{decreasing}
 #' @param outx numeric or integer: x values at which slopes are desired (default: same as input values)
 #' @param allowZero logical: should zero be allowed in the output? Default \code{FALSE}
-#' @param Underflow tolerance level: when \code{allowZero=FALSE}, slope below that value is considered zero. Default 1e-4. Might need to change if you use unusual units for x or y.
+#' @param tol tolerance level: when \code{allowZero=FALSE}, slope below that value is considered zero. Default 1e-4. Might need to change if you use unusual units for x or y.
 #' @param full logical: should a more detailed output be provided? Default \code{FALSE} (see details under 'Value').
 #' @param decreasing logical: is input supposed to be monotone decreasing rather than increasing? Default \code{FALSE}
 
