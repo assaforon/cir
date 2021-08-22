@@ -3,6 +3,9 @@
 dat=doseResponse(y=c(1/7,1/8,1/2,1/4,4/17),wt=c(7,24,20,12,17))
 # The experiment's goal is to find the 30th percentile
 quick1=quickIsotone(dat)
+# For inverse confidence intervals "the long way", 
+#    we need a full CIR output object:
+fwd1=cirPAVA(dat, full=TRUE)
 invDelta=deltaInverse(dat)
 
 ### Showing the data and the estimates

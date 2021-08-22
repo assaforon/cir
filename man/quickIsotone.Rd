@@ -102,5 +102,5 @@ Flournoy, N. and Oron, A.P., 2020. Bias Induced by Adaptive Dose-Finding Designs
 \code{\link{cirPAVA}},\code{\link{oldPAVA}},\code{\link{isotInterval}},\code{\link{quickInverse}},\code{\link{doseResponse}}
 }
 \author{
-Assaf P. Oron \code{<aoron.at.idmod.org>}
+Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 }

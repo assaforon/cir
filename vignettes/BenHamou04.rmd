@@ -5,7 +5,7 @@ author: "Assaf Oron"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette for 'cir' Package}
+  %\VignetteIndexEntry{"Vignette for 'cir' Package"}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -87,7 +87,7 @@ levoTargetCIR
  - The estimate appears under the word `point`: 0.0938% for ropivacaine and 0.0684% for  levobupivacaine.
  - We specify the target as a fraction, via the `target` argument.
  - Default CIs are 90% rather than 95%, due to the large variabily in these typical small-sample experiments. To change it use the `conf` argument.
- - The `adaptiveShrink` option performs an empirical correction the bias induced by the adaptive design, a bias discovered and described recently by Flournoy and Oron.^[Flournoy N, Oron AP. Bias induced by adaptive dose-finding designs. J Appl Stat. 2020;47(13-15):2431-2442.] It is induced not just by UD designs, but also by model-based designs such as the Continual Reassessment Method. Because of this bias, we strongly recommend to *not* estimate any target except 0.5 from these data, except for exploratory/illustrative purposes.
+ - The `adaptiveShrink` option performs an empirical correction the bias induced by the adaptive design, a bias discovered and described recently by Flournoy and Oron.^[Flournoy N, Oron AP. Bias induced by adaptive dose-finding designs. J Appl Stat. 2020;47(13-15):2431-2442.] It is induced not just by UD designs, but also by model-based designs such as the Continual Reassessment Method. **Because of this bias, we strongly recommend to *not* estimate any target except 0.5 from these data, except for exploratory/illustrative purposes.** The correction serves mostly to provide better CI coverage for the target dose estimate.
  - In an experiment with non-median targets such as the ED$_{90}$, we recommend adding the option `adaptiveCurve=TRUE` to the command above. This broadens the confidence intervals a bit to ensure proper coverage, which is more challenging the closer the target gets to the edge of the dose-response curve.
  
 Let us calculate 83% CIs, to evaluate the evidence for different potencies via the overlapping-intervals method.
@@ -97,8 +97,8 @@ quickInverse(bhamou03ropiRates, target=0.5, adaptiveShrink=TRUE, conf=0.83)
 quickInverse(bhamou03levoRates, target=0.5, adaptiveShrink=TRUE, conf=0.83)
 ```
 
-The lower 83% confidence limit of ropivacaine is almost touching the upper 83% limit levobupivacaine, but there’s no overlap. One could conclude that there is moderate evidence for a difference in potency at the $\alpha=0.05$ level.
-Thus, our conclusion is similar to Pace and Stylianou’s reanalysis, but not as strong. Our point estimates are also very similar to theirs, and so is the levo/ropi potency ratio (1.37, quite a bit higher than Benhamou et al.’s 1.19). This should not be too surprising, because CIR is an extension of IR which Pace and Stylianou used, whereas Benhamou et al. used dose averaging. 
+The lower 83% confidence limit for ropivacaine's ED$_{50}$ is almost touching the upper 83% limit for levobupivacaine, but there’s no overlap. One may conclude that there is moderate evidence for a difference in potency at the $\alpha=0.05$ level.
+Thus, our conclusion is similar to Pace and Stylianou’s reanalysis, but not as strong. Our point estimates are also very similar to theirs, and so is the levo/ropi potency ratio (1.37, quite a bit higher than Benhamou et al.’s 1.19). This should not be too surprising, because CIR is a direct upgrade of IR which Pace and Stylianou used, whereas Benhamou et al. used dose averaging. 
 
 Looking more closely for the source of discrepancy, the difference is not in the ropivacaine estimates (0.092 vs. 0.093, and 0.094, by Benhamou et al., Pace-Stylianou, and us, respectively) - but rather in levobupivacaine (0.077, 0.068, 0.068). Looking even deeper, the relatively high dose-avaeraging estimate for levobupivacaine in the original article is mostly due to the experiment’s meandering (rather than straight) path downward to the region where most of the doses were given. There is reason to suspect that the starting-point effect was not mitigated well enough. The original dose-averaging estimate probably excluded only the first 1-2 doses. If one excludes, say, the first 10 doses, the average gets closer to IR/CIR (0.072), and the difference may become significant. 
 
@@ -131,11 +131,11 @@ Each of these returns a list of three `doseResponse` objects. Here's one:
 ropiCurveCIR
 ```
 
-If you want a quick, "short-form" forward estimate -- the analogue of `quickInverse()` used above for inverse estimation -- use `quickIsotone`. You will get an output similar to the `$output` object, together with confidence intervals for each dose. That function's arguments are similar to `quickInverse()`.
+To obtain a quick, "short-form" forward estimate -- the forward analogue of `quickInverse()` used above -- use `quickIsotone()`. You will get an output similar to the `$output` object above, together with confidence intervals for each dose. That function's arguments are similar to `quickInverse()`.
 
 We end with the dose-response plots.
 
-```{r drfig,fig.width=9,fig.height=4.5,out.height=400,out.width=800}
+```{r drfig,fig.width=10,fig.height=5,out.height=400,out.width=800}
 par(mfrow=c(1,2), las=1, mar=c(4,4,4,1)) # image format parameters
 plot(bhamou03ropiRates, xlab="Concentration (%)", 
 ylab="Proportion Effective", main='Ropivacaine Arm')

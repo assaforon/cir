@@ -74,5 +74,5 @@ Flournoy N and Oron AP, 2020. Bias Induced by Adaptive Dose-Finding Designs. Jou
 \code{\link{oldPAVA}},\code{\link{cirPAVA}}. If you'd like point and interval estimates together, use \code{\link{quickInverse}}.
 }
 \author{
-Assaf P. Oron \code{<aoron.at.idmod.org>}
+Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 }

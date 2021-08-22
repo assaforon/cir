@@ -91,5 +91,5 @@ Morris, M., 1988. Small-sample confidence limits for parameters under inequality
 \code{\link{isotInterval}}
 }
 \author{
-Assaf P. Oron \code{<aoron.at.idmod.org>}
+Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 }
