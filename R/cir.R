@@ -13,7 +13,7 @@
 #' @references Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Statistics in Biopharmaceutical Research 9, 258-267. (author's public version available on arxiv.org).
 #' @references Flournoy, N. and Oron, A.P., 2020. Bias Induced by Adaptive Dose-Finding Designs. Journal of Applied Statistics 47, 2431-2442.
 
-##' @author Assaf P. Oron \code{<aoron.at.idmod.org>}
+##' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 #' @example inst/examples/cirExamples.r
 
 
@@ -128,7 +128,7 @@ if (!full) {
 #' An analogous function for dose-finding (inverse estimation) is \code{\link{quickInverse}}.
 #'
 #'
-##' @author Assaf P. Oron \code{<aoron.at.idmod.org>}
+##' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 #' @example inst/examples/cirExamples.r
 #' @export
 

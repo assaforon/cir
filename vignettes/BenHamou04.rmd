@@ -1,0 +1,86 @@
+---
+title: "Vignette for 'cir' Package"
+subtitle: "using Up-and-Down data from Benhamou et al. (2004)"
+author: "Assaf Oron"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette for 'cir' Package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Background
+
+We demonstrate the `cir` package with data from the anesthesiology experiment of Benhamou et al.^[Benhamou D, Ghosh C, Mercier FJ. A Randomized Sequential Allocation Study to Determine the Minimum Effective Analgesic Concentration of Levobupivacaine and Ropivacaine in Patients Receiving Epidural Analgesia for Labor. Anesthesiology. 2003;99(6):1383-1386.]. This experiment used the Up-and-Down (UD) dose-finding design, and was re-analyzed a few years later by Pace and Stylianou.^[Pace NL, Stylianou MP. Advances in and Limitations of Up-and-down Methodology: A Précis of Clinical Use, Study Design, and Dose Estimation in Anesthesia Research. Anesthesiology. 2007;107(1):144-152.] Here we re-analyze them again using state-of-the-art Centered Isotonic Regression (CIR) found in our package.
+
+The study randomized women in labor into two groups, receiving as analgesic either ropivacaine or levobupivacaine, to estimate each agent’s median effective dose (ED$_{50}$) for this condition, and test whether they are different. The original study used a "traditional" dose-averaging estimation method, concluding that even though levobupivacaine seemed 19% more potent, the difference between ED$_{50}$‘s, and hence the difference in potency, was not significant. To derive inference about this difference, they apparently used the standard errors of the dose averages in a $t$-test like manner.
+
+Pace and Stylianou re-analyzed the data using isotonic regression (IR) and 83% bootstrap confidence intervals (CIs); under certain assumptions, examining whether these CIs overlap is equivalent to rejecting the Null hypothesis. ^[Payton ME, Greenstone MH, Schenker N. Overlapping confidence intervals or standard error intervals:  What do they mean in terms of statistical significance? J Insect Sci. 2003;3(1).] They found a larger and statistically significant difference between the two ED50‘s. Per their estimates, levobupivacaine was 37% more potent.
+
+Here we revisit this experiment yet again, mostly as a `cir` tutorial, but also to demonstrate how our new analytically-derived CIs are indeed more conservative than Stylianou’s bootstrap CIs, and the vagaries of dose-averaging UD estimation.
+
+## The Raw Data
+
+Since UD datasets are rather compact, adding the data takes no more than 2-3 lines of code. But you can also use `.csv` file input if preferred, with two columns headed “x” and “y”. We do not have the original data table, nor do the original authors have access to it anymore; but we can read the sequence of administered doses off of Benhamou et al.’s Figure 1. 
+
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r data}
+# For brevity, we initially use integers to denote the doses. 
+# We make use of R’s shorthand for consecutive sequences, 
+# e.g., 1:3 is really 1,2,3
+xropi = c(11:9,10:8,9,10,9,10:7,8:11,10:12,11:7,8,7:10,9,8,9,8:10,9,10,9,10)
+xlevo = c(11,10,11,10,11:9,10:7,8,7,8:5,6:8,7,8:6,7,6,7,6,7:5,6,7,6:12)
+```
+
+The study design being *"classical"* or median-finding UD, the responses ($y$) can be read off directly from the doses ($x$): a positive increment indicates no effectiveness ($y=0$), and vice versa. Symbolically,  $y = \left( 1-diff(x) \right) / 2.$ We use this and the `DRtrace()` constructor utility, to create objects that store doses (converted to their physical units) and responses; as we call them here, the experimental **trace** or trajectory.
+
+```{r DRtrace}
+library(cir)
+bhamou03ropi = DRtrace(x=xropi[-40]/100, y=(1-diff(xropi))/2)
+bhamou03levo = DRtrace(x=xlevo[-40]/100, y=(1-diff(xlevo))/2)
+```
+
+In the construction above, we gave up the 40th and last observation in each arm, because we only know its dose but not the response. 
+
+`DRtrace` objects have a native plotting method:
+
+```{r tracefig}
+par(mfrow=c(1,2), las=1, mar=c(4,4,4,1)) # image format parameters
+doserange = c(5,12)/100
+
+plot(bhamou03ropi, ylim=doserange, ylab="Concentration (%)",
+main='Ropivacaine Arm')
+plot(bhamou03levo, ylim=doserange, ylab="Concentration (%)",
+main='Levobupivacaine Arm')
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))

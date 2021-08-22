@@ -16,7 +16,7 @@
 
 
  
-##' @author Assaf P. Oron \code{<aoron.at.idmod.org>}
+##' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 
 #' @param y  can be either of the following: y values (response rates), a 2-column matrix with positive/negative response counts by dose, a \code{\link{DRtrace}} object or a \code{\link{doseResponse}} object. 
 #' @param x dose levels (if not included in y). 
