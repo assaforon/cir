@@ -1,11 +1,11 @@
 ---
 title: "Vignette for 'cir' Package"
-subtitle: "using Up-and-Down data from Benhamou et al. (2004)"
+subtitle: "Using Up-and-Down data from Benhamou et al. (2004)"
 author: "Assaf Oron"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{"Vignette for 'cir' Package"}
+  %\VignetteIndexEntry{Vignette for 'cir' Package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -42,7 +42,7 @@ xropi = c(11:9,10:8,9,10,9,10:7,8:11,10:12,11:7,8,7:10,9,8,9,8:10,9,10,9,10)
 xlevo = c(11,10,11,10,11:9,10:7,8,7,8:5,6:8,7,8:6,7,6,7,6,7:5,6,7,6:12)
 ```
 
-The study design being *"classical"* or median-finding UD, the responses ($y$) can be read off directly from the doses ($x$): a positive increment indicates no effectiveness ($y=0$), and vice versa. Symbolically,  $$y = \left( 1-diff(x) \right) / 2.$$ We use this and the `DRtrace()` constructor utility, to create objects that store doses (converted to their physical units) and responses; as we call them here, the experimental **trace** or trajectory.
+The study design being *"classical"* or median-finding UD, the responses ($y$) can be read off directly from the doses ($x$): a positive increment indicates no effectiveness ($y=0$), and vice versa. Symbolically,  $$y = \left( 1-diff(x) \right) / 2.$$ We use this and the `DRtrace()` constructor utility, to create objects that store doses (converted to their physical units) and responses; as we call them here, the experimental "trace" or **trajectory.**
 
 ```{r DRtrace}
 library(cir)
@@ -110,7 +110,7 @@ quickInverse(bhamou03levoRates, target=0.5, estfun=oldPAVA, conf=0.83)
 ```
 
 
-Note the argument specifying the `oldPAVA()` estimation function (PAVA is the name of the leading algorithm to produce IR estimates). 
+Note the argument specifying the `oldPAVA()` estimation function (PAVA is the name of the leading algorithm to produce IR estimates; the package default is `cirPAVA()`, i.e., CIR). 
 
 Our confidence intervals are still different from Pace and Stylianou’s, even when using the same point-estimation method. For intervals they used the bootstrap, whereas we use an analytical approach based on Morris’ theoretical work and the Delta method.^[Morris MD. Small-Sample Confidence Limits for Parameters under Inequality Constraints with Application to Quantal Bioassay. Biometrics. 1988;44:1083-1092.
 ] Their levobupivacaine 83% CI is slightly wider than ours (0.059-0.081 vs. 0.059-0.080), but their ropivacaine interval is substantially narrower (0.087-0.097 vs. 0.085-0.101). The latter is the more typical difference between the two approaches. In fact, their ropivacaine 83% bootstrap CI is unrealistically narrow given the amount of information in the experiment, taking up only a single dose spacing (0.01). 
@@ -126,12 +126,14 @@ levoCurveIR = oldPAVA(bhamou03levoRates, full=TRUE)
 levoCurveCIR = cirPAVA(bhamou03levoRates, target=0.5, adaptiveShrink=TRUE, full=TRUE)
 ```
 
-Each of these returns a list of three `doseResponse` objects. Here's one:
+Each of these returns a list of three `doseResponse` objects. Here's one of the lists:
 ```{r forward2}
 ropiCurveCIR
 ```
 
-To obtain a quick, "short-form" forward estimate -- the forward analogue of `quickInverse()` used above -- use `quickIsotone()`. You will get an output similar to the `$output` object above, together with confidence intervals for each dose. That function's arguments are similar to `quickInverse()`.
+`$input` is the incoming data, `$output` the estimates at the same doses, and `$shrinkage` the doses where the algorithm makes the estimates (then interpolated to generate `$output`). With `oldPAVA()` this will always be identical to `$output`.
+
+**Note:** To obtain a quick, "short-form" forward estimate -- the forward analogue of `quickInverse()` used above -- use `quickIsotone()`. You will get an output similar to the `$output` object, together with confidence intervals for each dose. That function's arguments are similar to `quickInverse()`.
 
 We end with the dose-response plots.
 
