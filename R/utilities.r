@@ -193,14 +193,14 @@ return(list(rawslopes=slopes,initial=candidate0,final=candidate))
 #' @param wt0 weights (if not included in y).
 #' @param target the balance point (between 0 and 1) around which the design concentrates allocations.
 #' @param swt the weight of the shrinkage. Default 1 (a single observation)
-#' @param nmin the minimum n at each dose, for the shrinkage to be applied. Default 1 (all doses with any observation).
+#' @param nmin the minimum n at each dose, for the shrinkage to be applied. Default 2.
 #' @param ... parameters passed on to \code{doseResponse()} 
 #' 
 #' @export
-DRshrink<-function(y,x=NULL,wt0=NULL,target,swt=1,nmin=2,...) 
+DRshrink<-function(y, x=NULL, wt0=NULL, target, swt=1, nmin=2, ...) 
 {
 if(length(target)>1) stop('Shrinkage target must be a single constant.\n')
-dr=doseResponse(y=y,x=x,wt=wt0,...)
+dr = doseResponse(y=y,x=x,wt=wt0,...)
 dr$y=ifelse(dr$weight<nmin,dr$y,round((dr$y*dr$weight+target*swt)/(dr$weight+swt),8))
 #print(dr)
 return(dr)
