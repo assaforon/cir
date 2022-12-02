@@ -39,7 +39,7 @@ quickIsotone(
 \item{...}{arguments passed on to other functions (constructor, point estimate and interval estimate).}
 }
 \value{
-A data frame with 4 variables:  
+A data frame with 4 variables:
 \itemize{
 \item {\code{x}} {either the input x values, or \code{outx} of specified;}
 \item {\code{y}} {  The point estimates of x}

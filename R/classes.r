@@ -6,8 +6,9 @@ is.DRtrace<-function(dr)
 {
 if(!inherits(dr,"DRtrace")) return(FALSE)
 if(!inherits(dr,"data.frame")) return(FALSE)
-if(!all(c("x","y","weight") %in% names(dr))) return(FALSE)
-if(!all(sapply(dr[,c("x","y","weight")],is.numeric))) return(FALSE)
+if(!all(c("x", "y", "weight") %in% names(dr))) return(FALSE)
+if(!all(sapply(dr[,c("x", "weight")],is.numeric))) return(FALSE)
+if(!all(dr$y %in% 0:1) & !all(is.logical(dr$y))) return(FALSE)
 if(any(dr$weight<0)) return(FALSE)
 return(TRUE)
 }
@@ -17,8 +18,12 @@ return(TRUE)
 is.doseResponse<-function(dr)
 {
 if(!inherits(dr,"doseResponse")) return(FALSE)
+if(!inherits(dr,"data.frame")) return(FALSE)
+if(!all(c("x","y","weight") %in% names(dr))) return(FALSE)
+if(!all(sapply(dr[,c("x", "y", "weight")],is.numeric))) return(FALSE)
 if(any(duplicated(dr$x))) return(FALSE)
 if (any(dr$x!=sort(dr$x))) return(FALSE)
+
 return(TRUE)
 }
 
@@ -84,6 +89,8 @@ if (length(ll)==2 && ll[2]==2) { # converting a yes-no table
    wt<-rep(1,length(y))  ## in case of yes-no table we ignore incoming weights 
 #	warning("Raw data is a yes-no table; therefore, observation order is arbitrary.\n")
 }
+
+if(!all(y %in% 0:1) & !all(is.logical(y))) stop("y must be 0/1 or TRUE/FALSE.\n")
 
 n=length(y)
 if(is.null(wt)) wt=rep(1,n)
