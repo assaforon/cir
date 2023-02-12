@@ -22,8 +22,6 @@
 #' @param dosevals Dose values to be plotted along the x-axis (`plot.doseResponse`) or y-axis (`plot.DRtrace`) . If \code{NULL} (default), those will be the doses in the dataset (i.e.,\code{sort(unique(x$x))}).
 #' @param ...	Other arguments passed on to \code{\link{plot}}. 
 #' 
-#' @note If you would like to expand the limits of the dose axis (i.e., x-axis of `plot.doseResponse` or y-axis `plot.DRtrace`), do it by specifying a longer vector in `dosevals` than via `xlim` or `ylim`. The former supersedes the latter, in order to control both the range and resolution of dose labels in one fell swoop. 
-#' 
 #' Conversely, putting values on a different scale into `dosevals`, or even text labels instead of numbers, won't work. For the former, change the scale at the source data (i.e., in the plotted object). For the latter, sorry but no solution at present. 
 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
@@ -31,7 +29,9 @@
 #' @export
 #' @import graphics
 #' 
-plot.DRtrace <- function(x, xlab="Patient Order", ylab="Dose", shape='circle', connect=TRUE, mcol=1, dosevals=NULL, ...) {
+plot.DRtrace <- function(x, xlab="Patient Or
+
+der", ylab="Dose", shape='circle', connect=TRUE, mcol=1, dosevals=NULL, ...) {
 
 n=dim(x)[1]
 # Setting plotting symbol
@@ -62,8 +62,10 @@ if(varsize) cexy = refsize * sqrt(x$weight)
 
 if(is.null(dosevals[1]))  dosevals = sort(unique(x$x))
 
+#if(is.null(xlim)) xlim = range(x$x)
+
 plot(y~x, data=x, pch=pch, xlab=xlab, ylab=ylab, cex=cexy, xaxt="n",
-	type=ifelse(connect, 'b', 'p'), col=mcol, xlim = range(dosevals), ...)
+	type=ifelse(connect, 'b', 'p'), col=mcol, ...)
 
 axis(1, at=dosevals, ...)
 }
