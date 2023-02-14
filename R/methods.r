@@ -29,9 +29,8 @@
 #' @export
 #' @import graphics
 #' 
-plot.DRtrace <- function(x, xlab="Patient Or
-
-der", ylab="Dose", shape='circle', connect=TRUE, mcol=1, dosevals=NULL, ...) {
+plot.DRtrace <- function(x, xlab="Patient Order", ylab="Dose", shape='circle', connect=TRUE, 
+                         mcol=1, dosevals=NULL, offset=0.2, ...) {
 
 n=dim(x)[1]
 # Setting plotting symbol
@@ -41,11 +40,29 @@ if(shape=='triangle') ch1=17
 
 if(is.null(dosevals[1]))  dosevals = sort(unique(x$x))
 
-plot(x$x, pch = ifelse(x$y==1, ch1, ch1-15), type=ifelse(connect,'b','p'), xaxt='n', yaxt='n', xlab=xlab, ylab=ylab, col=mcol, 
-#ylim = range(dosevals), 
-...)
+if(length(unique(x$cohort)) < n) # Case with cohorts
+{
+  spacings = table( abs(diff(x$x)[diff(x$x) != 0]) )
+  spacing = as.numeric(names(spacings))[which.max(spacings)]
+  if(length(spacing)==0) spacing = 1
 
-axis(1,at=1:n, ...)
+  x$within = unlist(tapply(x$cohort, x$cohort, seq_along))
+  x$midpoint = rep(tapply(x$within, x$cohort, max), tapply(x$within, x$cohort, max)) / 2 + 0.5
+  plot(x$cohort, x$x + spacing*offset*(x$within - x$midpoint), 
+       pch = ifelse(x$y==1, ch1, ch1-15),
+       xaxt='n', yaxt='n', xlab=xlab, ylab=ylab, col=mcol, ...)
+  if(connect) points(unique(x$cohort), tapply(x$x, x$cohort, function(x) x[1]), 
+                     type = 'b', cex=0, ...)
+  axis(1, at = 1:max(x$cohort), ...)
+    
+}  else {
+  
+  plot(x$x, pch = ifelse(x$y==1, ch1, ch1-15), type=ifelse(connect,'b','p'), 
+     xaxt='n', yaxt='n', xlab=xlab, ylab=ylab, col=mcol, ...)
+#ylim = range(dosevals),
+  axis(1, at = 1:n, ...)
+}
+
 axis(2, at=dosevals, ...)
 }
 

@@ -11,18 +11,22 @@ is.DRtrace(dr)
 
 is.doseResponse(dr)
 
-DRtrace(y, x = NULL, wt = NULL, noyes = FALSE, ...)
+DRtrace(y, x = NULL, cohort = NULL, noyes = FALSE, ...)
 
 doseResponse(y, x = NULL, wt = rep(1, length(y)), noyes = FALSE, ...)
 }
 \arguments{
 \item{dr}{the object being checked}
 
-\item{y, x, wt}{see Details.}
+\item{y, x}{see Details.}
+
+\item{cohort}{(\code{DRtrace} only) specify each observation's cohorts, if there were cohorts. If not, will default to \code{1:n}}
 
 \item{noyes}{logical, in case of a 2-column input is the 1st column 'no'? Default \code{FALSE}, meaning the 1st column is 'yes'.}
 
 \item{...}{parameters passed on to \code{DRtrace()}, or ignored.}
+
+\item{wt}{(\code{doseResponse} only) the weights associated with each \code{x} value; usually the sample size or similar.}
 }
 \value{
 For constructor functions, the relevant object. For checking functions, a logical value indicating whether the object meets class definition.

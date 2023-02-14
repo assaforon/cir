@@ -7,12 +7,13 @@
 \usage{
 \method{plot}{DRtrace}(
   x,
-  xlab = "Patient Or\\n\\nder",
+  xlab = "Patient Order",
   ylab = "Dose",
   shape = "circle",
   connect = TRUE,
   mcol = 1,
   dosevals = NULL,
+  offset = 0.2,
   ...
 )
 
