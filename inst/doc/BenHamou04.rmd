@@ -11,10 +11,10 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-#### Note to self: Use this whenever editing the vignette for resubmission/rebuild
+#### Note to self: Use this whenever editing the vignette
 # tools::buildVignettes(dir = '.',  tangle=TRUE)
-# dir.create("inst/doc")
 # file.copy(dir("vignettes", full.names=TRUE), "inst/doc", overwrite=TRUE)
+# file.remove("vignettes/BenHamou04.html")
 # (from SoF: https://stackoverflow.com/questions/10266963/moving-files-between-folders)
 
 knitr::opts_chunk$set(
