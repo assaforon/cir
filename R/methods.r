@@ -43,6 +43,7 @@ if(is.null(dosevals[1]))  dosevals = sort(unique(x$x))
 
 if(length(unique(x$cohort)) < n) # Case with cohorts
 {
+  xlab = "Cohort"
   spacings = table( abs(diff(x$x)[diff(x$x) != 0]) )
   spacing = as.numeric(names(spacings))[which.max(spacings)]
   if(length(spacing)==0) spacing = 1
