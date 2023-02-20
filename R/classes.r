@@ -9,7 +9,7 @@ if(!inherits(dr,"data.frame")) return(FALSE)
 if(!all(c("x", "y", "cohort") %in% names(dr))) return(FALSE)
 if(!all(sapply(dr[,c("x", "cohort")],is.numeric))) return(FALSE)
 if(!all(dr$y %in% 0:1) & !all(is.logical(dr$y))) return(FALSE)
-if(any(dr$weight<0)) return(FALSE)
+if(any(dr$cohort<0)) return(FALSE)
 return(TRUE)
 }
 ##' @rdname DRtrace
@@ -49,7 +49,7 @@ return(TRUE)
 
 #' @param y,x see Details.
 #' @param wt (`doseResponse` only) the weights associated with each `x` value; usually the sample size or similar.
-#' @param cohort  (`DRtrace` only) specify each observation's cohorts, if there were cohorts. If not, will default to `1:n`
+#' @param cohort  (`DRtrace` only) specify each observation's cohorts, if there were cohorts. If all cohorts were the same size, then you can specify the size as a single number. If there were no cohorts, code will default this variable to `1:n`
 #' @param noyes logical, in case of a 2-column input is the 1st column 'no'? Default \code{FALSE}, meaning the 1st column is 'yes'.
 #' @param dr the object being checked
 #' @param ... parameters passed on to \code{DRtrace()}, or ignored.
@@ -92,9 +92,17 @@ if (length(ll)==2 && ll[2]==2)
 }
 
 if(!all(y %in% 0:1) & !all(is.logical(y))) stop("y must be 0/1 or TRUE/FALSE.\n")
-
 n=length(y)
+
+### Cohort element
+
 if(is.null(cohort)) cohort = 1:n
+# Option for uniform cohort size
+if(length(cohort)==1) 
+{
+  ccount = 1 + n/cohort
+  cohort = rep( 1:ccount, each = cohort )[1:n]
+}
 if(length(x)!=n || length(cohort)!=n) stop("Mismatched lengths.\n")
 
 tout<-data.frame(x=x, y=y, cohort=cohort)

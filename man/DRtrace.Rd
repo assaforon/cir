@@ -20,7 +20,7 @@ doseResponse(y, x = NULL, wt = rep(1, length(y)), noyes = FALSE, ...)
 
 \item{y, x}{see Details.}
 
-\item{cohort}{(\code{DRtrace} only) specify each observation's cohorts, if there were cohorts. If not, will default to \code{1:n}}
+\item{cohort}{(\code{DRtrace} only) specify each observation's cohorts, if there were cohorts. If all cohorts were the same size, then you can specify the size as a single number. If there were no cohorts, code will default this variable to \code{1:n}}
 
 \item{noyes}{logical, in case of a 2-column input is the 1st column 'no'? Default \code{FALSE}, meaning the 1st column is 'yes'.}
 
