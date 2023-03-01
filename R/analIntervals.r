@@ -93,7 +93,7 @@ if(sum(n>0)<2 || is.null(yval0) || length(yval0)<=1 ||
 ### Forward interval
 # New 2.2.2! outx is not at design/shrinkage points anymore
 xgaps = diff(xvals)
-xout = sort( c(xvals[-m] + minslope*xgaps, xvals[-1] - minslope*xgaps) )
+xout = sort( c(xvals[1], xvals[-m] + minslope*xgaps, xvals[-1] - minslope*xgaps, xvals[m]) )
 print(xout)
 
 festimate=approx(isotPoint$shrinkage$x,isotPoint$shrinkage$y, xout=xout,  ...)$y
