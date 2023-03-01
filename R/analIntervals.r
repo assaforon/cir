@@ -75,35 +75,43 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 
 #' @export
 
-deltaInverse<-function(isotPoint,target=NULL,intfun = morrisCI, conf = 0.9,
+deltaInverse<-function(isotPoint, target=(1:3)/4, intfun = morrisCI, conf = 0.9,
 	adaptiveCurve = FALSE, minslope = 0.01,...)
 {
 k=length(target)
 isotPoint$shrinkage$y=round(isotPoint$shrinkage$y,8) ### avoid rounding errors from PAVA
+xvals=isotPoint$shrinkage$y
 yvals=isotPoint$shrinkage$y
 yval0=sort(unique(isotPoint$shrinkage$y))
 n=isotPoint$shrinkage$weight
+m = length(xvals)
+
 #cat(yvals)
 if(sum(n>0)<2 || is.null(yval0) || length(yval0)<=1 || var(yvals)<.Machine$double.eps*1e3) return(cbind(rep(NA,k),rep(NA,k))) ## degenerate case, completely flat or otherwise useless
 
 ### Forward interval
-cestimate=isotInterval(isotPoint,conf=conf,intfun=intfun,outx=isotPoint$shrinkage$x,...)
-fslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, tol=minslope)
+# New 2.2.2! outx is not at design/shrinkage points anymore
+xgaps = diff(xvals)
+xout = sort( c(xvals[-m] + minslope*xgaps, xvals[-1] - minslope*xgaps) )
+
+pestimate=approx(isotPoint$shrinkage$x,isotPoint$shrinkage$y, xout=xout, outx=xout, ...)
+cestimate=isotInterval(isotPoint,conf=conf, intfun=intfun, outx=xout, ...)
+fslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=xout, tol=minslope)
 
 # inverse widths raw
-rwidths=(isotPoint$shrinkage$y-cestimate$ciLow)/fslopes
-lwidths=(isotPoint$shrinkage$y-cestimate$ciHigh)/fslopes
+rwidths=(pestimate-cestimate$ciLow)/fslopes
+lwidths=(pestimate-cestimate$ciHigh)/fslopes
+
+
 # Adding the widths to the mean curve, self-consistently
-#rbounds=rev(cummin(rev(tapply(isotPoint$shrinkage$x+rwidths,isotPoint$shrinkage$y,max))))
-#lbounds=cummax(tapply(isotPoint$shrinkage$x+lwidths,isotPoint$shrinkage$y,min))
-rbounds=rev(cummin(rev(isotPoint$shrinkage$x+rwidths)))
-lbounds=cummax(isotPoint$shrinkage$x+lwidths)
+rbounds=rev(cummin(rev(xout+rwidths)))
+lbounds=cummax(xout+lwidths)
 
 ### Returning
 # Note we use approx() with rule=1, forcing NAs when specified target is outside bounds
 if(length(unique(lbounds))==1 || length(unique(rbounds))==1)
 { # degenerate case: only one y value. No interval can be calculated
-	nout=ifelse(is.null(target),nrow(isotPoint$output),length(target))
+	nout=ifelse(is.null(target),length(xout),length(target))
 	lout=rep(NA,nout)
 	rout=rep(NA,nout)
 	return(cbind(lout,rout))
