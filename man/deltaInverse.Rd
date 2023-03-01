@@ -6,7 +6,7 @@
 \usage{
 deltaInverse(
   isotPoint,
-  target = NULL,
+  target = (1:3)/4,
   intfun = morrisCI,
   conf = 0.9,
   adaptiveCurve = FALSE,

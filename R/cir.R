@@ -34,7 +34,8 @@
 #' @seealso \code{\link{oldPAVA}},\code{\link{quickIsotone}}; \code{\link{DRshrink}} for explanation about \code{adaptiveShrink}.
 #' @export
 #' 
-cirPAVA <-function (y,x=NULL,wt=NULL,outx=NULL,full=FALSE,dec=FALSE,strict=FALSE,interiorStrict=TRUE,ybounds=0:1,adaptiveShrink=FALSE,...) {
+cirPAVA <-function (y, x=NULL, wt=NULL, outx=NULL, full=FALSE, dec=FALSE, strict=FALSE,
+                    interiorStrict=TRUE, ybounds=0:1, adaptiveShrink=FALSE,...) {
 
 ### converting to doseResponse object 
 ### Basically it's a numeric data frame with x,y,weight, and x increasing
@@ -161,7 +162,8 @@ if (!full) {
 #' @note If the data were obtained from an adaptive dose-finding design then away from the design's target the estimates are likely biased (Flournoy and Oron, 2020). Use \code{adaptiveShrink=TRUE} to mitigate the bias. 
 
 
-quickIsotone<-function (y,x=NULL,wt=NULL,outx=NULL,dec=FALSE,estfun=cirPAVA,intfun=morrisCI,conf=0.9,adaptiveShrink=FALSE,...) 
+quickIsotone<-function (y, x=NULL, wt=NULL, outx=NULL, dec=FALSE, estfun=cirPAVA,
+                        intfun=morrisCI, conf=0.9, adaptiveShrink=FALSE,...) 
 {
 dr=doseResponse(y=y,x=x,wt=wt,...)
 # Adaptive-design shrinkage fix

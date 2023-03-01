@@ -80,27 +80,30 @@ deltaInverse<-function(isotPoint, target=(1:3)/4, intfun = morrisCI, conf = 0.9,
 {
 k=length(target)
 isotPoint$shrinkage$y=round(isotPoint$shrinkage$y,8) ### avoid rounding errors from PAVA
-xvals=isotPoint$shrinkage$y
+xvals=isotPoint$shrinkage$x
 yvals=isotPoint$shrinkage$y
 yval0=sort(unique(isotPoint$shrinkage$y))
 n=isotPoint$shrinkage$weight
 m = length(xvals)
 
-#cat(yvals)
-if(sum(n>0)<2 || is.null(yval0) || length(yval0)<=1 || var(yvals)<.Machine$double.eps*1e3) return(cbind(rep(NA,k),rep(NA,k))) ## degenerate case, completely flat or otherwise useless
+## degenerate case, completely flat or otherwise useless
+if(sum(n>0)<2 || is.null(yval0) || length(yval0)<=1 || 
+    var(yvals)<.Machine$double.eps*1e3) return(cbind(rep(NA,k),rep(NA,k))) 
 
 ### Forward interval
 # New 2.2.2! outx is not at design/shrinkage points anymore
 xgaps = diff(xvals)
 xout = sort( c(xvals[-m] + minslope*xgaps, xvals[-1] - minslope*xgaps) )
+print(xout)
 
-pestimate=approx(isotPoint$shrinkage$x,isotPoint$shrinkage$y, xout=xout, outx=xout, ...)
+festimate=approx(isotPoint$shrinkage$x,isotPoint$shrinkage$y, xout=xout,  ...)$y
 cestimate=isotInterval(isotPoint,conf=conf, intfun=intfun, outx=xout, ...)
 fslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=xout, tol=minslope)
+# return(list(festimate, cestimate, fslopes))
 
 # inverse widths raw
-rwidths=(pestimate-cestimate$ciLow)/fslopes
-lwidths=(pestimate-cestimate$ciHigh)/fslopes
+rwidths=(festimate-cestimate$ciLow)/fslopes
+lwidths=(festimate-cestimate$ciHigh)/fslopes
 
 
 # Adding the widths to the mean curve, self-consistently
@@ -118,16 +121,16 @@ if(length(unique(lbounds))==1 || length(unique(rbounds))==1)
 }	
 if (is.null(target)) 
 { ## No target specified, returning CIs at design points
-	lout = approx(yvals,lbounds,isotPoint$output$y,rule=1,ties='ordered')$y
-	rout = approx(yvals,rbounds,isotPoint$output$y,rule=1,ties='ordered')$y
+	lout = approx(festimate,lbounds,isotPoint$output$y,rule=1,ties='ordered')$y
+	rout = approx(festimate,rbounds,isotPoint$output$y,rule=1,ties='ordered')$y
 } else if(adaptiveCurve) {
 # Otherwise: target was specified
 # First, curved case for adaptive design with target!=0.5
-	lout=parapolate(unique(yvals),lbounds[!duplicated(yvals)],xout=target,upward=TRUE)
-	rout=parapolate(unique(yvals),rbounds[!duplicated(yvals)],xout=target,upward=FALSE)
+	lout=parapolate(unique(festimate),lbounds[!duplicated(festimate)],xout=target,upward=TRUE)
+	rout=parapolate(unique(festimate),rbounds[!duplicated(festimate)],xout=target,upward=FALSE)
 } else {
-	lout=approx(yvals,lbounds,xout=target,rule=1,ties='ordered')$y
-	rout=approx(yvals,rbounds,xout=target,rule=1,ties='ordered')$y
+	lout=approx(festimate,lbounds,xout=target,rule=1,ties='ordered')$y
+	rout=approx(festimate,rbounds,xout=target,rule=1,ties='ordered')$y
 }
 return(cbind(lout,rout))
 }
