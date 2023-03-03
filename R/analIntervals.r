@@ -76,7 +76,7 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' @export
 
 deltaInverse<-function(isotPoint, target=(1:3)/4, intfun = morrisCI, conf = 0.9,
-	adaptiveCurve = FALSE, minslope = 0.01,...)
+	adaptiveCurve = FALSE, minslope = 0.01, slopeImprovement = TRUE, finegrid = 0.01, ...)
 {
 k=length(target)
 isotPoint$shrinkage$y=round(isotPoint$shrinkage$y,8) ### avoid rounding errors from PAVA
@@ -93,10 +93,10 @@ if(sum(n>0)<2 || is.null(yval0) || length(yval0)<=1 ||
 ### Forward interval
 # New 2.2.2! outx is not at design/shrinkage points anymore
 xgaps = diff(xvals)
-xout = sort( c(xvals[1], xvals[-m] + minslope*xgaps, xvals[-1] - minslope*xgaps, xvals[m]) )
-print(xout)
+xout = sort( c(xvals[1], xvals[-m] + finegrid*xgaps, xvals[-1] - finegrid*xgaps, xvals[m]) )
+# print(xout)
 
-festimate=approx(isotPoint$shrinkage$x,isotPoint$shrinkage$y, xout=xout,  ...)$y
+festimate=approx(isotPoint$shrinkage$x,isotPoint$shrinkage$y, xout=xout)$y
 cestimate=isotInterval(isotPoint,conf=conf, intfun=intfun, outx=xout, ...)
 fslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=xout, tol=minslope)
 # return(list(festimate, cestimate, fslopes))
@@ -110,28 +110,53 @@ lwidths=(festimate-cestimate$ciHigh)/fslopes
 rbounds=rev(cummin(rev(xout+rwidths)))
 lbounds=cummax(xout+lwidths)
 
-### Returning
+### Calculating at the requested targets
+# No target specified: using design points
+if (is.null(target)) target = isotPoint$output$y
+
 # Note we use approx() with rule=1, forcing NAs when specified target is outside bounds
 if(length(unique(lbounds))==1 || length(unique(rbounds))==1)
 { # degenerate case: only one y value. No interval can be calculated
-	nout=ifelse(is.null(target),length(xout),length(target))
-	lout=rep(NA,nout)
-	rout=rep(NA,nout)
-	return(cbind(lout,rout))
+	nout= length(target)
+	return( cbind(rep(NA,nout), rep(NA,nout)) )
 }	
-if (is.null(target)) 
-{ ## No target specified, returning CIs at design points
-	lout = approx(festimate,lbounds,isotPoint$output$y,rule=1,ties='ordered')$y
-	rout = approx(festimate,rbounds,isotPoint$output$y,rule=1,ties='ordered')$y
-} else if(adaptiveCurve) {
+
+if(adaptiveCurve) {
 # Otherwise: target was specified
 # First, curved case for adaptive design with target!=0.5
-	lout=parapolate(unique(festimate),lbounds[!duplicated(festimate)],xout=target,upward=TRUE)
-	rout=parapolate(unique(festimate),rbounds[!duplicated(festimate)],xout=target,upward=FALSE)
+	lout=parapolate(unique(festimate),lbounds[!duplicated(festimate)],xout=target, upward=TRUE)
+	rout=parapolate(unique(festimate),rbounds[!duplicated(festimate)],xout=target, upward=FALSE)
 } else {
 	lout=approx(festimate,lbounds,xout=target,rule=1,ties='ordered')$y
 	rout=approx(festimate,rbounds,xout=target,rule=1,ties='ordered')$y
 }
+
+if(slopeImprovement)
+{
+  # Now we actually need the point estimates and the slopes at them
+  testimate=approx(isotPoint$shrinkage$y,isotPoint$shrinkage$x, xout=target)$y
+  tslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=testimate, tol=minslope)
+
+# return(data.frame(lout,testimate,rout))  
+  gridx = unique(c( seq(min(xvals), max(xvals), finegrid * diff(range(xvals)) / (m-1) ), max(xvals) ) )
+  gridslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=gridx, tol=minslope)
+
+# "Long coding" this part for clarity?
+  newslopes = data.frame(left=rep(NA, length(target)), right=rep(NA, length(target)) )
+  for(a in seq_along(target))
+  {
+    tmp = gridslopes[gridx >= lout[a] & gridx <= testimate[a] ]
+#    return(tmp)
+    newslopes$left[a]  = 1 / mean (1/tmp)
+    tmp = gridslopes[gridx <= rout[a] & gridx >= testimate[a] ]
+    newslopes$right[a] = 1 / mean (1/tmp)
+  }
+  
+  lout = testimate + (lout - testimate) * (tslopes / newslopes$left )
+  rout = testimate + (rout - testimate) * (tslopes / newslopes$right)
+                                          
+}
+
 return(cbind(lout,rout))
 }
 

@@ -11,6 +11,8 @@ deltaInverse(
   conf = 0.9,
   adaptiveCurve = FALSE,
   minslope = 0.01,
+  slopeImprovement = TRUE,
+  finegrid = 0.01,
   ...
 )
 }
