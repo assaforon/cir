@@ -76,7 +76,7 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' @export
 
 deltaInverse<-function(isotPoint, target=(1:3)/4, intfun = morrisCI, conf = 0.9,
-	adaptiveCurve = FALSE, minslope = 0.01, slopeImprovement = TRUE, finegrid = 0.01, ...)
+	adaptiveCurve = FALSE, minslope = 0.01, slopeImprovement = TRUE, finegrid = 0.05, ...)
 {
 k=length(target)
 isotPoint$shrinkage$y=round(isotPoint$shrinkage$y,8) ### avoid rounding errors from PAVA
@@ -90,11 +90,11 @@ m = length(xvals)
 if(sum(n>0)<2 || is.null(yval0) || length(yval0)<=1 || 
     var(yvals)<.Machine$double.eps*1e3) return(cbind(rep(NA,k),rep(NA,k))) 
 
-### Forward interval
-# New 2.2.2! outx is not at design/shrinkage points anymore
+### Using reference grid to calculate forward and then slope
+# New 2.2.2! outx is not only at design/shrinkage points anymore
 xgaps = diff(xvals)
-xout = sort( c(xvals[1], xvals[-m] + finegrid*xgaps, xvals[-1] - finegrid*xgaps, xvals[m]) )
-# print(xout)
+xout = sort( unique( c(xvals, xvals[-m] + finegrid*xgaps, xvals[-1] - finegrid*xgaps) ) )
+# return(xout)
 
 festimate=approx(isotPoint$shrinkage$x,isotPoint$shrinkage$y, xout=xout)$y
 cestimate=isotInterval(isotPoint,conf=conf, intfun=intfun, outx=xout, ...)
@@ -104,6 +104,40 @@ fslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=xout, tol=minslo
 # inverse widths raw
 rwidths=(festimate-cestimate$ciLow)/fslopes
 lwidths=(festimate-cestimate$ciHigh)/fslopes
+#return(cbind(lwidths, rwidths))
+
+if(slopeImprovement)
+{
+  # Now we actually need the point estimates and the slopes at them
+#  testimate=approx(isotPoint$shrinkage$y,isotPoint$shrinkage$x, xout=target)$y
+  
+#  tslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=testimate, tol=minslope)
+  
+  # return(data.frame(lout,testimate,rout))  
+  gridx = unique(c( seq(min(xvals), max(xvals), finegrid * diff(range(xvals)) / (m-1) ), max(xvals) ) )
+  gridslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=gridx, tol=minslope)
+ #   return(gridslopes)
+    
+  # "Long coding" this part for clarity?
+  newslopes = data.frame(left=rep(NA, length(xout)), right=rep(NA, length(xout)) )
+  for(a in seq_along(xout))
+  {
+    tmp = gridslopes[gridx >= xout[a]+lwidths[a] & gridx <= xout[a] ]
+#        return(tmp)
+    ntmp = length(tmp)
+#  cat(a, ntmp,'\n')
+    newslopes$left[a]  = 1 / weighted.mean(1/tmp, w = (1:ntmp)^2)
+    
+    tmp = gridslopes[gridx <= xout[a]+rwidths[a] & gridx >= xout[a] ]
+    ntmp = length(tmp)
+    newslopes$right[a] = 1 / weighted.mean(1/tmp, w = (ntmp:1)^2)
+  }
+#  return(newslopes)
+
+  rwidths = rwidths * fslopes / newslopes$right
+  lwidths = lwidths * fslopes / newslopes$left
+  
+}
 
 
 # Adding the widths to the mean curve, self-consistently
@@ -131,35 +165,6 @@ if(adaptiveCurve) {
 	rout=approx(festimate,rbounds,xout=target,rule=1,ties='ordered')$y
 }
 
-if(slopeImprovement)
-{
-  # Now we actually need the point estimates and the slopes at them
-  testimate=approx(isotPoint$shrinkage$y,isotPoint$shrinkage$x, xout=target)$y
-
-  tslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=testimate, tol=minslope)
-
-# return(data.frame(lout,testimate,rout))  
-  gridx = unique(c( seq(min(xvals), max(xvals), finegrid * diff(range(xvals)) / (m-1) ), max(xvals) ) )
-  gridslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=gridx, tol=minslope)
-
-# "Long coding" this part for clarity?
-  newslopes = data.frame(left=rep(NA, length(target)), right=rep(NA, length(target)) )
-  for(a in seq_along(target))
-  {
-    tmp = gridslopes[gridx >= lout[a] & gridx <= testimate[a] ]
-#    return(tmp)
-    ntmp = length(tmp)
-    newslopes$left[a]  = 1 / weighted.mean(1/tmp, w = (1:ntmp)^2)
-    
-    tmp = gridslopes[gridx <= rout[a] & gridx >= testimate[a] ]
-    ntmp = length(tmp)
-    newslopes$right[a] = 1 / weighted.mean(1/tmp, w = (ntmp:1)^2)
-  }
-  return(list(fslopes, tslopes, newslopes))
-  lout = testimate + (lout - testimate) * (tslopes / newslopes$left )
-  rout = testimate + (rout - testimate) * (tslopes / newslopes$right)
-                                          
-}
 
 return(cbind(lout,rout))
 }
