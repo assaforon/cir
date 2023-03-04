@@ -135,6 +135,7 @@ if(slopeImprovement)
 {
   # Now we actually need the point estimates and the slopes at them
   testimate=approx(isotPoint$shrinkage$y,isotPoint$shrinkage$x, xout=target)$y
+
   tslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=testimate, tol=minslope)
 
 # return(data.frame(lout,testimate,rout))  
@@ -147,11 +148,14 @@ if(slopeImprovement)
   {
     tmp = gridslopes[gridx >= lout[a] & gridx <= testimate[a] ]
 #    return(tmp)
-    newslopes$left[a]  = 1 / mean (1/tmp)
+    ntmp = length(tmp)
+    newslopes$left[a]  = 1 / weighted.mean(1/tmp, w = (1:ntmp)^2)
+    
     tmp = gridslopes[gridx <= rout[a] & gridx >= testimate[a] ]
-    newslopes$right[a] = 1 / mean (1/tmp)
+    ntmp = length(tmp)
+    newslopes$right[a] = 1 / weighted.mean(1/tmp, w = (ntmp:1)^2)
   }
-  
+  return(list(fslopes, tslopes, newslopes))
   lout = testimate + (lout - testimate) * (tslopes / newslopes$left )
   rout = testimate + (rout - testimate) * (tslopes / newslopes$right)
                                           
