@@ -29,6 +29,10 @@ deltaInverse(
 
 \item{minslope}{minimum local slope considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.}
 
+\item{slopeImprovement}{(new to 2.3.0) logical: whether to allow refinement of the slope estimate, including different slopes to the left and right of target.}
+
+\item{finegrid}{a numerical value used to guide slope estimation. Should be in (0,1) (preferably much less than 1). Default 0.05.}
+
 \item{...}{additional arguments passed on to \code{\link{quickIsotone}}}
 }
 \value{

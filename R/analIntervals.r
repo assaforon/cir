@@ -66,6 +66,8 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param adaptiveCurve logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation (default \code{FALSE})? Recommended when adaptive design was used and \code{target} is not 0.5.
 #' @param minslope minimum local slope considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.
+#' @param slopeImprovement (new to 2.3.0) logical: whether to allow refinement of the slope estimate, including different slopes to the left and right of target.
+#' @param finegrid a numerical value used to guide slope estimation. Should be in (0,1) (preferably much less than 1). Default 0.05.
 #' @param ... additional arguments passed on to \code{\link{quickIsotone}}
 
 #' @seealso \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{isotInterval}},
