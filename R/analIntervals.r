@@ -54,20 +54,23 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' Calculate left-bound to right-bound intervals for the dose point estimates, using local slopes at design points (places where observations exist) to invert the forward lower-upper bounds.
 #'
 #'
-#' The Delta method in this application boils down to dividing the distance to the forward (vertical) bounds, by the slope, to get the left/right interval width. Slope estimates are performed by \code{\link{slope}}. An alternative method (dubbed "global") is hard-coded into \code{\link{quickInverse}}. 
-
+#' The Delta method in this application boils down to dividing the distance to the forward (vertical) bounds, by the slope, to get the left/right interval width. Slope estimates are performed by \code{\link{slope}}. Starting version 2.3.0, by default the slope estimate is different to the right and left of target. The intervals should now better accommodate the sharp slope changes that often happen with discrete dose-response datasets.
+#' 
+#' An alternative interval method (dubbed "global") is hard-coded into \code{\link{quickInverse}}, and can be chosen from there as an option.
+#' 
+#' 
 
 
 #' @return two-column matrix with the left and right bounds, respectively
 
 #' @param isotPoint The output of an estimation function such as \code{\link{cirPAVA},\link{doseFind}},  with the option \code{full=TRUE}. Should be at least a list of 3 \code{\link{doseResponse}} objects named \code{input, output, shrinkage}.
-#' @param target A vector of target response rate(s), for which the interval is needed. If \code{NULL} (default), interval will be returned for the point estimates at design points (e.g., if the forward point estimate at $x_1$ is 0.2, then the first returned interval is for the 20th percentile).
+#' @param target A vector of target response rate(s), for which the interval is needed. Default (since version 2.3.0) is the 3 quartiles (`(1:3) / 4`). If changed to \code{NULL}, interval will be returned for the \eqn{y} values of `isotPoint$output`. 
 #' @param intfun the function to be used for initial (forward) interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param adaptiveCurve logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation (default \code{FALSE})? Recommended when adaptive design was used and \code{target} is not 0.5.
 #' @param minslope minimum local slope considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.
-#' @param slopeImprovement (new to 2.3.0) logical: whether to allow refinement of the slope estimate, including different slopes to the left and right of target.
-#' @param finegrid a numerical value used to guide slope estimation. Should be in (0,1) (preferably much less than 1). Default 0.05.
+#' @param slopeImprovement **(new to 2.3.0)** logical: whether to allow refinement of the slope estimate, including different slopes to the left and right of target. Default `TRUE`.
+#' @param finegrid a numerical value used to guide how fine the grid of `x` values will be during slope estimation. Should be in (0,1) (preferably much less than 1). Default 0.05.
 #' @param ... additional arguments passed on to \code{\link{quickIsotone}}
 
 #' @seealso \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{isotInterval}},
@@ -167,8 +170,9 @@ if(adaptiveCurve) {
 	rout=approx(festimate,rbounds,xout=target,rule=1,ties='ordered')$y
 }
 
-
-return(cbind(lout,rout))
+dout = cbind(lout,rout)
+rownames(dout) = target
+return(dout)
 }
 
 
