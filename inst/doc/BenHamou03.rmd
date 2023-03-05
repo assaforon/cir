@@ -13,6 +13,7 @@ vignette: >
 ```{r setup, include = FALSE}
 #### Note to self: Use this whenever editing the vignette for resubmission/rebuild
 # tools::buildVignettes(dir = '.',  tangle=TRUE)
+#  (You can also replace the 2 lines below here with point/click directory creation and file copy/paste)
 # dir.create("inst/doc")
 # file.copy(dir("vignettes", full.names=TRUE), "inst/doc", overwrite=TRUE)
 # (from https://community.rstudio.com/t/browsevignettes-mypackage-saying-no-vignettes-found/68656/6 )
