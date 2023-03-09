@@ -111,7 +111,7 @@ fslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=xout, tol=minslo
 # inverse widths raw
 rwidths=(festimate-cestimate$ciLow)/fslopes
 lwidths=(festimate-cestimate$ciHigh)/fslopes
-#return(cbind(lwidths, rwidths))
+# return(cbind(xout, lwidths, rwidths))
 
 if(slopeRefinement)
 {
@@ -120,7 +120,6 @@ if(slopeRefinement)
   
 #  tslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=testimate, tol=minslope)
   
-  # return(data.frame(lout,testimate,rout))  
   gridx = unique(c( seq(min(xvals), max(xvals), finegrid * diff(range(xvals)) / (m-1) ), max(xvals) ) )
   gridslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=gridx, tol=minslope)
  #   return(gridslopes)
@@ -133,11 +132,13 @@ if(slopeRefinement)
 #        return(tmp)
     ntmp = length(tmp)
 #  cat(a, ntmp,'\n')
-    newslopes$left[a]  = 1 / weighted.mean(1/tmp, w = (1:ntmp)^2)
+    newslopes$left[a]  = ifelse(ntmp==0, fslopes[a], 1 / weighted.mean(1/tmp, w = (1:ntmp)^2) )
     
     tmp = gridslopes[gridx <= xout[a]+rwidths[a] & gridx >= xout[a] ]
     ntmp = length(tmp)
-    newslopes$right[a] = 1 / weighted.mean(1/tmp, w = (ntmp:1)^2)
+#  cat(a, ntmp,'\n')
+    
+    newslopes$right[a] = ifelse(ntmp==0, fslopes[a], 1 / weighted.mean(1/tmp, w = (ntmp:1)^2) )
   }
 #  return(newslopes)
 
