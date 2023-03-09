@@ -54,9 +54,11 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' Calculate left-bound to right-bound intervals for the dose point estimates, using local slopes at design points (places where observations exist) to invert the forward lower-upper bounds.
 #'
 #'
-#' The Delta method in this application boils down to dividing the distance to the forward (vertical) bounds, by the slope, to get the left/right interval width. Slope estimates are performed by \code{\link{slope}}. Starting version 2.3.0, by default the slope estimate is different to the right and left of target. The intervals should now better accommodate the sharp slope changes that often happen with discrete dose-response datasets.
+#' The Delta method in this application boils down to dividing the distance to the forward (vertical) bounds, by the slope, to get the left/right interval width. Both forward intervals and slopes are calculated across a standard set of \eqn{x} values, then interpolated at horizontal cross-sections determined by `target`. Slope estimates are performed by \code{\link{slope}}. 
 #' 
-#' An alternative interval method (dubbed "global") is hard-coded into \code{\link{quickInverse}}, and can be chosen from there as an option.
+#' Starting version 2.3.0, by default the slope estimate is different to the right and left of target. The intervals should now better accommodate the sharp slope changes that often happen with discrete dose-response datasets. Operationally, the intervals are first estimated via the single-slope approach described above. Then using a finer grid of \eqn{x} values, weighted-harmonic-average slopes to the right and left of the point estimate separately are calculated over the first-stage's half-intervals. The weights are hard-coded as quadratic (Epanechnikov). 
+#' 
+#' An alternative and much simpler interval method (dubbed "global") is hard-coded into \code{\link{quickInverse}}, and can be chosen from there as an option. But it is not recommended.
 #' 
 #' 
 
@@ -69,7 +71,7 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param adaptiveCurve logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation (default \code{FALSE})? Recommended when adaptive design was used and \code{target} is not 0.5.
 #' @param minslope minimum local slope considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.
-#' @param slopeImprovement **(new to 2.3.0)** logical: whether to allow refinement of the slope estimate, including different slopes to the left and right of target. Default `TRUE`.
+#' @param slopeRefinement **(new to 2.3.0)** logical: whether to allow refinement of the slope estimate, including different slopes to the left and right of target. Default `TRUE`. See Details.
 #' @param finegrid a numerical value used to guide how fine the grid of `x` values will be during slope estimation. Should be in (0,1) (preferably much less than 1). Default 0.05.
 #' @param ... additional arguments passed on to \code{\link{quickIsotone}}
 
@@ -81,7 +83,7 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' @export
 
 deltaInverse<-function(isotPoint, target=(1:3)/4, intfun = morrisCI, conf = 0.9,
-	adaptiveCurve = FALSE, minslope = 0.01, slopeImprovement = TRUE, finegrid = 0.05, ...)
+	adaptiveCurve = FALSE, minslope = 0.01, slopeRefinement = TRUE, finegrid = 0.05, ...)
 {
 k=length(target)
 isotPoint$shrinkage$y=round(isotPoint$shrinkage$y,8) ### avoid rounding errors from PAVA
@@ -111,7 +113,7 @@ rwidths=(festimate-cestimate$ciLow)/fslopes
 lwidths=(festimate-cestimate$ciHigh)/fslopes
 #return(cbind(lwidths, rwidths))
 
-if(slopeImprovement)
+if(slopeRefinement)
 {
   # Now we actually need the point estimates and the slopes at them
 #  testimate=approx(isotPoint$shrinkage$y,isotPoint$shrinkage$x, xout=target)$y

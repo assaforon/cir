@@ -13,8 +13,7 @@ knitr::opts_chunk$set(
 
 ## ----data----------------------------------------------------------------------------------------------------------------------------
 # For brevity, we initially use integers to denote the doses. 
-# We make use of R’s shorthand for consecutive sequences, 
-# e.g., 1:3 is really 1,2,3
+
 xropi = c(11:9,10:8,9,10,9,10:7,8:11,10:12,11:7,8,7:10,9,8,9,8:10,9,10,9,10)
 xlevo = c(11,10,11,10,11:9,10:7,8,7,8:5,6:8,7,8:6,7,6,7,6,7:5,6,7,6:12)
 
@@ -54,9 +53,9 @@ quickIsotone(bhamou03ropiRates, target=0.5, adaptiveShrink=TRUE)
 quickIsotone(bhamou03levoRates, target=0.5, adaptiveShrink=TRUE)
 
 ## ----cir-----------------------------------------------------------------------------------------------------------------------------
-ropiTargetCIR=quickInverse(bhamou03ropiRates, target=0.5, adaptiveShrink=TRUE)
+ropiTargetCIR = quickInverse(bhamou03ropiRates, target=0.5, adaptiveShrink=TRUE)
 ropiTargetCIR 
-levoTargetCIR=quickInverse(bhamou03levoRates, target=0.5, adaptiveShrink=TRUE)
+levoTargetCIR = quickInverse(bhamou03levoRates, target=0.5, adaptiveShrink=TRUE)
 levoTargetCIR
 
 ## ----ci83----------------------------------------------------------------------------------------------------------------------------
