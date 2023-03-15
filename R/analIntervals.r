@@ -70,7 +70,7 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' @param intfun the function to be used for initial (forward) interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
 #' @param adaptiveCurve logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation (default \code{FALSE})? Recommended when adaptive design was used and \code{target} is not 0.5.
-#' @param minslope minimum local slope considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.
+#' @param minslope minimum local slope (subsequently normalized by the units dose spacing) considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.
 #' @param slopeRefinement **(new to 2.3.0)** logical: whether to allow refinement of the slope estimate, including different slopes to the left and right of target. Default `TRUE`. See Details.
 #' @param finegrid a numerical value used to guide how fine the grid of `x` values will be during slope estimation. Should be in (0,1) (preferably much less than 1). Default 0.05.
 #' @param ... additional arguments passed on to \code{\link{quickIsotone}}
@@ -92,6 +92,10 @@ yvals=isotPoint$shrinkage$y
 yval0=sort(unique(isotPoint$shrinkage$y))
 n=isotPoint$shrinkage$weight
 m = length(xvals)
+
+# Normalizing minslope
+minslope = minslope / mean(diff(isotPoint$input$x))
+
 
 ## degenerate case, completely flat or otherwise useless
 if(sum(n>0)<2 || is.null(yval0) || length(yval0)<=1 || 
@@ -124,7 +128,7 @@ if(slopeRefinement)
   
   gridx = unique(c( seq(min(xvals), max(xvals), finegrid * diff(range(xvals)) / (m-1) ), max(xvals) ) )
   gridslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=gridx, tol=minslope)
- #   return(gridslopes)
+#    return(gridslopes)
     
   # "Long coding" this part for clarity?
   newslopes = data.frame(left=rep(NA, length(xout)), right=rep(NA, length(xout)) )
