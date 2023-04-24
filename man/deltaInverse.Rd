@@ -27,7 +27,7 @@ deltaInverse(
 
 \item{adaptiveCurve}{logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation (default \code{FALSE})? Recommended when adaptive design was used and \code{target} is not 0.5.}
 
-\item{minslope}{minimum local slope considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.}
+\item{minslope}{minimum local slope (subsequently normalized by the units dose spacing) considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.}
 
 \item{slopeRefinement}{\strong{(new to 2.3.0)} logical: whether to allow refinement of the slope estimate, including different slopes to the left and right of target. Default \code{TRUE}. See Details.}
 
