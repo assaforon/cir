@@ -1,4 +1,5 @@
 \name{cir-package}
+\alias{cir-package}
 \alias{cir}
 \docType{package}
 \title{Isotonic Regression, Centered Isotonic Regression, and Dose-Response Utilities}
