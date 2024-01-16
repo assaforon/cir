@@ -72,6 +72,7 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' @param adaptiveCurve logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation (default \code{FALSE})? Recommended when adaptive design was used and \code{target} is not 0.5.
 #' @param minslope minimum local slope (subsequently normalized by the units dose spacing) considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.
 #' @param slopeRefinement **(new to 2.3.0)** logical: whether to allow refinement of the slope estimate, including different slopes to the left and right of target. Default `TRUE`. See Details.
+#' @param globalCheck **(new to 2.4.0)** logical: whether to allow narrowing of the bound, in case the "global" bound *(obtained via inverting the forward interval, and generally more conservative)* is narrower. Default `TRUE`.
 #' @param finegrid a numerical value used to guide how fine the grid of `x` values will be during slope estimation. Should be in (0,1) (preferably much less than 1). Default 0.05.
 #' @param ... additional arguments passed on to \code{\link{quickIsotone}}
 
@@ -82,8 +83,8 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 
 #' @export
 
-deltaInverse<-function(isotPoint, target=(1:3)/4, intfun = morrisCI, conf = 0.9,
-	adaptiveCurve = FALSE, minslope = 0.01, slopeRefinement = TRUE, finegrid = 0.05, ...)
+deltaInverse <- function(isotPoint, target=(1:3)/4, intfun = morrisCI, conf = 0.9,
+	adaptiveCurve = FALSE, minslope = 0.01, slopeRefinement = TRUE, finegrid = 0.05, globalCheck = TRUE, ...)
 {
 k=length(target)
 isotPoint$shrinkage$y=round(isotPoint$shrinkage$y,8) ### avoid rounding errors from PAVA
@@ -104,19 +105,21 @@ if(sum(n>0)<2 || is.null(yval0) || length(yval0)<=1 ||
 ### Using reference grid to calculate forward and then slope
 # New 2.2.2! outx is not only at design/shrinkage points anymore
 xgaps = diff(xvals)
-xout = sort( unique( c(xvals, xvals[-m] + finegrid*xgaps, xvals[-1] - finegrid*xgaps) ) )
+gridx = unique(c( seq(min(xvals), max(xvals), finegrid * diff(range(xvals)) / (m-1) ), max(xvals) ) )
+xout = gridx
+#xout = sort( unique( c(xvals, xvals[-m] + finegrid*xgaps, xvals[-1] - finegrid*xgaps) ) )
 # return(xout)
 
 festimate=approx(isotPoint$shrinkage$x,isotPoint$shrinkage$y, xout=xout)$y
-cestimate=isotInterval(isotPoint,conf=conf, intfun=intfun, outx=xout, ...)
-#return(list(xout, festimate, cestimate))
+cestimate=isotInterval(isotPoint, conf=conf, intfun=intfun, outx=xout, ...)
 fslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=xout, tol=minslope)
 # return(list(festimate, cestimate, fslopes))
 
-# inverse widths raw
+# inverse widths raw; note that lwidths are negative, rwidths positive
 rwidths=(festimate-cestimate$ciLow)/fslopes
 lwidths=(festimate-cestimate$ciHigh)/fslopes
 # return(cbind(xout, lwidths, rwidths))
+
 
 ### New since 2.3.0: slope refinement to right/left slope, and generally wider CIs
 if(slopeRefinement)
@@ -126,7 +129,6 @@ if(slopeRefinement)
   
 #  tslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=testimate, tol=minslope)
   
-  gridx = unique(c( seq(min(xvals), max(xvals), finegrid * diff(range(xvals)) / (m-1) ), max(xvals) ) )
   gridslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=gridx, tol=minslope)
 #    return(gridslopes)
     
@@ -157,6 +159,22 @@ if(slopeRefinement)
 # Adding the widths to the mean curve, self-consistently
 rbounds=rev(cummin(rev(xout+rwidths)))
 lbounds=cummax(xout+lwidths)
+
+# New 2.4.0! Optional narrowing via global interval
+if(globalCheck)
+{
+
+#  festimate2 = approx(isotPoint$shrinkage$x,isotPoint$shrinkage$y, xout=gridx)$y
+  cestimate2 = cestimate
+    #isotInterval(isotPoint, conf=conf, intfun=intfun, outx=gridx, ...)
+# print(cbind(gridx,cestimate2)); stop() 
+  rglob = approx(cestimate2$ciLow, y=gridx, xout = festimate, rule=1, ties='ordered')$y
+  lglob = approx(cestimate2$ciHigh, y=gridx, xout = festimate, rule=1, ties='ordered')$y
+ # print(cbind(festimate,lglob,rglob)); stop() 
+  
+  rbounds = ifelse(is.finite(rglob) & rglob >= xout & rglob < rbounds, rglob, rbounds) 
+  lbounds = ifelse(is.finite(lglob) & lglob <= xout & lglob > rbounds, lglob, lbounds) 
+}
 
 ### Calculating at the requested targets
 # No target specified: using design points

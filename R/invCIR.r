@@ -156,7 +156,7 @@ if(all(is.na(pestimate$targest))) {
 }
 
 if(delta) { ## Default, delta-method ("local") intervals
-	dout[,3:4]=deltaInverse(pestimate,target=target,intfun=intfun,conf=conf,adaptiveCurve = adaptiveCurve,...)
+	dout[,3:4]=deltaInverse(pestimate,target=target,intfun=intfun,conf=conf, adaptiveCurve = adaptiveCurve,...)
 } else {
 #### CI, using "global" interpolation; generally too conservative and not recommended
 #	if(adaptiveShrink) dr=DRshrink(y=dr,target=starget,...)

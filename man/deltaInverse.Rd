@@ -13,6 +13,7 @@ deltaInverse(
   minslope = 0.01,
   slopeRefinement = TRUE,
   finegrid = 0.05,
+  globalCheck = TRUE,
   ...
 )
 }
@@ -32,6 +33,8 @@ deltaInverse(
 \item{slopeRefinement}{\strong{(new to 2.3.0)} logical: whether to allow refinement of the slope estimate, including different slopes to the left and right of target. Default \code{TRUE}. See Details.}
 
 \item{finegrid}{a numerical value used to guide how fine the grid of \code{x} values will be during slope estimation. Should be in (0,1) (preferably much less than 1). Default 0.05.}
+
+\item{globalCheck}{\strong{(new to 2.4.0)} logical: whether to allow narrowing of the bound, in case the "global" bound \emph{(obtained via inverting the forward interval, and generally more conservative)} is narrower. Default \code{TRUE}.}
 
 \item{...}{additional arguments passed on to \code{\link{quickIsotone}}}
 }
