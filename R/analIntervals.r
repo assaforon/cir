@@ -106,8 +106,8 @@ if(sum(n>0)<2 || is.null(yval0) || length(yval0)<=1 ||
 # New 2.2.2! outx is not only at design/shrinkage points anymore
 xgaps = diff(xvals)
 gridx = unique(c( seq(min(xvals), max(xvals), finegrid * diff(range(xvals)) / (m-1) ), max(xvals) ) )
-xout = gridx
-#xout = sort( unique( c(xvals, xvals[-m] + finegrid*xgaps, xvals[-1] - finegrid*xgaps) ) )
+#xout = gridx
+xout = sort( unique( c(xvals, xvals[-m] + finegrid*xgaps, xvals[-1] - finegrid*xgaps) ) )
 # return(xout)
 
 festimate=approx(isotPoint$shrinkage$x,isotPoint$shrinkage$y, xout=xout)$y
@@ -164,9 +164,9 @@ lbounds=cummax(xout+lwidths)
 if(globalCheck)
 {
 
-#  festimate2 = approx(isotPoint$shrinkage$x,isotPoint$shrinkage$y, xout=gridx)$y
-  cestimate2 = cestimate
-    #isotInterval(isotPoint, conf=conf, intfun=intfun, outx=gridx, ...)
+  festimate2 = approx(isotPoint$shrinkage$x,isotPoint$shrinkage$y, xout=gridx)$y
+#  cestimate2 = cestimate
+  cestimate2 =    isotInterval(isotPoint, conf=conf, intfun=intfun, outx=gridx, ...)
 # print(cbind(gridx,cestimate2)); stop() 
   rglob = approx(cestimate2$ciLow, y=gridx, xout = festimate, rule=1, ties='ordered')$y
   lglob = approx(cestimate2$ciHigh, y=gridx, xout = festimate, rule=1, ties='ordered')$y
