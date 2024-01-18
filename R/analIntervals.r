@@ -105,15 +105,14 @@ if(sum(n>0)<2 || is.null(yval0) || length(yval0)<=1 ||
 ### Using reference grid to calculate forward and then slope
 # New 2.2.2! outx is not only at design/shrinkage points anymore
 xgaps = diff(xvals)
-gridx = unique(c( seq(min(xvals), max(xvals), finegrid * diff(range(xvals)) / (m-1) ), max(xvals) ) )
-#xout = gridx
-xout = sort( unique( c(xvals, xvals[-m] + finegrid*xgaps, xvals[-1] - finegrid*xgaps) ) )
+gridx = sort(unique(c(xvals, seq(min(xvals), max(xvals), finegrid * diff(range(xvals)) / (m-1) ), max(xvals) ) ) )
+xout = gridx
+ xout = sort( unique( c(xvals, xvals[-m] + finegrid*xgaps, xvals[-1] - finegrid*xgaps) ) )
 # return(xout)
 
 festimate=approx(isotPoint$shrinkage$x,isotPoint$shrinkage$y, xout=xout)$y
 cestimate=isotInterval(isotPoint, conf=conf, intfun=intfun, outx=xout, ...)
 fslopes=slope(isotPoint$shrinkage$x,isotPoint$shrinkage$y, outx=xout, tol=minslope)
-# return(list(festimate, cestimate, fslopes))
 
 # inverse widths raw; note that lwidths are negative, rwidths positive
 rwidths=(festimate-cestimate$ciLow)/fslopes
@@ -152,6 +151,8 @@ if(slopeRefinement)
 
   rwidths = rwidths * fslopes / newslopes$right
   lwidths = lwidths * fslopes / newslopes$left
+
+# print(cbind(xout, festimate, cestimate, fslopes, lwidths, rwidths)) ; stop()
   
 }
 
