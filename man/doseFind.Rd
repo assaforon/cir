@@ -16,6 +16,7 @@ doseFind(
   errOnFlat = FALSE,
   adaptiveShrink = FALSE,
   starget = target[1],
+  tiemeth = "ordered",
   ...
 )
 }
@@ -41,6 +42,8 @@ doseFind(
 \item{adaptiveShrink}{logical, should the y-values be pre-shrunk towards an experiment's target? Recommended if data were obtained via an adaptive dose-finding design. See \code{\link{DRshrink}} and the Note.}
 
 \item{starget}{The shrinkage target. Defaults to \code{target[1]}.}
+
+\item{tiemeth}{The method to resolve ties; either a function that returns one value, or the string \code{"ordered"} (default).}
 
 \item{...}{Other arguments passed on to \code{\link{doseResponse}} and \code{estfun}.}
 }
