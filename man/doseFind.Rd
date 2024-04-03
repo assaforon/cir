@@ -16,7 +16,7 @@ doseFind(
   errOnFlat = FALSE,
   adaptiveShrink = FALSE,
   starget = target[1],
-  tiemeth = "ordered",
+  tiemeth = mean,
   ...
 )
 }
@@ -43,7 +43,7 @@ doseFind(
 
 \item{starget}{The shrinkage target. Defaults to \code{target[1]}.}
 
-\item{tiemeth}{The method to resolve ties; either a function that returns one value, or the string \code{"ordered"} (default).}
+\item{tiemeth}{The method to resolve ties; either a function that returns one value, or the string \code{"ordered"}. Default \code{mean}, like in \code{approx()}.}
 
 \item{...}{Other arguments passed on to \code{\link{doseResponse}} and \code{estfun}.}
 }

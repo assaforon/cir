@@ -29,7 +29,7 @@
 #' @param errOnFlat logical: in case the forward estimate is completely flat making dose-finding infeasible, should an error be returned? Under default (\code{FALSE}), \code{NA}s are returned for the target estimate. 
 #' @param adaptiveShrink logical, should the y-values be pre-shrunk towards an experiment's target? Recommended if data were obtained via an adaptive dose-finding design. See \code{\link{DRshrink}} and the Note.
 #' @param starget The shrinkage target. Defaults to \code{target[1]}.
-#' @param tiemeth The method to resolve ties; either a function that returns one value, or the string `"ordered"` (default).
+#' @param tiemeth The method to resolve ties; either a function that returns one value, or the string `"ordered"`. Default `mean`, like in `approx()`.
 #' @param ...	Other arguments passed on to \code{\link{doseResponse}} and \code{estfun}.
 
 #' @return under default, returns point estimate(s) of the dose (x) for the provided target rate(s). With \code{full=TRUE}, returns a list with
@@ -47,7 +47,7 @@
 
 #' @export
 
-doseFind<-function(y,x=NULL,wt=NULL,estfun=cirPAVA,target=NULL,full=FALSE, dec=FALSE, extrapolate=FALSE,errOnFlat=FALSE, adaptiveShrink=FALSE, starget=target[1], tiemeth = 'ordered', ...) {
+doseFind<-function(y,x=NULL,wt=NULL,estfun=cirPAVA,target=NULL,full=FALSE, dec=FALSE, extrapolate=FALSE,errOnFlat=FALSE, adaptiveShrink=FALSE, starget=target[1], tiemeth = mean, ...) {
 
 
 ### converting to doseResponse object 
