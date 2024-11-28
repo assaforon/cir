@@ -6,10 +6,10 @@
 #'
 #'
 #' The function works by calling \code{estfun} for forward estimation of the x-y relationship, then using \code{\link{approx}} with the x and y roles reversed for inverse estimation. The \code{extrapolate} option sets the \code{rule} argumet for this second call: 
-#' \itemize{
-#' \item {}{\code{extrapolate=TRUE} translates to \code{rule=2}, which actually means that the x value on the edge of the estimated y range will be assigned.}
-#' \item{}{\code{extrapolate=FALSE} (default) translates to \code{rule=1}, which means an \code{NA} will be returned for any target y value lying outside the estimated y range.}
-#' }
+#
+#'  - \code{extrapolate=TRUE} translates to \code{rule=2}, which actually means that the x value on the edge of the estimated y range will be assigned.
+#'  - \code{extrapolate=FALSE} (default) translates to \code{rule=1}, which means an \code{NA} will be returned for any target y value lying outside the estimated y range.
+#' 
 #' Note also that the function is set up to work with a vector of targets.
 #'
 #' If the data were obtained from an adaptive dose-finding design and you seek to estimate a dose other than the experiment's target, note that away from the target the estimates are likely biased (Flournoy and Oron, 2019). Use \code{adaptiveShrink=TRUE} to mitigate the bias. In addition, either provide the true target as \code{starget}, or a vector of values to \code{target}, with the first value being the true target.
@@ -35,12 +35,12 @@
 #' @param ...	Other arguments passed on to \code{\link{doseResponse}} and \code{estfun}.
 
 #' @return under default, returns point estimate(s) of the dose (x) for the provided target rate(s). With \code{full=TRUE}, returns a list with
-#' \itemize{
-#' \item {targest } {  The said point estimate of x}
-#' \item {input  }  {  a \code{doseResponse} object summarizing the input data}
-#' \item {output  }  {  a \code{doseResponse} object with the forward estimate at design points}
-#' \item {shrinkage  }  {  a \code{doseResponse} object which is the \code{alg} output of the forward-estimation function}
-#' }
+#'
+#'  - `targest`: The said point estimate of x
+#'  - `input`:    a \code{doseResponse} object summarizing the input data
+#'  - `output`:  a \code{doseResponse} object with the forward estimate at design points
+#'  - `shrinkage`:  a \code{doseResponse} object which is the \code{alg} output of the forward-estimation function
+#' 
 
 #' @seealso \code{\link{oldPAVA}},\code{\link{cirPAVA}}. If you'd like point and interval estimates together, use \code{\link{quickInverse}}.
 
@@ -137,11 +137,11 @@ return (list(targest=tout,input=dr,shrinkage=pavout$shrinkage,output=pavout$outp
 #' @param ...	Other arguments passed on to \code{\link{doseFind}} and \code{\link{quickIsotone}}, and onwards from there.
 
 #' @return A data frame with 4 elements:
-#' \itemize{
-#' \item {\code{target}  }  { The user-provided target values of y, at which x is estimated}
-#' \item {\code{point} } {  The point estimates of x}
-#' \item {\code{lowerPPconf,upperPPconf}  }  { the interval-boundary estimates for a 'PP'=\code{100*conf} confidence interval}
-#' }
+#' 
+#'  - `target`: The user-provided target values of y, at which x is estimated
+#'  - `point`: The point estimates of x
+#'  - `lowerPPconf,upperPPconf`: the interval-boundary estimates for a 'PP'=\code{100*conf} confidence interval
+#' 
 
 #' @references Flournoy N and Oron AP, 2020. Bias Induced by Adaptive Dose-Finding Designs. Journal of Applied Statistics 47, 2431-2442.
 

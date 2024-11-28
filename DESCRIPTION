@@ -2,12 +2,12 @@ Package: cir
 Type: Package
 Title: Centered Isotonic Regression and Dose-Response Utilities
 Version: 2.5.0
-Date: 2024-04-15
+Date: 2024-12-01
 Description: Isotonic regression (IR) and its improvement: centered isotonic regression (CIR). CIR is recommended in particular with small samples. Also, interval estimates for both, and additional utilities such as plotting dose-response data. For dev version and change history, see GitHub assaforon/cir.
 License: GPL-2
 Authors@R:
     person('Assaf P.','Oron', role=c('cre','aut'), email='assaf.oron@gmail.com')
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
 VignetteBuilder: knitr

@@ -53,9 +53,9 @@ quickInverse(
 \value{
 A data frame with 4 elements:
 \itemize{
-\item {\code{target}  }  { The user-provided target values of y, at which x is estimated}
-\item {\code{point} } {  The point estimates of x}
-\item {\code{lowerPPconf,upperPPconf}  }  { the interval-boundary estimates for a 'PP'=\code{100*conf} confidence interval}
+\item \code{target}: The user-provided target values of y, at which x is estimated
+\item \code{point}: The point estimates of x
+\item \verb{lowerPPconf,upperPPconf}: the interval-boundary estimates for a 'PP'=\code{100*conf} confidence interval
 }
 }
 \description{

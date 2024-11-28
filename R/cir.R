@@ -134,11 +134,10 @@ if (!full) {
 #' @export
 
 #' @return A data frame with 4 variables:  
-#' \itemize{
-#' \item {\code{x}} {either the input x values, or \code{outx} of specified;}
-#' \item {\code{y}} {  The point estimates of x}
-#' \item {\code{lowerPPconf,upperPPconf}  }  { the interval-boundary estimates for a 'PP'=\code{100*conf} confidence interval}
-#' }
+#
+#'  - `x` either the input x values, or \code{outx} if specified;
+#'  - `y`  he point estimates of x;
+#'  - `lowerPPconf,upperPPconf` the interval-boundary estimates for a `PP`=\code{100*conf} confidence interval.
 #'  
 #' @seealso \code{\link{cirPAVA}},\code{\link{oldPAVA}},\code{\link{isotInterval}},\code{\link{quickInverse}},\code{\link{doseResponse}}
 #' @note You can obtain interpolated point estimates for x values between the observed data by specifying them via \code{outx}. However, for CIR, do NOT commit the error of generating estimates at observations, then interpolating using \code{\link{approx}}. If you need to retain a set of estimates for plotting the entire fitted curve, or for future interpolation at unknown points, call \code{\link{cirPAVA}} directly with \code{full=TRUE}, then use the returned \code{shrinkage} data frame for plotting and interpolation. See example code below.

@@ -41,9 +41,9 @@ quickIsotone(
 \value{
 A data frame with 4 variables:
 \itemize{
-\item {\code{x}} {either the input x values, or \code{outx} of specified;}
-\item {\code{y}} {  The point estimates of x}
-\item {\code{lowerPPconf,upperPPconf}  }  { the interval-boundary estimates for a 'PP'=\code{100*conf} confidence interval}
+\item \code{x} either the input x values, or \code{outx} if specified;
+\item \code{y}  he point estimates of x;
+\item \verb{lowerPPconf,upperPPconf} the interval-boundary estimates for a \code{PP}=\code{100*conf} confidence interval.
 }
 }
 \description{
