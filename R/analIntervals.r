@@ -58,7 +58,7 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' 
 #' Starting version 2.3.0, by default the slope estimate is different to the right and left of target. The intervals should now better accommodate the sharp slope changes that often happen with discrete dose-response datasets. Operationally, the intervals are first estimated via the single-slope approach described above. Then using a finer grid of \eqn{x} values, weighted-average slopes to the right and left of the point estimate separately are calculated over the first-stage's half-intervals. The weights are hard-coded as quadratic (Epanechnikov). 
 #' 
-#' An alternative and much simpler interval method (dubbed "global") is hard-coded into \code{\link{quickInverse}}, and can be chosen from there as an option. But it is not recommended.
+#' An alternative and much simpler interval method (dubbed "global") is hard-coded into \code{\link{quickInverse}}, and can be chosen from there as an option. It is not recommended being far more conservative. It is now also used in this function's backend, as a fallback upper bound on interval width.
 #' 
 #' 
 
@@ -69,8 +69,8 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' @param target A vector of target response rate(s), for which the interval is needed. Default (since version 2.3.0) is the 3 quartiles (`(1:3) / 4`). If changed to \code{NULL}, interval will be returned for the \eqn{y} values of `isotPoint$output`. 
 #' @param intfun the function to be used for initial (forward) interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
-#' @param adaptiveCurve logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation (default \code{FALSE})? Recommended when adaptive design was used and \code{target} is not 0.5.
-#' @param minslope minimum local slope (subsequently normalized by the units dose spacing) considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.
+#' @param adaptiveCurve logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation? Default \code{FALSE}. Switch to `TRUE` recommended when adaptive design was used, and \code{target} is outside of $[0.4, 0.6]$.
+#' @param minslope minimum local slope (subsequently normalized by the dose-spacing unit) considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.
 #' @param slopeRefinement **(new to 2.3.0)** logical: whether to allow refinement of the slope estimate, including different slopes to the left and right of target. Default `TRUE`. See Details.
 #' @param globalCheck **(new to 2.4.0)** logical: whether to allow narrowing of the bound, in case the "global" bound *(obtained via inverting the forward interval, and generally more conservative)* is narrower. Default `TRUE`.
 #' @param finegrid a numerical value used to guide how fine the grid of `x` values will be during slope estimation. Should be in (0,1) (preferably much less than 1). Default 0.05.
@@ -161,21 +161,6 @@ if(slopeRefinement)
 rbounds=rev(cummin(rev(xout+rwidths)))
 lbounds=cummax(xout+lwidths)
 
-# New 2.4.0! Optional narrowing via global interval
-if(globalCheck)
-{
-
-  festimate2 = approx(isotPoint$shrinkage$x,isotPoint$shrinkage$y, xout=gridx)$y
-#  cestimate2 = cestimate
-  cestimate2 =    isotInterval(isotPoint, conf=conf, intfun=intfun, outx=gridx, ...)
-# print(cbind(gridx,cestimate2)); stop() 
-  rglob = approx(cestimate2$ciLow, y=gridx, xout = festimate, rule=1, ties='ordered')$y
-  lglob = approx(cestimate2$ciHigh, y=gridx, xout = festimate, rule=1, ties='ordered')$y
- # print(cbind(festimate,lglob,rglob)); stop() 
-  
-  rbounds = ifelse(is.finite(rglob) & rglob >= xout & rglob < rbounds, rglob, rbounds) 
-  lbounds = ifelse(is.finite(lglob) & lglob <= xout & lglob > rbounds, lglob, lbounds) 
-}
 
 ### Calculating at the requested targets
 # No target specified: using design points
@@ -197,6 +182,23 @@ if(adaptiveCurve) {
 	lout=approx(festimate,lbounds,xout=target,rule=1,ties='ordered')$y
 	rout=approx(festimate,rbounds,xout=target,rule=1,ties='ordered')$y
 }
+
+# New 2.4.0! Optional narrowing via global interval
+if(globalCheck)
+{
+  
+  # print(cbind(gridx,cestimate2)); stop() 
+  rglob = approx(cestimate$ciLow, y=xout, xout = target, rule=1, ties='ordered')$y
+  lglob = approx(cestimate$ciHigh, y=xout, xout = target, rule=1, ties='ordered')$y
+#  return(cbind(lout,rout))
+  
+  #   rfine = approx(x=rbounds, y=xout, xout=festimate2, ties = 'ordered')$y
+  #   lfine = approx(x=lbounds, y=xout, xout=festimate2, ties = 'ordered')$y
+  #   return(cbind(festimate2, lfine, rfine))
+  rout = ifelse(is.finite(rglob) &  rglob < rout, rglob, rout) 
+  lout = ifelse(is.finite(lglob) &  lglob > lout, lglob, lout) 
+}
+
 
 dout = cbind(lout,rout)
 rownames(dout) = target

@@ -26,9 +26,9 @@ deltaInverse(
 
 \item{conf}{numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.}
 
-\item{adaptiveCurve}{logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation (default \code{FALSE})? Recommended when adaptive design was used and \code{target} is not 0.5.}
+\item{adaptiveCurve}{logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation? Default \code{FALSE}. Switch to \code{TRUE} recommended when adaptive design was used, and \code{target} is outside of $\link{0.4, 0.6}$.}
 
-\item{minslope}{minimum local slope (subsequently normalized by the units dose spacing) considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.}
+\item{minslope}{minimum local slope (subsequently normalized by the dose-spacing unit) considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.}
 
 \item{slopeRefinement}{\strong{(new to 2.3.0)} logical: whether to allow refinement of the slope estimate, including different slopes to the left and right of target. Default \code{TRUE}. See Details.}
 
@@ -49,7 +49,7 @@ The Delta method in this application boils down to dividing the distance to the 
 
 Starting version 2.3.0, by default the slope estimate is different to the right and left of target. The intervals should now better accommodate the sharp slope changes that often happen with discrete dose-response datasets. Operationally, the intervals are first estimated via the single-slope approach described above. Then using a finer grid of \eqn{x} values, weighted-average slopes to the right and left of the point estimate separately are calculated over the first-stage's half-intervals. The weights are hard-coded as quadratic (Epanechnikov).
 
-An alternative and much simpler interval method (dubbed "global") is hard-coded into \code{\link{quickInverse}}, and can be chosen from there as an option. But it is not recommended.
+An alternative and much simpler interval method (dubbed "global") is hard-coded into \code{\link{quickInverse}}, and can be chosen from there as an option. It is not recommended being far more conservative. It is now also used in this function's backend, as a fallback upper bound on interval width.
 }
 \examples{
 # Interesting run (#664) from a simulated up-and-down ensemble:
@@ -96,7 +96,7 @@ lines(invDelta[,2], yvals, lty=2, lwd=2)
 legend('topleft', pch=c(NA,NA,'X',NA,NA), lty=c(1,1,NA,2,2), 
        col=c(4,'purple', 1,1,3), lwd=c(1.5,1.5,0,2,1),
        legend = c('True Curve', 'CIR Curve', 'Observations', 
-                  'Local Interval (default)',
+                  'Local Interval around y = 0.3 (default)',
                   'Forward/Global Interval'), bty='n')
 
 }

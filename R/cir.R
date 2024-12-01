@@ -6,9 +6,9 @@
 #'
 #' This is the underlying "engine" function implementing CIR. For a quick and somewhat more user-friendly wrapper, use \code{\link{quickIsotone}}. CIR is a variation of isotonic regression (IR) that shrinks IR's constant ("flat") intervals to single points and interpolates between these points, generating a curve that is strictly monotone everywhere except (possibly) near the boundaries.
 #'
-#' Flat intervals in the raw input data, are handled with care. Under the default setting (\code{strict=FALSE,interiorStrict=TRUE}), flat intervals are treated as monotonicity violations, unless the \eqn{y} value is on the boundary of its allowed range (default \eqn{[0,1]}, appropriate for binary-response data). On that boundary, flat intervals are left unchanged.
+#' Flat intervals in the raw input data, are handled with care. Under the default setting (\code{strict=FALSE, interiorStrict=TRUE}), flat intervals are treated as monotonicity violations, unless the \eqn{y} value is on the boundary of its allowed range (default \eqn{[0,1]}, appropriate for binary-response data). On that boundary, flat intervals are left unchanged.
 #' 
-#' The algorithm is documented and discussed in Oron and Flournoy (2017). The function now include an \code{adaptiveShrink} option, to mitigate bias caused when using adaptive designs (Flournoy and Oron, 2020). 
+#' The algorithm is documented and discussed in Oron and Flournoy (2017). The function includes an \code{adaptiveShrink} option, to mitigate bias caused when using adaptive designs (Flournoy and Oron, 2020). 
 #' 
 #' @references Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Statistics in Biopharmaceutical Research 9, 258-267. (author's public version available on arxiv.org).
 #' @references Flournoy, N. and Oron, A.P., 2020. Bias Induced by Adaptive Dose-Finding Designs. Journal of Applied Statistics 47, 2431-2442.
@@ -17,16 +17,16 @@
 #' @example inst/examples/cirExamples.r
 
 
-#' @param y  can be either of the following: y values (response rates), a \code{\link{DRtrace}} object,a \code{\link{doseResponse}} object, or valid input (potentially together with \code{x,wt}) to generate a \code{\link{doseResponse}} object. See \code{\link{doseResponse}} help for more. 
+#' @param y  can be either of the following: y values (response rates), a \code{\link{DRtrace}} object,  \code{\link{doseResponse}} object, or valid input (potentially together with \code{x,wt}) to generate a \code{\link{doseResponse}} object. See \code{\link{doseResponse}} help for more. 
 #' @param x dose levels (if not included in y). 
 #' @param wt weights (if not included in y).
-#' @param outx vector of x values for which predictions will be made. If \code{NULL} (default), this will be set to the set of unique values in the x argument (or equivalently in y$x). Non-NULL inputs are relevant only if \code{full=TRUE}.
-#' @param full logical, is a more complete output desired? if \code{FALSE} (default), only a vector of point estimates for y at the provided dose levels is returned
-#' @param dec logical, is the true function is assumed to be monotone decreasing? Default \code{FALSE}.
-#' @param strict logical, should CIR enforce strict monotonicity by "fixing" flat intervals as well? Default \code{FALSE}.
+#' @param outx vector of x values at which predictions will be made. If \code{NULL} (default), this will be set to the set of unique values in the x argument (or equivalently in `y$x`). Non-NULL inputs are relevant only if \code{full=TRUE}.
+#' @param full logical, is a more complete output desired? if \code{FALSE} (default), only a vector of point estimates for y at `outx` is returned.
+#' @param dec logical, is the true function is assumed to be monotone decreasing rather than increasing? Default \code{FALSE}.
+#' @param strict logical, should CIR enforce strict monotonicity by "fixing" flat intervals everywhere? Default \code{FALSE}.
 #' @param interiorStrict logical, should CIR enforce strict monotonicity, but only for y values inside of \code{ybounds}?  Default \code{TRUE}. Choosing \code{FALSE} will be overridden if \code{strict=TRUE}, and a warning will be given.
-#' @param ybounds numeric vector of length 2, relevant only under the default setting of \code{strict=FALSE,interiorStrict=TRUE}. Default \code{0:1}. See 'Details'.
-#' @param adaptiveShrink logical, should the y-values be pre-shrunk towards an experiment's target? Recommended if data were obtained via an adaptive dose-finding design. If \code{TRUE}, then must also provide a \code{target} argument that will be passed via \code{...}.
+#' @param ybounds numeric vector of length 2, relevant only under the default setting of \code{strict=FALSE, interiorStrict=TRUE}. Default \code{0:1}. See 'Details'.
+#' @param adaptiveShrink logical, should the y-values be pre-shrunk towards a dose-finding experiment's target? Recommended if data were obtained via an adaptive dose-finding design. If \code{TRUE}, then must also provide a \code{target} argument that will be passed via \code{...}.
 #' @param ...	Other arguments passed on to pre-processing functions.
 
 #' @return under default, returns a vector of y estimates at unique x values. With \code{full=TRUE}, returns a list of 3 \code{\link{doseResponse}} objects name \code{output,input,shrinkage} for the output data at dose levels, the input data, and the function as fit at algorithm-generated shrinkage points, respectively.
