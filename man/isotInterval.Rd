@@ -2,7 +2,7 @@
 % Please edit documentation in R/analIntervals.r
 \name{isotInterval}
 \alias{isotInterval}
-\title{Returns analytical interval estimates, given isotonic-regression (centered or not) point estimates}
+\title{Backend utility to calculate analytical interval estimates, given isotonic-regression (centered or not) point estimates}
 \usage{
 isotInterval(
   isotPoint,

@@ -37,7 +37,7 @@ lines(quick1$upper90conf,lty=2,col=3)
 
 # Now, the default "local" inverse interval, which is finite for the range of estimated y values.
 # In particular, it is finite for y=0.3.
-# Note in the plot how we make it equal the "global" bound when the latter is narrower.
+# Note in the plot, how we make it equal to the "global" bound when the latter is narrower.
 lines(invDelta[,1], yvals, lty=2, lwd=2)
 lines(invDelta[,2], yvals, lty=2, lwd=2)
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/invCIR.r
 \name{quickInverse}
 \alias{quickInverse}
-\title{Point and Interval Inverse Estimation ("Dose-Finding"), using CIR and IR}
+\title{Convenient point and Interval Inverse Estimation ("Dose-Finding"), using CIR or IR}
 \usage{
 quickInverse(
   y,

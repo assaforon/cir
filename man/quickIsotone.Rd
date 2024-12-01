@@ -2,7 +2,7 @@
 % Please edit documentation in R/cir.R
 \name{quickIsotone}
 \alias{quickIsotone}
-\title{One-Stop-shop Forward point and interval estimation via CIR or IR}
+\title{Convenient Forward point and interval estimation via CIR or IR}
 \usage{
 quickIsotone(
   y,

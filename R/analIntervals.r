@@ -1,4 +1,4 @@
-##' Returns analytical interval estimates, given isotonic-regression (centered or not) point estimates
+##' Backend utility to calculate analytical interval estimates, given isotonic-regression (centered or not) point estimates
 #'
 #'
 #' For confidence intervals at design points ($x$ values with obesrvations), this function calls \code{intfun} to do the work. In addition, CIs for any $x$ value are calculated using linear interpolation between design points (note that for CIR, this differs from the interpolation of point estimates which is carried out between shrinkage points, as explained in \code{\link{quickIsotone}})
@@ -48,17 +48,19 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 
 ####################### Inverse
 
-#' Calculate inverse (dose-finding) intervals, using local inversion and the Delta method
+#' Backend utility to calculate inverse (dose-finding) intervals, using local inversion and the Delta method
 #'
 #'
 #' Calculate left-bound to right-bound intervals for the dose point estimates, using local slopes at design points (places where observations exist) to invert the forward lower-upper bounds.
 #'
 #'
+#' This function is the "backend engine" for calculating confidence intervals for inverse (dose-finding) estimation. Methodologically this might be the most challenging task in the package. It is expected that most users will not interact with this function directly, but rather indirectly via the convenience wrapper \code{\link{quickInverse}}.
+#' 
 #' The Delta method in this application boils down to dividing the distance to the forward (vertical) bounds, by the slope, to get the left/right interval width. Both forward intervals and slopes are calculated across a standard set of \eqn{x} values, then interpolated at horizontal cross-sections determined by `target`. Slope estimates are performed by \code{\link{slope}}. 
 #' 
 #' Starting version 2.3.0, by default the slope estimate is different to the right and left of target. The intervals should now better accommodate the sharp slope changes that often happen with discrete dose-response datasets. Operationally, the intervals are first estimated via the single-slope approach described above. Then using a finer grid of \eqn{x} values, weighted-average slopes to the right and left of the point estimate separately are calculated over the first-stage's half-intervals. The weights are hard-coded as quadratic (Epanechnikov). 
 #' 
-#' An alternative and much simpler interval method (dubbed "global") is hard-coded into \code{\link{quickInverse}}, and can be chosen from there as an option. It is not recommended being far more conservative. It is now also used in this function's backend, as a fallback upper bound on interval width.
+#' An alternative and much simpler interval method (dubbed "global") is hard-coded into \code{\link{quickInverse}}, and can be chosen from there as an option. It is not recommended being far too conservative, and sometimes not existing. It is now also (since version 2.4.0) used in this function as a fallback upper bound on interval width.
 #' 
 #' 
 
