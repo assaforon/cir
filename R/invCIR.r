@@ -1,4 +1,4 @@
-##' Backend utility for inverse (dose-finding) point estimate (e.g., estimating a percentile)
+#' Inverse (dose-finding) point estimate (e.g., estimating a percentile)
 #'
 #'
 #' Inverse ("dose-finding") point estimation of a dose (x) for a specified target y value (e.g., a response rate), 

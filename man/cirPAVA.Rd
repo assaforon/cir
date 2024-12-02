@@ -2,7 +2,7 @@
 % Please edit documentation in R/cir.R
 \name{cirPAVA}
 \alias{cirPAVA}
-\title{Backend utility for centered-isotonic-regression (CIR) point estimation}
+\title{Centered-isotonic-regression (CIR) point estimation}
 \usage{
 cirPAVA(
   y,

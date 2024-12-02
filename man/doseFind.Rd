@@ -2,7 +2,7 @@
 % Please edit documentation in R/invCIR.r
 \name{doseFind}
 \alias{doseFind}
-\title{Backend utility for inverse (dose-finding) point estimate (e.g., estimating a percentile)}
+\title{Inverse (dose-finding) point estimate (e.g., estimating a percentile)}
 \usage{
 doseFind(
   y,

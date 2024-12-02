@@ -1,4 +1,4 @@
-#' Backend utility for centered-isotonic-regression (CIR) point estimation
+#' Centered-isotonic-regression (CIR) point estimation
 #'
 #'
 #' Nonparametric forward point estimation of a monotone response (y) as a function of dose (x), using the centered-isotonic-regression (CIR) algorithm.
