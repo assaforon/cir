@@ -1,11 +1,11 @@
-##' Backend utility to calculate analytical interval estimates, given isotonic-regression (centered or not) point estimates
+##' Backend utility to calculate analytical CIR/IR interval estimates, given the point estimates
 #'
 #'
-#' For confidence intervals at design points ($x$ values with obesrvations), this function calls \code{intfun} to do the work. In addition, CIs for any $x$ value are calculated using linear interpolation between design points (note that for CIR, this differs from the interpolation of point estimates which is carried out between shrinkage points, as explained in \code{\link{quickIsotone}})
+#' For confidence intervals at design points (x values with obesrvations), this function calls \code{intfun} to do the work. In addition, CIs for any x value are calculated using linear interpolation between design points (note that for CIR, this differs from the interpolation of point estimates which is carried out between shrinkage points, as explained in \code{\link{quickIsotone}}). The interval estimation method is presented and discussed by Oron and Flournoy (2017).
 #' 
-#' @note All provided algorithm and formulae are for Binomial data only. For other data, write your own \code{intfun}, returning a two-column matrix. The interval estimation method is presented and discussed by Oron and Flournoy (2017).
+#' @note All provided algorithms and formulae are for binary/Binomial data only. For other data, write your own \code{intfun}, returning a two-column matrix. 
 #'
-#' @note Interval coverage for extreme percentiles with adaptive designs may be lacking: use \code{adaptiveCurve=TRUE} whenever the \code{target} is not 0.5. However, targeting  the the 5th or 95th percentile will likely produce intervals with 10-15% under-coverage by with that option. 
+#' @note Interval coverage for extreme percentiles with adaptive designs may be lacking: use \code{adaptiveCurve=TRUE} whenever the \code{target} is outside (0.4, 0.6). This should work as far as the 10th or 90th percentile, but not for more extreme targets. 
 #'
 #' @seealso \code{\link{quickIsotone}},\code{\link{quickInverse}},\code{\link{morrisCI}},
 #' @example inst/examples/fwdCiExamples.r
@@ -71,7 +71,7 @@ return(data.frame(ciLow=lcl,ciHigh=ucl))
 #' @param target A vector of target response rate(s), for which the interval is needed. Default (since version 2.3.0) is the 3 quartiles (`(1:3) / 4`). If changed to \code{NULL}, interval will be returned for the \eqn{y} values of `isotPoint$output`. 
 #' @param intfun the function to be used for initial (forward) interval estimation. Default \code{\link{morrisCI}} (see help on that function for additional options).
 #' @param conf numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.
-#' @param adaptiveCurve logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation? Default \code{FALSE}. Switch to `TRUE` recommended when adaptive design was used, and \code{target} is outside of $[0.4, 0.6]$.
+#' @param adaptiveCurve logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation? Default \code{FALSE}. Switch to `TRUE` recommended when adaptive design was used, and \code{target} is outside of (0.4, 0.6).
 #' @param minslope minimum local slope (subsequently normalized by the dose-spacing unit) considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.
 #' @param slopeRefinement **(new to 2.3.0)** logical: whether to allow refinement of the slope estimate, including different slopes to the left and right of target. Default `TRUE`. See Details.
 #' @param globalCheck **(new to 2.4.0)** logical: whether to allow narrowing of the bound, in case the "global" bound *(obtained via inverting the forward interval, and generally more conservative)* is narrower. Default `TRUE`.

@@ -48,7 +48,7 @@ A data frame with 4 variables:
 }
 \description{
 One-Stop-shop Forward point and confidence-interval estimation of a monotone response (y) as a function of dose (x), using centered-isotonic-regression (CIR, default) or isotonic regression. Input format is rather flexible.
-This function calls \code{\link{cirPAVA}}, \code{\link{oldPAVA}}, \code{\link{iterCIR}} (speculatively), or a user-written function, for the point estimate, then \code{\link{isotInterval}} for the confidence interval. Vector input is allowed, but the preferred input format is a \code{\link{doseResponse}} object.
+This function calls \code{\link{cirPAVA}}, \code{\link{oldPAVA}}, or a user-written function, for the point estimate, then \code{\link{isotInterval}} for the confidence interval. Vector input is allowed, but the preferred input format is a \code{\link{doseResponse}} object.
 An analogous function for dose-finding (inverse estimation) is \code{\link{quickInverse}}.
 }
 \note{

@@ -42,7 +42,7 @@ Nonparametric forward point estimation of a monotone response (y), using the sta
 Compute the isotonic regression (IR) point estimate of a numeric input vector \code{y}, with weights \code{wt}, with respect to simple order. The core algorithm is still the one coded by R.F. Raubertas, dated 02 Sep 1994. However, the input and output modules have been
 modified to allow more flexible formats in either direction. The output is also compatible with the convenience wrapper \code{\link{quickIsotone}}; however you will have to set \code{estfun = oldPAVA} to get it to run IR rather than centered isotonic regression (CIR) which is the default for all wrapper functions in this package.
 
-nNte that unlike CIR (see \code{\link{cirPAVA}}), this algorithm does not use the dose (x) values at all. For a discussion why CIR is preferred over "plain-vanilla" PAVA, see Oron and Flournoy (2017).
+Note that unlike CIR (see \code{\link{cirPAVA}}), this algorithm does not use the dose (x) values at all. For a discussion why CIR is preferred over the "plain-vanilla" PAVA of this function, see Oron and Flournoy (2017).
 }
 \references{
 Oron, A.P. and Flournoy, N., 2017. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Statistics in Biopharmaceutical Research, In Press (author's public version available on arxiv.org).

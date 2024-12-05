@@ -71,7 +71,7 @@ neundatTrace = DRtrace(x = c(rep(1:4, c(3,4,5,4) ), 7, 7, rep(6,9)),
                        cohort = rep(1:8, c(3,4,5,4, 2, 3,3,3)) )
 par(mar=c(3,3,3,1), mgp=c(2,.5,0), tcl=-0.25)
 layout(t(1:2))
-plot(neundatTrace ,main="N. et al. (2008) Cohort Trace", xlab = 'Cohort', 
+plot(neundatTrace ,main="N. et al. (2008) Trajectory", xlab = 'Cohort', 
           ylab="Ordinal Dose Level" ,cex.main=1.5)
 
 ## Same data, in 'doseResponse' format with actual doses rather than dose levels
@@ -84,7 +84,7 @@ neundatLevel = doseResponse(neundatTrace)
 ### Now plotting the former, vs. IR/CIR estimates
 neunCIR0 = cirPAVA(neundatDose,full=TRUE, adaptiveShrink = TRUE, target = 0.3)
 lines(neunCIR0$shrinkage$x, neunCIR0$shrinkage$y)
-legend(1,1, pch=c(4,0), lty = 0:1, legend=c('Observations', 'CIR w/bias corr.'), bty='n')
+legend(1,1, pch=c(4,NA), lty = 0:1, legend=c('Observations', 'CIR w/bias corr.'), bty='n')
 }
 \seealso{
 \code{\link{doseResponse}}, \code{\link{DRtrace}}

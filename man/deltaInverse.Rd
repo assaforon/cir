@@ -26,7 +26,7 @@ deltaInverse(
 
 \item{conf}{numeric, the interval's confidence level as a fraction in (0,1). Default 0.9.}
 
-\item{adaptiveCurve}{logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation? Default \code{FALSE}. Switch to \code{TRUE} recommended when adaptive design was used, and \code{target} is outside of $\link{0.4, 0.6}$.}
+\item{adaptiveCurve}{logical, should the CIs be expanded by using a parabolic curve between estimation points rather than straight interpolation? Default \code{FALSE}. Switch to \code{TRUE} recommended when adaptive design was used, and \code{target} is outside of (0.4, 0.6).}
 
 \item{minslope}{minimum local slope (subsequently normalized by the dose-spacing unit) considered positive, passed on to \code{\link{slope}}. Needed to avoid unrealistically broad intervals. Default 0.01.}
 

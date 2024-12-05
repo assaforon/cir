@@ -70,7 +70,7 @@ axis(2, at=dosevals, ...)
 
 
 #############
-##' @rdname plot.DRtrace
+#' @rdname plot.DRtrace
 #' @export
 plot.doseResponse<-function(x, xlab="Dose", ylab="Response", pch='X', varsize=TRUE,
                             refsize=sqrt(1/mean(x$weight)), connect=FALSE, mcol=1, 
