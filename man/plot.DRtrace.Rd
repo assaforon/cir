@@ -23,7 +23,7 @@
   ylab = "Response",
   pch = "X",
   varsize = TRUE,
-  refsize = sqrt(1/mean(x$weight)),
+  refsize = NULL,
   connect = FALSE,
   mcol = 1,
   dosevals = NULL,
@@ -41,13 +41,11 @@
 
 \item{mcol}{The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there will be an error message.}
 
-\item{dosevals}{Dose values to be plotted along the x-axis (\code{plot.doseResponse}) or y-axis (\code{plot.DRtrace}) . If \code{NULL} (default), those will be the doses in the dataset (i.e.,\code{sort(unique(x$x))}).}
+\item{dosevals}{Dose values to be plotted along the x-axis (\code{plot.doseResponse}) or y-axis (\code{plot.DRtrace}) . Must be on the same scale as \code{x$x}. If \code{NULL} (default), those will be the doses in the dataset (i.e.,\code{sort(unique(x$x))}).}
 
 \item{offset}{(\code{DRtrace} only) In case of a cohort-based experiment, the relative vertical offset between symbols for outcomes within the same cohort (as fraction of dose spacing). Default 0.2.}
 
-\item{...}{Other arguments passed on to \code{\link{plot}}.
-
-Conversely, putting values on a different scale into \code{dosevals}, or even text labels instead of numbers, won't work. For the former, change the scale at the source data (i.e., in the plotted object). For the latter, sorry but no solution at present.}
+\item{...}{Other arguments passed on to \code{\link{plot}}.}
 
 \item{pch}{the plotting character (doseResponse only), the default being 'X' marks}
 
@@ -60,7 +58,8 @@ Plotting methods for \code{\link{doseResponse}} and \code{\link{DRtrace}} classe
 }
 \details{
 Generic methods for dose-response trajectory/trace (\code{\link{DRtrace}}), and dose-response summary  (\code{\link{doseResponse}}) class objects.
-The \code{\link{DRtrace}} plotting uses the typical convention of plotting dose-finding experimental trace, with dose levels (x) in the vertical axis and 1/0 responses (y) denoted via filled/empty circles, respectively. In other words, this generic plotting method is only relevant for binary 0/1 outcomes. If cohort information is provided via \code{x$cohort} (i.e., multiple observations considered as collected together rather than each data point sequentially), then the plotting will respect cohort structure.
+The \code{\link{DRtrace}} plotting uses the typical convention of plotting dose-finding experimental trace, with dose levels (x) in the vertical axis and 1/0 responses (y) denoted via filled/empty symbols, respectively. In other words, this generic plotting method is only relevant for binary 0/1 outcomes. If cohort information is provided via \code{x$cohort} (i.e., multiple observations considered as collected together rather than each data point sequentially), then the plotting will respect cohort structure.
+
 The \code{\link{doseResponse}} plotting has response rate on the y-axis and dose on the x-axis, and plots symbols whose area is proportional to the weights.
 }
 \examples{
