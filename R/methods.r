@@ -19,7 +19,7 @@
 #' @param connect logical: whether to connect the symbols (generic plotting type 'b'). Default \code{TRUE} for \code{\link{DRtrace}} and \code{FALSE} for \code{\link{doseResponse}}
 #' @param varsize 	(\code{doseResponse} only) logical, should symbol size vary by sample size? Default \code{TRUE}
 #' @param refsize 	(\code{doseResponse} only) a reference size by which the plotting sizes will be multiplied. Default is \code{1/sqrt(mean(dr$weight))}, scaled so that if `varsize = TRUE` the weighted-average symbol size is 1. If `varsize = FALSE`, this argument is equivalent to `cex` in an ordinary x-y `plot()` call.
-#' @param dosevals Dose values to be plotted along the x-axis (`plot.doseResponse`) or y-axis (`plot.DRtrace`) . Must be on the same scale as `x$x`. If \code{NULL} (default), those will be the doses in the dataset (i.e.,\code{sort(unique(x$x))}). 
+#' @param dosevals Dose values to be plotted along the x-axis (`plot.doseResponse`) or y-axis (`plot.DRtrace`) . Must be on the same scale as `x$x`. If \code{NULL} (default), those will be the doses in the dataset (i.e.,\code{sort(unique(x$x))}). The range of this values will determine the plot's x-axis range.
 #' @param offset (\code{DRtrace} only) In case of a cohort-based experiment, the relative vertical offset between symbols for outcomes within the same cohort (as fraction of dose spacing). Default 0.2.
 #' @param ...	Other arguments passed on to \code{\link{plot}}. 
 #' 
@@ -33,7 +33,7 @@ plot.DRtrace <- function(x, xlab="Patient Order", ylab="Dose", shape='circle', c
                          mcol=1, dosevals=NULL, offset=0.2, ...) {
 
 n=dim(x)[1]
-# Setting plotting symbol
+# Setting plotting symbols
 ch1=16
 if(shape=='square') ch1=15
 if(shape=='triangle') ch1=17
