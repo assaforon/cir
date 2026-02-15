@@ -29,25 +29,24 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-I demonstrate the `cir` package with data from the anesthesiology experiment of Benhamou et al. (2003)^[Benhamou D, Ghosh C, Mercier FJ. A Randomized Sequential Allocation Study to Determine the Minimum Effective Analgesic Concentration of Levobupivacaine and Ropivacaine in Patients Receiving Epidural Analgesia for Labor. Anesthesiology. 2003;99(6):1383-1386.]. This experiment used the Up-and-Down (UD) dose-finding design, and was re-analyzed a few years later by Pace and Stylianou (2007).^[Pace NL, Stylianou MP. Advances in and Limitations of Up-and-down Methodology: A Précis of Clinical Use, Study Design, and Dose Estimation in Anesthesia Research. *Anesthesiology* 2007;107(1):144-152.] Here I re-analyze the dataset yet again, using state-of-the-art Centered Isotonic Regression (CIR),^[Oron AP, Flournoy N. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. *Stat Biopharm Res.* 2017;9(3):258-267.] this package's core estimator. 
+I demonstrate the `cir` package with data from the anesthesiology experiment of Benhamou et al. (2003)^[Benhamou D, Ghosh C, Mercier FJ. A Randomized Sequential Allocation Study to Determine the Minimum Effective Analgesic Concentration of Levobupivacaine and Ropivacaine in Patients Receiving Epidural Analgesia for Labor. Anesthesiology. 2003;99(6):1383-1386.], which used the Up-and-Down (UD) dose-finding design. It was re-analyzed a few years later by Pace and Stylianou (2007).^[Pace NL, Stylianou MP. Advances in and Limitations of Up-and-down Methodology: A Précis of Clinical Use, Study Design, and Dose Estimation in Anesthesia Research. *Anesthesiology* 2007;107(1):144-152.] Here I re-analyze the dataset yet again, using state-of-the-art Centered Isotonic Regression (CIR),^[Oron AP, Flournoy N. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. *Stat Biopharm Res.* 2017;9(3):258-267.] the `cir` package's core estimator. 
 
-Up-and-down data analysis was the original motivation for developing CIR and `cir`. An overview of UD designs for general scientific audiences was recently published in Oron et al. (2022).^[Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. See also the online supplement.] Even more recently, an overview oriented towards statisticians and data scientists was published in Oron and Flournoy (2025).^[Oron AP, Flournoy N. p-and-Down: The Most Popular, Most Reliable, and Most Overlooked Dose-Finding Design, *N Engl J STAT DATA SCI* 3(2025), no. 3, 222-233.] 
+Up-and-down data analysis was the original motivation for developing CIR and `cir`. If you are not familiar with UD designs, an overview for general scientific audiences was recently published by Oron et al. (2022).^[Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. See also the online supplement.] An even more recent overview oriented towards statisticians and data scientists, is available in Oron and Flournoy (2025).^[Oron AP, Flournoy N. p-and-Down: The Most Popular, Most Reliable, and Most Overlooked Dose-Finding Design, *N Engl J STAT DATA SCI* 3(2025), no. 3, 222-233.] 
 
-Despite the UD connection, the `cir` package is useful for any binary-outcome data for which a monotone dose-response relationship is expected, regardless of how that data were obtained. Given $n$ observation pairs of doses $x_i, i=1, \ldots, n$ and binary responses $y_i, i=1, \ldots, n$, CIR estimates the **dose-response function $F(x)$, or in short, just $F$:** 
+Despite its UD-related history, `cir` is useful with any binary-outcome data for which a monotone dose-response relationship is expected, regardless of how that data were obtained. Given $n$ observation pairs consisting of doses $x_i, i=1, \ldots, n$ and binary responses $y_i, i=1, \ldots, n$, CIR estimates the **dose-response function $F(x)$, or in short, just $F$:** 
 
 $$ F\equiv F(x) \equiv \Pr\left(Y = 1 \mid X = x \right),$$
-making no assumptions except for strict monotonicity.
-
+making no assumptions except for strict monotonicity. While the package default *(and our description here)* assumes an increasing monotone $F$, the decreasing case is also accommodated, usually by adding the argument $dec = TRUE$ to function calls. 
 
 The package includes methods for both **"forward"** estimation of $F$, i.e., the expected response rate conditional on dose, and **"inverse"** estimation of $F^{-1}$, a.k.a. dose-finding. Both estimation directions have quick, user-friendly all-in-one functions, as well as more detailed in-depth functions.
 
-**If your interest is mainly in UD data analysis rather than more general dose-response data, then you are strongly encouraged to use the dedicated UD package `upndown`.** It includes wrappers for even simpler, single-command plotting and estimation of UD datasets, using `cir` package functions with the defaults already dialed onto the UD context. You can download the latest version of that package using `remotes::install_github(assaforon/upndown)`. CRAN also has a copy, but it would always be a couple of steps back, as `upndown` is still new and changing a lot.
+**If your interest is mainly in UD data analysis rather than more general dose-response data, then you are strongly encouraged to use the dedicated UD package `upndown`.** It includes wrappers for even simpler, single-command plotting and estimation of UD datasets, using `cir` package functions with the defaults already dialed onto the UD context. You can download the latest version of that package using `remotes::install_github(assaforon/upndown)`. CRAN also has a copy, which while more stable it would also tend to be a couple of steps behind, as `upndown` is still relatively new and changing a lot.
 
 ## The Study in our Example
 
-Benhamou et al. (2003) randomized pregnant volunteers in labor into two groups, receiving as analgesic either ropivacaine or levobupivacaine, to estimate each agent’s median effective dose (ED$_{50}$) for this condition, and to test whether there is significant difference in equal-concentration efficacy by comparing the two estimates. The original study used a "traditional" UD dose-averaging estimation method, concluding that even though levobupivacaine seemed 19% more potent, the difference between ED$_{50}$s was not significant. To derive inference about this difference, they apparently used the standard errors of dose averages in a $t$-test like manner.
+Benhamou et al. (2003) randomized consenting pregnant patients in labor into two arm of $n=40$ each, to receive as analgesic either ropivacaine or levobupivacaine. The goal was to estimate each agent’s median effective dose (ED$_{50}$) for this condition, and to evaluate whether they differ in same-concentration efficacy by comparing the two estimates. The original study used a "traditional" UD dose-averaging estimation method, concluding that even though levobupivacaine seemed 19% more potent, the difference between ED$_{50}$s was not significant. To derive inference about this difference, they apparently used the standard errors of dose averages in a $t$-test like manner.
 
-Pace and Stylianou (2007) re-analyzed the data using isotonic regression (IR) and $83\%$ bootstrap confidence intervals (CIs); under certain assumptions, examining whether such CIs overlap is equivalent to rejecting the Null hypothesis with $\alpha = 0.05.$ ^[Payton ME, Greenstone MH, Schenker N. Overlapping confidence intervals or standard error intervals:  What do they mean in terms of statistical significance? *J Insect Sci.* 2003;3(1).] They found a larger difference than Benhamou et al.: according to the IR estimates, levobupivacaine was 37% more potent . Furthermore, the difference was deemed statistically significant because the $83\%$ CIs did not overlap.
+Pace and Stylianou (2007) re-analyzed the data using isotonic regression (IR) and 83% bootstrap confidence intervals (CIs); under certain assumptions, examining whether such CIs overlap is roughly equivalent to rejecting the Null hypothesis with $\alpha = 0.05.$ ^[Payton ME, Greenstone MH, Schenker N. Overlapping confidence intervals or standard error intervals:  What do they mean in terms of statistical significance? *J Insect Sci.* 2003;3(1).] They found a larger difference than Benhamou et al.: according to the IR estimates, levobupivacaine was 37% more potent . Furthermore, the difference was deemed statistically significant because the 83% CIs did not overlap.
 
 Here we revisit this experiment yet again. To reduce some confusion, we drop the percent sign from description of doses used *(in the original, concentrations were described as percents)*.
 
@@ -63,7 +62,7 @@ xropi = c(11:9,10:8,9,10,9,10:7,8:11,10:12,11:7,8,7:10,9,8,9,8:10,9,10,9,10)
 xlevo = c(11,10,11,10,11:9,10:7,8,7,8:5,6:8,7,8:6,7,6,7,6,7:5,6,7,6:12)
 ```
 
-Given knowledge of the UD's design rules, the responses ($y$) can be read off directly from the doses ($x$): a positive increment indicates no effectiveness ($y=0$), and vice versa. Symbolically,  $$y = \left( 1-diff(x) \right) / 2.$$ We use this and the `DRtrace()` constructor utility, to create objects that store doses (converted to their physical units) and responses; as we call them here, the experimental "trace" or **trajectory.**
+Given knowledge of the UD design's rules, the responses ($y$) can be read off directly from the doses ($x$). In this specific case, a positive increment indicates no effectiveness ($y=0$), and vice versa. Symbolically,  $$y = \left( 1-diff(x) \right) / 2.$$ We use this and the `DRtrace()` constructor utility, to create objects that store doses (converted to their physical units) and responses; as we call them here, the experimental "trace" or **trajectory.**
 
 ```{r DRtrace}
 library(cir)
@@ -71,20 +70,20 @@ bhamou03ropi = DRtrace(x = xropi[-40]/100, y = (1-diff(xropi))/2 )
 bhamou03levo = DRtrace(x = xlevo[-40]/100, y = (1-diff(xlevo))/2 )
 ```
 
-In the construction above, we gave up the 40th and last observation in each arm, because we only know its dose but not the response. Since UD datasets (and more generally, small-sample dose-response datasets) are rather compact, as shown above entering the data takes no more than 2-3 lines of code. But you can also use `.csv` file input if preferred, with two columns headed `x` and `y`. 
+In the construction above we had to give up the 40th and last observation in each arm, because we only know its dose but not the response. As shown above, entering the data takes no more than 2-3 lines of code. But you can also use `.csv` file input if preferred, with two columns headed `x` and `y`. 
 
-`DRtrace` objects have a native plotting method:
+`DRtrace` objects have a native plotting method. By the way, `DRtrace()` and its plotting method can also accommodate data in which observations were collected in groups or cohorts rather than one-by-one as was done here. See function help for details.
 
 ```{r tracefig,fig.width=9,fig.height=4.5,out.height=400,out.width=800}
 par(mfrow=c(1,2), las=1, mar=c(4,4,4,1)) # image format parameters
-doserange = c(5,12)/100
+doserange = (5:12)/100 # This helps set the same y-axis range and labels
 
-plot(bhamou03ropi, ylim=doserange, ylab="Concentration (%)", main='Ropivacaine Arm')
-legend('bottomright', legend=c('Effective','Ineffective'), pch=c(19,1), bty='n')
-plot(bhamou03levo, ylim=doserange, ylab="Concentration (%)", main='Levobupivacaine Arm')
+plot(bhamou03ropi, dosevals=doserange, ylab="Concentration (%)", main='Ropivacaine Arm')
+legend('topright', legend=c('Effective','Ineffective'), pch=c(19,1), bty='n')
+plot(bhamou03levo, dosevals=doserange, ylab="Concentration (%)", main='Levobupivacaine Arm')
 ```
 
-The "traditional" estimates in the original articles, used some type of average of the doses administered. This is based on the premise that over time, up-and-down designs concentrate these doses roughly symmetrically around the target percentile. Generally speaking, the "traditional" estimates are rather outdated and lack robustness. We recommend CIR as the standard estimator for up-and-down experiments (see e.g., [Oron et al. 2022 supplement (pdf link)](https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf)).
+The "traditional" estimates in the original articles used some type of average of the doses administered. This is based on the premise that over time, UD designs concentrate these doses roughly symmetrically around the target percentile. Generally speaking, these "traditional" estimates are rather outdated and lack robustness. We recommend CIR as the standard estimator for UD experiments (see e.g., [Oron et al. 2022 supplement (pdf link)](https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf)).
 
 ## Dose-Response Plot and ED$_{50}$ Estimates
 
@@ -119,9 +118,9 @@ Target-dose estimation via regression is an [**"Inverse Problem"**](https://en.w
 
 With the Ropivacaine arm data (left), there is a relatively clear transition between low-response and high-response regions, so the target seems to lie between concentrations $0.09$ and $0.10$. We cannot be very confident of that, given the limited amount of information - but at least there's a clear candidate. 
 
-With Levobupivacaine data (right) the picture is far more murky. Concentrations $0.07$ and $0.08$ go above $50\%$ response, but  $0.09$ and $0.10$ go back below that level. As we visualize further below, CIR helps clear that picture via the simplest pooled response-rate averages that makes the overall dose-response curve obey monotonicity.
+With Levobupivacaine data (right) the picture is far more murky. Concentrations $0.07$ and $0.08$ go above $50\%$ response, but  $0.09$ and $0.10$ go back below that level. As we visualize further below, CIR helps clarify that picture via the simplest pooled response-rate averages that makes the overall dose-response curve obey monotonicity.
 
-But before going behind the scenes: from the `doseResponse` object, CIR estimation of $F(x)$  is only one step away.
+In any case, CIR estimation of the entire $F(x)$ curve is only one step away.
 
 ```{r fcir}
 quickIsotone(bhamou03ropiRates, target=0.5, adaptiveShrink=TRUE)
@@ -137,22 +136,21 @@ levoTargetCIR = quickInverse(bhamou03levoRates, target=0.5, adaptiveShrink=TRUE,
 levoTargetCIR
 ```
 
-You can also do the estimation directly from the `x, y` data; the functions will create a `doseResponse` object on the fly.
+You can also perform the estimation directly from the raw `x, y` data; the functions will create a `doseResponse` object on the fly.
 
-The ratio between our point estimates is `r round(ropiTargetCIR$point/levoTargetCIR$point, 2)`, similar to the Pace-Stylianou IR estimate. Not too surprising, as the methods are close to each other than to the original authors' dose-averaging approach, and therefore less affected by starting dose.
+The ratio between our point estimates is `r round(ropiTargetCIR$point/levoTargetCIR$point, 2)`, similar to the Pace-Stylianou IR result. Not too surprising, as the methods are closer to each other than to the original authors' dose-averaging approach; in particular, both are less affected by starting dose, which played a substantial role in the Levobupivacaine arm.
 
 ### Other Notes
  - The target-dose estimate appears under the word `point`: `r round(ropiTargetCIR$point, 4)` for ropivacaine and `r round(levoTargetCIR$point, 4)` for  levobupivacaine.
  - We specify the target response-rate as a fraction, via the `target` argument.
- - Default CIs are 90% rather than 95%, due to the large variability and limited confidence in these typically small-sample experiments. Here we use the `conf` argument to obtain 95% CIs, which are the more appropriate ones when comparing arms.
- - The `adaptiveShrink` option performs an empirical correction of the bias induced by adaptive designs, a bias described by Flournoy and Oron (2019).^[Flournoy N, Oron AP. Bias induced by adaptive dose-finding designs. J Appl Stat. 2019;47(13-15):2431-2442.] This type of bias is induced not just by UD designs, but also by model-based adaptive designs such as the Continual Reassessment Method. It is minimal near the target dose, but flares out to substantial magnitudes in both directions. **Because of this bias, we strongly recommend to *not* estimate any dose that is far removed from the dose-finding design's designated target, except for exploratory/illustrative purposes.** The correction offered in `cir` serves mostly to provide better CI coverage for the target dose estimate.
-
+ - Default CIs are 90% rather than 95%, due to the large variability and limited confidence in these typically small-sample experiments. Here we use the `conf` argument to obtain 95% CIs, which are the more appropriate ones when comparing arms, as explained below.
+ - The `adaptiveShrink` option used in our function calls, implements an empirical correction of the bias induced by adaptive designs, a bias described by Flournoy and Oron (2019).^[Flournoy N, Oron AP. Bias induced by adaptive dose-finding designs. J Appl Stat. 2019;47(13-15):2431-2442.] This type of bias is induced not just by UD designs, but also by model-based adaptive designs such as the Continual Reassessment Method. It is minimal near the target dose, but flares out to substantial magnitudes in both directions. **Because of this bias, we strongly recommend to *not* estimate any dose that is far removed from the dose-finding design's designated target, except for exploratory/illustrative purposes.** The correction offered in `cir` serves mostly to provide better CI coverage for the target dose estimate.
 
 ## Comparing the Two Arms
 
-Having examined the methodology behind the CI-overlap approach (which to be prudent, should have been between 84% rather than 83% CIs), we do **not** recommend it anymore. Besides its somewhat contrived nature, this method is not robust to deviations from distribution assumptions, or even to sample size. Instead, we recommend the more mainstream approach of calculating the (95%) CI for the difference and observing whether it contains zero. 
+Having examined the methodology behind the CI-overlap approach (which to be prudent, should have been between 84% CIs rather than 83% CIs), we do **not** recommend it anymore. Besides its somewhat contrived nature, this method is not robust to deviations from distribution assumptions, or even to sample size. Instead, we recommend the more mainstream approach of calculating the (95%) CI for the difference, and observing whether it contains zero. 
 
-To obtain that CI we use the assumption that CI widths are roughly proportional to the square-roots of the variances, as well as independence between arms, while allowing for CI asymmetry, and calculate
+To obtain the CI of the difference we use the assumption that CI widths are roughly proportional to the square-roots of the variances, as well as independence between arms, while allowing for asymmetry of CI widths to the left and right of the point estimate:
 
 $$
 \begin{array}{rcl}
@@ -179,21 +177,24 @@ ropiTargetCIR$point - levoTargetCIR$point + rhw
 ```
 
 
-Somewhat surprisingly, we reach a conclusion similar to the original authors: **the 95% CI for the difference contains zero, suggesting no evidence for a difference in potency** at the $\alpha=0.05$ level. Where we part ways with Pace and Stylianou - dramatically - is indeed the confidence intervals. Not so much the 83% vs. CI-of-difference, but rather the individual CIs themselves for which, per our repeated examinations over the years, the Pace-Stylianou approach lacks coverage. That approach relied upon the bootstarp, whereas we use an analytical approach based on Morris’ theoretical work with intervals for datasets with monotone dose-response data,^[Morris MD. Small-Sample Confidence Limits for Parameters under Inequality Constraints with Application to Quantal Bioassay. Biometrics. 1988;44:1083-1092.]  with modifications.
+Somewhat surprisingly, we reach a conclusion similar to the original authors: **the 95% CI for the difference contains zero, suggesting no evidence for a difference in potency** at the $\alpha=0.05$ level. 
+
+Why the difference conclusions from Pace and Stylianou? Our CIs are based on an entirely different approach. Per our repeated examinations over the years, the Pace-Stylianou approach substantially lacks in coverage. That approach relied upon the bootstrap, whereas we use an analytical approach based on Morris’ theoretical work with intervals for datasets with monotone dose-response data,^[Morris MD. Small-Sample Confidence Limits for Parameters under Inequality Constraints with Application to Quantal Bioassay. Biometrics. 1988;44:1083-1092.] with some modifications.
 
 By the way, we can use the same `quickInverse()` function to reproduce the Pace-Stylianou *point* estimates (but not the CIs, since `cir` does not implement the bootstrap approach):
 
 ```{r pacesty}
-PSropiEstimate = quickInverse(bhamou03ropiRates, target=0.5, estfun=oldPAVA, conf=0.83)
+PSropiEstimate = quickInverse(bhamou03ropiRates, target=0.5, estfun=oldPAVA, conf=0.95)
 PSropiEstimate
-PSlevoEstimate = quickInverse(bhamou03levoRates, target=0.5, estfun=oldPAVA, conf=0.83)
+PSlevoEstimate = quickInverse(bhamou03levoRates, target=0.5, estfun=oldPAVA, conf=0.95)
 PSlevoEstimate
 ```
 
+Note the argument that chooses `oldPAVA()` as estimation function (PAVA is the name of the leading algorithm to produce IR estimates; the default is `cirPAVA()`, i.e., CIR). 
 
-Note the argument specifying the `oldPAVA()` estimation function (PAVA is the name of the leading algorithm to produce IR estimates; the package default is `cirPAVA()`, i.e., CIR). 
+Incidentally, plugging the 95% (rather than 83%) CIs calculated by Pace and Stylianou (2007) into the CI-of-difference formula above, we obtain (-0.005, 0.037). Somewhat narrower than the CIR-derived interval, but yielding the same inference - in contrast with the conclusion they actually reached using the 83% CI overlap approach. Looking more closely at their CIs, both $LHW_1$ and $RHW_2$ (which in this case are the two half-widths that determine whether there is an overlap) shrank in the 83% CI version to less than half of their 95% CI magnitude. Under a Normal distribution assumption, the 83% CI would be $\sim 0.7x$ as wide; only rather unusual distributions reach a $<0.5x$ ratio.
 
-Let us visualize more clearly the CIR estimates, and the rationale supporting wider intervals from this dataset.
+To end the vignette, we visualize more clearly the CIR (and IR) estimates, and the rationale supporting wider intervals from this dataset.
 
 ## Visualizing CIR on the Dose-Response Plane
 

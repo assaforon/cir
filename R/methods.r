@@ -59,7 +59,7 @@ if(length(unique(x$cohort)) < n) # Case with cohorts
 }  else {
   
   plot(x$x, pch = ifelse(x$y==1, ch1, ch1-15), type=ifelse(connect,'b','p'), 
-     xaxt='n', yaxt='n', xlab=xlab, ylab=ylab, col=mcol, ...)
+     xaxt='n', yaxt='n', xlab=xlab, ylab=ylab, col=mcol, ylim = range(dosevals), ...)
 #ylim = range(dosevals),
   axis(1, at = 1:n, ...)
 }
