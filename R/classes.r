@@ -115,7 +115,7 @@ return(tout)
 ##' @rdname DRtrace
 #' @export
 
-doseResponse<-function(y,x=NULL,wt=rep(1,length(y)),noyes=FALSE, ...)
+doseResponse<-function(y, x=NULL, wt=rep(1,length(y)), noyes=FALSE, ...)
 {
 if(is.doseResponse(y)) return(y)
 if(!is.DRtrace(y) && is.data.frame(y)) # data frame input, e.g, from read.csv
