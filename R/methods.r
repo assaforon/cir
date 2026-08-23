@@ -75,6 +75,7 @@ plot.doseResponse<-function(x, xlab="Dose", ylab="Response", pch='X', varsize=TR
                             refsize = NULL, connect=FALSE, mcol=1, 
                             dosevals=NULL, ...) 
 {
+if(!is.doseResponse(x)) stop('x must be a doseResponse object.\n')
 if(is.null(refsize)) refsize = sqrt(1/mean(x$weight) )
 cexy = refsize
 if(varsize) cexy = refsize * sqrt(x$weight)
