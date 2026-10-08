@@ -21,6 +21,7 @@
 #' @param refsize 	(\code{doseResponse} only) a reference size by which the plotting sizes will be multiplied. Default is \code{1/sqrt(mean(dr$weight))}, scaled so that if `varsize = TRUE` the weighted-average symbol size is 1. If `varsize = FALSE`, this argument is equivalent to `cex` in an ordinary x-y `plot()` call.
 #' @param dosevals Dose values to be plotted along the x-axis (`plot.doseResponse`) or y-axis (`plot.DRtrace`) . Must be on the same scale as `x$x`. If \code{NULL} (default), those will be the doses in the dataset (i.e.,\code{sort(unique(x$x))}). The range of this values will determine the plot's x-axis range.
 #' @param offset (\code{DRtrace} only) In case of a cohort-based experiment, the relative vertical offset between symbols for outcomes within the same cohort (as fraction of dose spacing). Default 0.2.
+#' @param ylim same as the base `plot()` function's `ylim` argument. Behavior is also similar, but mentioned explicitly for pass-through compatbility with `upndown` package utilities.
 #' @param ...	Other arguments passed on to \code{\link{plot}}. 
 #' 
 
@@ -30,7 +31,8 @@
 #' @import graphics
 #' 
 plot.DRtrace <- function(x, xlab="Patient Order", ylab="Dose", shape='circle', connect=TRUE, 
-                         mcol=1, dosevals=NULL, offset=0.2, ...) {
+                         mcol=1, dosevals=NULL, offset=0.2 , ylim = NULL, ...) 
+{
 
 n=dim(x)[1]
 # Setting plotting symbols
@@ -49,9 +51,11 @@ if(length(unique(x$cohort)) < n) # Case with cohorts
 
   x$within = unlist(tapply(x$cohort, x$cohort, seq_along))
   x$midpoint = rep(tapply(x$within, x$cohort, max), tapply(x$within, x$cohort, max)) / 2 + 0.5
+  
+#  if(is.null(ylim)) ylim = range(dosevals)
   plot(x$cohort, x$x + spacing*offset*(x$within - x$midpoint), 
        pch = ifelse(x$y==1, ch1, ch1-15),
-       xaxt='n', yaxt='n', xlab=xlab, ylab=ylab, col=mcol, ylim = range(dosevals), ...)
+       xaxt='n', yaxt='n', xlab=xlab, ylab=ylab, col=mcol, ylim = ylim, ...)
   if(connect) points(unique(x$cohort), tapply(x$x, x$cohort, function(x) x[1]), 
                      type = 'b', cex=0, ...)
   axis(1, at = 1:max(x$cohort), ...)
@@ -59,7 +63,7 @@ if(length(unique(x$cohort)) < n) # Case with cohorts
 }  else {
   
   plot(x$x, pch = ifelse(x$y==1, ch1, ch1-15), type=ifelse(connect,'b','p'), 
-     xaxt='n', yaxt='n', xlab=xlab, ylab=ylab, col=mcol, ylim = range(dosevals), ...)
+     xaxt='n', yaxt='n', xlab=xlab, ylab=ylab, col=mcol, ylim = ylim, ...)
 #ylim = range(dosevals),
   axis(1, at = 1:n, ...)
 }

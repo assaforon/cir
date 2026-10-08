@@ -14,6 +14,7 @@
   mcol = 1,
   dosevals = NULL,
   offset = 0.2,
+  ylim = NULL,
   ...
 )
 
@@ -44,6 +45,8 @@
 \item{dosevals}{Dose values to be plotted along the x-axis (\code{plot.doseResponse}) or y-axis (\code{plot.DRtrace}) . Must be on the same scale as \code{x$x}. If \code{NULL} (default), those will be the doses in the dataset (i.e.,\code{sort(unique(x$x))}). The range of this values will determine the plot's x-axis range.}
 
 \item{offset}{(\code{DRtrace} only) In case of a cohort-based experiment, the relative vertical offset between symbols for outcomes within the same cohort (as fraction of dose spacing). Default 0.2.}
+
+\item{ylim}{same as the base \code{plot()} function's \code{ylim} argument. Default \code{NULL}, and if left untouched the function will}
 
 \item{...}{Other arguments passed on to \code{\link{plot}}.}
 
