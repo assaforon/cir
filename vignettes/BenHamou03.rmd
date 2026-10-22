@@ -179,7 +179,7 @@ ropiTargetCIR$point - levoTargetCIR$point + rhw
 
 Somewhat surprisingly, we reach a conclusion similar to the original authors: **the 95% CI for the difference contains zero, suggesting no evidence for a difference in potency** at the $\alpha=0.05$ level. 
 
-Why the difference conclusions from Pace and Stylianou? Our CIs are based on an entirely different approach. Per our repeated examinations over the years, the Pace-Stylianou approach substantially lacks in coverage. That approach relied upon the bootstrap, whereas we use an analytical approach based on Morris’ theoretical work with intervals for datasets with monotone dose-response data,^[Morris MD. Small-Sample Confidence Limits for Parameters under Inequality Constraints with Application to Quantal Bioassay. Biometrics. 1988;44:1083-1092.] with some modifications.
+Why the different conclusions from Pace and Stylianou? Our CIs are based on an entirely different approach. Per our repeated examinations over the years, the bootstrap approach they used substantially lacks in coverage. We use an analytical approach based on Morris’ theoretical work on intervals for datasets with monotone dose-response data,^[Morris MD. Small-Sample Confidence Limits for Parameters under Inequality Constraints with Application to Quantal Bioassay. Biometrics. 1988;44:1083-1092.] with some modifications.
 
 By the way, we can use the same `quickInverse()` function to reproduce the Pace-Stylianou *point* estimates (but not the CIs, since `cir` does not implement the bootstrap approach):
 
@@ -218,7 +218,7 @@ levoCurveCIR
 
 We end with the dose-response plots, the regression curves and the target estimates, with the two arms aligned and arranged vertically to help visualize the CI overlap.
 
-**As can be seen below, in `cir` this takes quite a bit of coding. In the new `upndown` package dedicated to up-and-down designs *(currently in beta version on GitHub `assaforon/upndown`, and soon also on CRAN)*, most of what you see in the plot can be achieved in a single command with the `drplot()` utility** (which does of course rely on `cir` functions in the backend).
+**As can be seen below, in `cir` this takes quite a bit of coding. In the newer `upndown` package dedicated to up-and-down designs, most of what you see in the plot can be achieved in a single command via the `drplot()` utility** (which does of course rely on `cir` functions in the backend).
 
 ```{r drfig,fig.width=6,fig.height=12,out.height=1000,out.width=500}
 par(mfrow=c(2,1), las=1, mar=c(4,4,4,1)) # image format parameters
@@ -260,7 +260,7 @@ lines(c(0.058, 0.095), rep(0.49,2))
  - Referring back to the "murky" picture around target in the Levobupivacaine dose-response plots, we see that both IR (black dashes) and CIR (solid blue) pool the observations from $x = 0.08, 0,09, 0.10$ into a single weighted average $y$ value, which is only slightly higher than the estimate at $x = 0.07.$ The main difference is that IR creates a flat "stretch" with that pooled $y$ value, whereas CIR also pools along the $x$ axis into a single point on the dose-response plane. So both these nonparametric algorithms *"convert the murkiness"* into concluding (with very limited confidence, given the overall small $n$) that **$F(x)$ is very shallow for a long stretch, right above the $y = 0.5$ target response rate.**
  
  - Prior to `cir` package version 2.3.0, the estimated slope informing the CI was the same to the right and left of target, and hence CIs were usually near-symmetric *(and in this particular example, much shorter)*. We now estimate different *"left"* and *"right"* slopes. To revert to the single-slope version, use the argument `slopeRefinement = FALSE` in your `quickInverse()` call.  
- - In this demonstration the CIR curves differ from the ordinary IR curves not only in the CIR algorithm that “shrinks” horizontal intervals to single points, but also in the bias correction found by Flournoy and Oron (2019) and mentioned earlier. In principle this correction is compatible with both methods, but here we applied it only to CIR, because it did not exist at the time of Pace and Stylianou’s article.
+ - In this demonstration the CIR curves differ from the ordinary IR curves not only in the CIR algorithm that “shrinks” horizontal intervals to single points, but also in the bias correction suggested by Flournoy and Oron (2019) and mentioned earlier. In principle this correction is compatible with both methods, but here we applied it only to CIR, because it did not exist at the time of Pace and Stylianou’s article.
 
 
 ## References

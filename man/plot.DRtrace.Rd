@@ -28,6 +28,7 @@
   connect = FALSE,
   mcol = 1,
   dosevals = NULL,
+  xlim = NULL,
   ...
 )
 }
@@ -36,17 +37,17 @@
 
 \item{xlab, ylab}{x-axis and y-axis labels passed on to \code{\link{plot}}}
 
-\item{shape}{the plotting shape (DRtrace only): 'circle' (default), 'square', or 'triangle'}
+\item{shape}{the plotting shape (\code{DRtrace} only): 'circle' (default), 'square', or 'triangle'}
 
 \item{connect}{logical: whether to connect the symbols (generic plotting type 'b'). Default \code{TRUE} for \code{\link{DRtrace}} and \code{FALSE} for \code{\link{doseResponse}}}
 
 \item{mcol}{The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there will be an error message.}
 
-\item{dosevals}{Dose values to be plotted along the x-axis (\code{plot.doseResponse}) or y-axis (\code{plot.DRtrace}) . Must be on the same scale as \code{x$x}. If \code{NULL} (default), those will be the doses in the dataset (i.e.,\code{sort(unique(x$x))}). The range of this values will determine the plot's x-axis range.}
+\item{dosevals}{Dose values to be plotted along the x-axis (\code{plot.doseResponse}) or y-axis (\code{plot.DRtrace}). Must be on the same scale as \code{x$x}. If \code{NULL} (default), those will be the doses in the dataset (i.e.,\code{sort(unique(x$x))}).}
 
 \item{offset}{(\code{DRtrace} only) In case of a cohort-based experiment, the relative vertical offset between symbols for outcomes within the same cohort (as fraction of dose spacing). Default 0.2.}
 
-\item{ylim}{same as the base \code{plot()} function's \code{ylim} argument. Default \code{NULL}, and if left untouched the function will}
+\item{ylim}{(\code{DRtrace} only) Similar to the base \code{plot()} function's \code{ylim} argument. If kept \code{NULL} (default), will be determined by \code{range(dosevals)}.}
 
 \item{...}{Other arguments passed on to \code{\link{plot}}.}
 
@@ -55,6 +56,8 @@
 \item{varsize}{(\code{doseResponse} only) logical, should symbol size vary by sample size? Default \code{TRUE}}
 
 \item{refsize}{(\code{doseResponse} only) a reference size by which the plotting sizes will be multiplied. Default is \code{1/sqrt(mean(dr$weight))}, scaled so that if \code{varsize = TRUE} the weighted-average symbol size is 1. If \code{varsize = FALSE}, this argument is equivalent to \code{cex} in an ordinary x-y \code{plot()} call.}
+
+\item{xlim}{(\code{doseResponse} only) Analogous to the above.}
 }
 \description{
 Plotting methods for \code{\link{doseResponse}} and \code{\link{DRtrace}} classes.
