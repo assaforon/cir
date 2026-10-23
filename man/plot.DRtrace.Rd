@@ -11,10 +11,13 @@
   ylab = "Dose",
   shape = "circle",
   connect = TRUE,
-  mcol = 1,
+  scol = 1,
+  lcol = scol,
+  obsvals = NULL,
   dosevals = NULL,
-  offset = 0.2,
+  offset = 0.1,
   ylim = NULL,
+  size = 1,
   ...
 )
 
@@ -26,7 +29,7 @@
   varsize = TRUE,
   refsize = NULL,
   connect = FALSE,
-  mcol = 1,
+  scol = 1,
   dosevals = NULL,
   xlim = NULL,
   ...
@@ -41,7 +44,7 @@
 
 \item{connect}{logical: whether to connect the symbols (generic plotting type 'b'). Default \code{TRUE} for \code{\link{DRtrace}} and \code{FALSE} for \code{\link{doseResponse}}}
 
-\item{mcol}{The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there will be an error message.}
+\item{scol}{The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there will be an error message.}
 
 \item{dosevals}{Dose values to be plotted along the x-axis (\code{plot.doseResponse}) or y-axis (\code{plot.DRtrace}). Must be on the same scale as \code{x$x}. If \code{NULL} (default), those will be the doses in the dataset (i.e.,\code{sort(unique(x$x))}).}
 

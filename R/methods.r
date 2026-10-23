@@ -15,7 +15,7 @@
 #' @param xlab,ylab		x-axis and y-axis labels passed on to \code{\link{plot}}
 #' @param pch	the plotting character (doseResponse only), the default being 'X' marks
 #' @param shape the plotting shape (`DRtrace` only): 'circle' (default), 'square', or 'triangle'
-#' @param mcol The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there will be an error message.
+#' @param scol The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there will be an error message.
 #' @param connect logical: whether to connect the symbols (generic plotting type 'b'). Default \code{TRUE} for \code{\link{DRtrace}} and \code{FALSE} for \code{\link{doseResponse}}
 #' @param varsize 	(\code{doseResponse} only) logical, should symbol size vary by sample size? Default \code{TRUE}
 #' @param refsize 	(\code{doseResponse} only) a reference size by which the plotting sizes will be multiplied. Default is \code{1/sqrt(mean(dr$weight))}, scaled so that if `varsize = TRUE` the weighted-average symbol size is 1. If `varsize = FALSE`, this argument is equivalent to `cex` in an ordinary x-y `plot()` call.
@@ -31,17 +31,19 @@
 #' @export
 #' @import graphics
 #' 
-plot.DRtrace <- function(x, xlab="Patient Order", ylab="Dose", shape='circle', connect=TRUE, 
-                         mcol=1, dosevals=NULL, offset=0.1 , ylim = NULL, ...) 
+plot.DRtrace <- function(x, xlab="Patient Order", ylab="Dose", shape='circle', connect=TRUE,
+                         scol=1, lcol = scol, obsvals = NULL, dosevals=NULL, offset=0.1, 
+                         ylim = NULL, size = 1, ...) 
 {
 
 n=dim(x)[1]
 # Setting plotting symbols
-ch1=16
-if(shape=='square') ch1=15
-if(shape=='triangle') ch1=17
+symb1=16
+if(shape=='square') symb1=15
+if(shape=='triangle') symb1=17
 
 if(is.null(dosevals[1]))  dosevals = sort(unique(x$x))
+xaxis = ifelse(is.null(obsvals[1]), 's', 'n')
 
 if(length(unique(x$cohort)) < n) # Case with cohorts
 {
@@ -56,21 +58,23 @@ if(length(unique(x$cohort)) < n) # Case with cohorts
   if(is.null(ylim)) ylim = c(min(dosevals) - offset * max(x$within)/2, 
                              max(dosevals) + offset * max(x$within)/2)
   plot(x$cohort, x$x + spacing*offset*(x$within - x$midpoint), 
-       pch = ifelse(x$y==1, ch1, ch1-15),
-       xaxt='n', yaxt='n', xlab=xlab, ylab=ylab, col=mcol, ylim = ylim, ...)
+       pch = ifelse(x$y==1, symb1, symb1-15), cex = size,
+       xaxt=xaxis, yaxt='n', xlab=xlab, ylab=ylab, col=scol, ylim = ylim, ...)
   if(connect) points(unique(x$cohort), tapply(x$x, x$cohort, function(x) x[1]), 
-                     type = 'b', cex=0, ...)
-  axis(1, at = 1:max(x$cohort), ...)
+                     type = 'b', cex=0, col = lcol, ...)
+  if(xaxis == 'n') axis(1, at = obsvals, xaxt = 's', ...)
     
 }  else {
 
   if(is.null(ylim)) ylim = range(dosevals)
-  plot(x$x, pch = ifelse(x$y==1, ch1, ch1-15), type=ifelse(connect,'b','p'), 
-     xaxt='n', yaxt='n', xlab=xlab, ylab=ylab, col=mcol, ylim = ylim, ...)
-  axis(1, at = 1:n, ...)
+  plot(x$x, pch = ifelse(x$y==1, symb1, symb1-15), xaxt=xaxis, yaxt='n', 
+       xlab=xlab, ylab=ylab, col=scol, ylim = ylim, cex = size, ...)
+  if(connect) {points (x$x, type = 'b', cex = 0, col = lcol, ...)
+    points ((1:n)[x$y==0], x$x[x$y==0], pch = symb1, cex = size *0.8 , col = par()$bg) }
+  if(xaxis == 'n') axis(1, at = obsvals) # , xaxt = 's')
 }
 
-axis(2, at=dosevals, ...)
+axis(2, at=dosevals)
 }
 
 
@@ -78,7 +82,7 @@ axis(2, at=dosevals, ...)
 #' @rdname plot.DRtrace
 #' @export
 plot.doseResponse<-function(x, xlab="Dose", ylab="Response", pch='X', varsize=TRUE,
-                            refsize = NULL, connect=FALSE, mcol=1, 
+                            refsize = NULL, connect=FALSE, scol=1, 
                             dosevals=NULL, xlim = NULL, ...) 
 {
 if(!is.doseResponse(x)) stop('x must be a doseResponse object.\n')
@@ -90,7 +94,7 @@ if(is.null(dosevals[1]))  dosevals = sort(unique(x$x))
 if(is.null(xlim)) xlim = range(dosevals)
 
 plot(y~x, data=x, pch=pch, xlab=xlab, ylab=ylab, cex=cexy, xaxt="n",
-	type=ifelse(connect, 'b', 'p'), col=mcol, xlim = xlim, ...)
+	type=ifelse(connect, 'b', 'p'), col=scol, xlim = xlim, ...)
 
 axis(1, at=dosevals, ...)
 }
